@@ -1,4 +1,5 @@
 import json
+import os
 import random
 import numpy as np
 import nltk
@@ -10,20 +11,27 @@ from keras.layers import Dense, Dropout
 from keras.optimizers import Adam
 from keras.models import load_model
 
-nltk.download("punkt")
-nltk.download("wordnet")
+nltk.download("punkt", quiet=True)
+nltk.download("wordnet", quiet=True)
+
+# Legacy mid-term model. Paths are resolved from this file so the app works from any cwd.
+_PKG_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_ROOT_DIR = os.path.dirname(_PKG_DIR)
+INTENTS_PATH = os.path.join(_PKG_DIR, "static", "data", "intents.json")
+PICKLE_PATH = os.path.join(_ROOT_DIR, "data.pickle")
+MODEL_PATH = os.path.join(_ROOT_DIR, "chatbot-model.h5")
 
 # Lemmatizer
 lemmatizer = WordNetLemmatizer()
 
 # load intents
-with open("ChatbotWebsite/static/data/intents.json") as file:
+with open(INTENTS_PATH, encoding="utf-8") as file:
     intents = json.load(file)
 
 try:  # load saved model if existed
-    with open("data.pickle", "rb") as f:
+    with open(PICKLE_PATH, "rb") as f:
         words, classes, training, output = pickle.load(f)
-    model = load_model("chatbot-model.h5")
+    model = load_model(MODEL_PATH)
 except:  # create new model if not existed
     # create list of words, tags, and tuples (pattern+tag), and ignore words
     words = []
@@ -71,7 +79,7 @@ except:  # create new model if not existed
     training = np.array(training)
     output = np.array(output)
 
-    with open("data.pickle", "wb") as f:
+    with open(PICKLE_PATH, "wb") as f:
         pickle.dump((words, classes, training, output), f)
 
     # create model (machine learning)
@@ -92,7 +100,7 @@ except:  # create new model if not existed
     model.fit(
         training, output, epochs=300, batch_size=10, verbose=1
     )  # fit model (train)
-    model.save("chatbot-model.h5")  # save model
+    model.save(MODEL_PATH)  # save model
     print("Done")
 
 
