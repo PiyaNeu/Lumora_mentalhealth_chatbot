@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 900px;">
+  <div class="card border-0 shadow-sm mb-3" style="background: rgba(255,255,255,0.88); border-radius: 14px;">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+        <h4 class="mb-0">Anonymous Community</h4>
+        <div class="btn-group btn-group-sm">
+          <a href="{{ url_for('community.index', sort='recent', tag=tag) }}" class="btn {{ 'btn-secondary' if sort == 'recent' else 'btn-outline-secondary' }}">Recent</a>
+          <a href="{{ url_for('community.index', sort='support', tag=tag) }}" class="btn {{ 'btn-secondary' if sort == 'support' else 'btn-outline-secondary' }}">Support-first</a>
+        </div>
+      </div>
+
+      {% if current_user.is_authenticated %}
+      <form method="POST" action="{{ url_for('community.new_post') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="text" name="title" maxlength="120" class="form-control mb-2" placeholder="Title" required>
+        <textarea name="body" maxlength="2000" rows="3" class="form-control mb-2" placeholder="Share what's on your mind..." required></textarea>
+        <select name="tag" class="form-select mb-2" required>
+          <option value="" disabled selected>Choose a tag</option>
+          {% for t in tags %}<option value="{{ t }}">{{ t }}</option>{% endfor %}
+        </select>
+        <button class="btn btn-primary btn-sm">Post Anonymously</button>
+        <div class="small text-secondary mt-2">
+          Please don't include phone/email/address. Harassment and crisis content may go under review.<br>
+          Allowed tags: {{ tags | join(', ') }}
+        </div>
+      </form>
+      {% else %}
+      <p class="small text-secondary mb-0"><a href="{{ url_for('auth.login') }}">Log in</a> to post, comment or react. Posts are always shown anonymously.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% for p in my_pending %}
+  <div class="alert alert-warning small">Your post "{{ p.title }}" is {{ 'under review' if p.status == 'under_review' else 'hidden after reports' }} and only visible to you.</div>
+  {% endfor %}
+
+  <div class="mb-2 d-flex flex-wrap gap-1">
+    <a href="{{ url_for('community.index', sort=sort) }}" class="badge rounded-pill text-decoration-none {{ 'bg-primary' if not tag else 'bg-light text-dark border' }}">all</a>
+    {% for t in tags %}
+    <a href="{{ url_for('community.index', sort=sort, tag=t) }}" class="badge rounded-pill text-decoration-none {{ 'bg-primary' if tag == t else 'bg-light text-dark border' }}">{{ t }}</a>
+    {% endfor %}
+  </div>
+
+  {% for post in posts %}
+  <div class="card border-0 shadow-sm mb-2" style="background: rgba(255,255,255,0.88); border-radius: 12px;">
+    <div class="card-body">
+      <h5 class="mb-0"><a href="{{ url_for('community.view_post', post_id=post.id) }}" class="text-decoration-none text-dark">{{ post.title }}</a></h5>
+      <div class="small text-secondary mb-2">Anonymous {{ post.alias }} • {{ post.created_at | localtime('%Y-%m-%d %H:%M') }} • <span class="badge bg-light text-dark border">{{ post.tag }}</span></div>
+      <p class="mb-2" style="white-space: pre-line;">{{ post.body | truncate(280) }}</p>
+      {% with mine = [], back = 'feed' %}{% include "community/_reactions.html" %}{% endwith %}
+      <a href="{{ url_for('community.view_post', post_id=post.id) }}" class="small">{{ post.comments | selectattr('status', 'equalto', 'visible') | list | length }} comments</a>
+    </div>
+  </div>
+  {% else %}
+  <p class="text-secondary text-center">No posts yet. Be the first to share — kindly.</p>
+  {% endfor %}
+</div>
+{% endblock content %}

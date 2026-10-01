@@ -193,3 +193,55 @@ class ToolUsage(db.Model):
     detail = db.Column(db.String(60))                   # e.g. exercise id
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+
+COMMUNITY_TAGS = ("anxiety", "exams", "relationship", "sadness", "sleep", "stress")
+REACTIONS = ("support", "relate", "heart")
+
+
+class CommunityPost(db.Model):
+    """Anonymous post. user_id is kept for ownership/moderation only and is never displayed."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    alias = db.Column(db.String(40), nullable=False)
+    title = db.Column(db.String(120), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    tag = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(15), nullable=False, default="visible")  # visible | under_review | hidden
+    report_count = db.Column(db.Integer, nullable=False, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    comments = db.relationship('CommunityComment', backref='post', lazy=True,
+                               cascade="all, delete-orphan", order_by="CommunityComment.created_at")
+    reactions = db.relationship('CommunityReaction', backref='post', lazy=True, cascade="all, delete-orphan")
+
+    def reaction_count(self, kind):
+        return sum(1 for r in self.reactions if r.kind == kind)
+
+
+class CommunityComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('community_post.id'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    alias = db.Column(db.String(40), nullable=False)
+    body = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(15), nullable=False, default="visible")
+    report_count = db.Column(db.Integer, nullable=False, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+class CommunityReaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    post_id = db.Column(db.Integer, db.ForeignKey('community_post.id'), nullable=False, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    kind = db.Column(db.String(10), nullable=False)  # support | relate | heart
+    __table_args__ = (db.UniqueConstraint('post_id', 'user_id', 'kind', name='uq_reaction'),)
+
+
+class CommunityReport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    target_type = db.Column(db.String(10), nullable=False)  # post | comment
+    target_id = db.Column(db.Integer, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    reason = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    __table_args__ = (db.UniqueConstraint('target_type', 'target_id', 'user_id', name='uq_report'),)
+

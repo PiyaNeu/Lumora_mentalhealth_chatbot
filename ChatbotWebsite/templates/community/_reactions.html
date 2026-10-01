@@ -1,0 +1,22 @@
+{# Reaction + report buttons for one post. Needs: post, reactions, mine (set), back ('feed'|'post'), sort #}
+{% set styles = {'support': 'success', 'relate': 'info', 'heart': 'danger'} %}
+<div class="d-flex flex-wrap gap-2 align-items-center">
+  {% for kind in reactions %}
+  <form method="POST" action="{{ url_for('community.react', post_id=post.id, kind=kind) }}" class="d-inline">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="hidden" name="back" value="{{ back }}">
+    <input type="hidden" name="sort" value="{{ sort or 'recent' }}">
+    <button class="btn btn-sm {{ 'btn-' if kind in mine else 'btn-outline-' }}{{ styles[kind] }}"
+            {% if not current_user.is_authenticated %}disabled title="Log in to react"{% endif %}>
+      {{ kind | capitalize }} ({{ post.reaction_count(kind) }})
+    </button>
+  </form>
+  {% endfor %}
+  {% if current_user.is_authenticated and post.user_id != current_user.id %}
+  <form method="POST" action="{{ url_for('community.report_post', post_id=post.id) }}" class="d-inline"
+        onsubmit="return confirm('Report this post for review?');">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button class="btn btn-sm btn-outline-warning">Report</button>
+  </form>
+  {% endif %}
+</div>

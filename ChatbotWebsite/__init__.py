@@ -82,6 +82,9 @@ def create_app(config_class=Config):
     admin.add_view(AdminModelView(models.User, db.session, endpoint="admin_user"))
     admin.add_view(AdminModelView(models.Journal, db.session, endpoint="admin_journal"))
     admin.add_view(AdminModelView(models.ChatMessage, db.session, endpoint="admin_chatmessage"))
+    # Community moderation: staff can review posts held for review or hidden after reports
+    admin.add_view(AdminModelView(models.CommunityPost, db.session, endpoint="admin_communitypost"))
+    admin.add_view(AdminModelView(models.CommunityComment, db.session, endpoint="admin_communitycomment"))
 
     # --- Create tables (SQLite, no migrations) ---
     from ChatbotWebsite.db_utils import add_missing_columns
