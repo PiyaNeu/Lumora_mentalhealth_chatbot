@@ -83,6 +83,12 @@ def preload_in_background(app):
     def _run():
         with app.app_context():
             get_classifier()
+        from ChatbotWebsite.sentiment import ml_probabilities
+
+        try:
+            ml_probabilities(["warm up"])  # loads the sentiment model too
+        except Exception:
+            app.logger.exception("Sentiment model could not be loaded; hybrid uses VADER + rules only")
 
     threading.Thread(target=_run, name="intent-preload", daemon=True).start()
 

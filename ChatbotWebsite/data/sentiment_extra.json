@@ -1,0 +1,34 @@
+{
+  "description": "Hand-written sentences added to the ML sentiment training data (train_sentiment.py). Fills gaps in the intent-derived labels: neutral everyday statements and explicit feeling words.",
+  "neutral": [
+    "I went to college", "it is raining", "i had rice for lunch", "my class starts at ten", "i am at home",
+    "i took the bus today", "the exam is on friday", "i have a lecture tomorrow", "i am reading a book",
+    "we have a holiday next week", "i woke up at seven", "my phone is charging", "i am in the library",
+    "i walked to the shop", "it is cold outside", "i am watching a movie", "my sister is visiting",
+    "i finished my homework", "the bus was late", "i am going to kathmandu", "i have two assignments",
+    "today is monday", "i study computer engineering", "i live in a hostel", "i am drinking tea",
+    "my friend called me", "i need to buy notebooks", "the internet is slow", "i cooked dinner",
+    "my results come out next month", "i have practical class today", "i am writing notes",
+    "we had a group meeting", "i am on my way to college", "my laptop is old", "it is sunny today",
+    "i went for a walk in the evening", "my exam schedule was published", "i am eating dinner",
+    "i have a doctor appointment on sunday", "aaja college gaye", "ma ghar ma chu", "khana khaye",
+    "म कलेज गएँ", "आज पानी परिरहेको छ", "म घरमा छु"
+  ],
+  "positive": [
+    "i feel happy today", "i am feeling hopeful", "i feel calm and relaxed", "today was a good day",
+    "i passed my exam", "i feel proud of myself", "i am grateful for my friends", "i feel much better now",
+    "i had a great time with my family", "i feel confident about my presentation", "i slept well last night",
+    "i am excited for the trip", "things are getting better", "i feel peaceful", "i am in a good mood",
+    "my exam went great", "i finally finished my project and i feel relieved", "i love my new hobby",
+    "i feel motivated today", "thank you, that really helped", "ma khusi chu", "aaja ramro bhayo",
+    "म खुसी छु", "आज राम्रो दिन थियो"
+  ],
+  "negative": [
+    "i feel hopeless", "i feel so sad", "i feel empty", "i am very anxious", "i feel lonely",
+    "i am so stressed", "i feel worthless", "i can't sleep at night", "i am exhausted", "i feel overwhelmed",
+    "i hate my life right now", "i feel like a failure", "nothing is going right", "i am scared",
+    "i feel terrible", "i cried all day", "i am angry at everyone", "i feel stuck", "i am really upset",
+    "my exam went badly", "i feel hurt", "i am disappointed in myself", "i feel down", "i am not okay",
+    "malai dukha lagyo", "ma eklo chu", "मलाई दुःख लाग्यो", "म निराश छु"
+  ]
+}

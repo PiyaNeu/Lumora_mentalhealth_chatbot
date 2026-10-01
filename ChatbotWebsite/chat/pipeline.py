@@ -38,6 +38,7 @@ class ChatReply:
     confidence: float = None
     strategy: str = None
     sentiment: Sentiment = field(default_factory=lambda: analyze(""))
+    text_en: str = ""   # translated text, used for sentiment storage
 
     @property
     def sos(self):
@@ -60,16 +61,18 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
     # 2. Risk-first safety screening (raw and translated text)
     risk = assess_risk(raw, text_en)
     if risk.is_high:
-        return ChatReply(SOS_REPLY[ui_lang], "sos", lang, "high", risk.matched, sentiment=sentiment)
+        return ChatReply(SOS_REPLY[ui_lang], "sos", lang, "high", risk.matched,
+                         sentiment=sentiment, text_en=text_en)
     if risk.is_medium:
-        return ChatReply(MEDIUM_REPLY[ui_lang], "medium_risk", lang, "medium", risk.matched, sentiment=sentiment)
+        return ChatReply(MEDIUM_REPLY[ui_lang], "medium_risk", lang, "medium", risk.matched,
+                         sentiment=sentiment, text_en=text_en)
 
     # 3. Rule-based guards
     guard = check_guards(text_en, raw)
     if guard:
         name, replies = guard
         return ChatReply(pick(replies, lang, avoid=last_bot_text), "guard", lang,
-                         intent=name, sentiment=sentiment)
+                         intent=name, sentiment=sentiment, text_en=text_en)
 
     # 4. Intent classifier with confidence threshold
     classifier = get_classifier()
@@ -83,7 +86,7 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
     # Second safety net: the model recognised a crisis the keyword rules missed
     if tag in CRISIS_INTENTS and confidence is not None and confidence >= CRISIS_MODEL_THRESHOLD:
         return ChatReply(SOS_REPLY[ui_lang], "sos", lang, "high", f"model:{tag}", tag, confidence,
-                         sentiment=sentiment)
+                         sentiment=sentiment, text_en=text_en)
 
     # 5. Brain: choose the response style
     strategy = brain.select_strategy(mode, sentiment.compound, tag if confident else None)
@@ -112,4 +115,4 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
         translated = llm.translate_to_nepali(body)
         body = humanize(translated, "ne") if translated else f"{NEPALI_UNAVAILABLE_NOTE}\n\n{body}"
 
-    return ChatReply(body, route, lang, "none", "", tag, confidence, strategy, sentiment)
+    return ChatReply(body, route, lang, "none", "", tag, confidence, strategy, sentiment, text_en)

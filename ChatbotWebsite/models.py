@@ -65,6 +65,9 @@ class Journal(db.Model):
     content = db.Column(db.Text, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    sentiment_compound = db.Column(db.Float)
+    sentiment_score = db.Column(db.Float)
+    sentiment_label = db.Column(db.String(10))
 
     def __repr__(self):
         return f'Journal({self.title}, user_id={self.user_id})'
@@ -99,6 +102,10 @@ class ChatMessage(db.Model):
     strategy = db.Column(db.String(20))
     language = db.Column(db.String(10))     # en | ne | ne-rom
     risk_level = db.Column(db.String(10))   # none | medium | high
+    # Sentiment (user messages, logged-in only): VADER compound + hybrid score/label
+    sentiment_compound = db.Column(db.Float)
+    sentiment_score = db.Column(db.Float)
+    sentiment_label = db.Column(db.String(10))  # negative | neutral | positive
 
     def to_dict(self):
         return {

@@ -41,3 +41,23 @@ class IntentFeaturizer:
         char = self.char.transform(cleaned)
         hist = self.word.transform(prev_clean) * HISTORY_WEIGHT
         return sp.hstack([word, char, hist], format="csr", dtype=np.float32)
+
+
+class SentimentFeaturizer:
+    """word TF-IDF (1–2) + char TF-IDF (3–5) for the ML sentiment classifier."""
+
+    def __init__(self):
+        self.word = TfidfVectorizer(ngram_range=(1, 2), max_features=3000, sublinear_tf=True)
+        self.char = TfidfVectorizer(analyzer="char_wb", ngram_range=(3, 5), max_features=4000,
+                                    sublinear_tf=True, min_df=2)
+
+    def fit(self, texts):
+        cleaned = [preprocess(t) for t in texts]
+        self.word.fit(cleaned)
+        self.char.fit(cleaned)
+        return self
+
+    def transform(self, texts):
+        cleaned = [preprocess(t) for t in texts]
+        return sp.hstack([self.word.transform(cleaned), self.char.transform(cleaned)],
+                         format="csr", dtype=np.float32)
