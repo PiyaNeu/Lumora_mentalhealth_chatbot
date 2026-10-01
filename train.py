@@ -2,7 +2,13 @@
 
   word TF-IDF (1–2) + char TF-IDF (3–5) + history features → Keras FFNN
   (Dense+ReLU, Softmax), categorical cross-entropy, Adam, EarlyStopping,
-  ReduceLROnPlateau, stratified 80/20 split grouped by base sentence.
+  ReduceLROnPlateau, stratified 80/20 split.
+
+Splits (--split):
+  random  (default) plain stratified 80/20, as described in the report
+  grouped           all variants of one base sentence stay on one side, i.e. the
+                    validation set contains only sentences the model never saw in
+                    any form — a stricter estimate for brand-new user messages
 
 Outputs
   model/intent_ffnn.keras         trained model (final model is refit on 100% of the data)
@@ -31,7 +37,7 @@ from sklearn.metrics import accuracy_score, classification_report, f1_score, pre
 
 from ChatbotWebsite.ml.features import IntentFeaturizer
 from ChatbotWebsite.ml.training import (DATASET_PATH, ROOT, add_history_noise, build_ffnn, grouped_split,
-                                        load_samples, predict_sparse, set_seeds, sparse_batches, train_ffnn)
+                                        load_samples, random_split, predict_sparse, set_seeds, sparse_batches, train_ffnn)
 
 MODEL_DIR = os.path.join(ROOT, "model")
 REPORT_DIR = os.path.join(ROOT, "reports")
@@ -77,6 +83,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--epochs", type=int, default=60)
     parser.add_argument("--no-refit", action="store_true")
+    parser.add_argument("--split", choices=("random", "grouped"), default="random")
     args = parser.parse_args()
 
     os.makedirs(MODEL_DIR, exist_ok=True)
@@ -84,9 +91,9 @@ def main():
     set_seeds()
 
     samples, labels = load_samples()
-    train, val = grouped_split(samples)
+    train, val = (grouped_split if args.split == "grouped" else random_split)(samples)
     print(f"Dataset: {len(samples)} samples, {len(labels)} intents "
-          f"(train {len(train)} / validation {len(val)}, grouped by base sentence)")
+          f"(train {len(train)} / validation {len(val)}, {args.split} split)")
 
     featurizer = IntentFeaturizer().fit([s["text"] for s in train])
     train_noisy = add_history_noise(train)
@@ -124,7 +131,8 @@ def main():
         "dataset": os.path.relpath(DATASET_PATH, ROOT),
         "samples": len(samples), "intents": len(labels),
         "train_samples": len(train), "validation_samples": len(val),
-        "split": "StratifiedGroupKFold 80/20 (variants of one base sentence never span both sides)",
+        "split": {"random": "Stratified random 80/20 (as in the report)",
+                  "grouped": "StratifiedGroupKFold 80/20 (validation = unseen base sentences only)"}[args.split],
         "feature_dim": featurizer.dim,
         "epochs_run": len(history["loss"]), "best_epoch": best_epoch,
         "learning_rates": sorted(set(round(x, 6) for x in history.get("learning_rate", [])), reverse=True),

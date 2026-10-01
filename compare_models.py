@@ -27,20 +27,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score
-from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.svm import LinearSVC
 
 from ChatbotWebsite.ml.features import IntentFeaturizer
 from ChatbotWebsite.ml.preprocess import preprocess
 from ChatbotWebsite.ml.training import (ROOT, add_history_noise, grouped_split, load_samples, predict_sparse,
-                                        set_seeds, train_ffnn, training_callbacks)
+                                        random_split, set_seeds, train_ffnn, training_callbacks)
 
 REPORT_DIR = os.path.join(ROOT, "reports")
-
-
-def random_split(samples):
-    return train_test_split(samples, test_size=0.2, stratify=[s["label"] for s in samples], random_state=42)
 
 
 def word_tfidf(train, val):

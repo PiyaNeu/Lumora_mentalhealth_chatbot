@@ -45,6 +45,16 @@ def grouped_split(samples, val_fraction=0.2, seed=RANDOM_SEED):
     return [samples[i] for i in train_idx], [samples[i] for i in val_idx]
 
 
+def random_split(samples, val_fraction=0.2, seed=RANDOM_SEED):
+    """Plain stratified 80/20 split (the method described in the report). Augmented
+    variants of a sentence can appear on both sides, so this measures recognition of
+    known phrasings; grouped_split measures generalisation to new sentences."""
+    from sklearn.model_selection import train_test_split
+
+    return train_test_split(samples, test_size=val_fraction, stratify=[s["label"] for s in samples],
+                            random_state=seed)
+
+
 def add_history_noise(train, seed=RANDOM_SEED):
     """Give some ordinary training samples an unrelated previous message, so the model
     learns that the current message outweighs the history block."""
