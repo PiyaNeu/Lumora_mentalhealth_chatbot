@@ -1,0 +1,78 @@
+{
+  "description": "Guided mindfulness exercises. 'audio' is a file name in ChatbotWebsite/static/mindfulness/ — leave it empty (or add the file later) and the page shows a placeholder with the written steps.",
+  "exercises": [
+    {
+      "id": "breathing-retraining",
+      "title": "Breathing Retraining",
+      "duration": "10:45",
+      "category": "Breathing",
+      "description": "A simple technique for lowering anxiety that you can use anywhere, at any time.",
+      "audio": "Breathing Retraining.mp3",
+      "steps": ["Sit comfortably and let your shoulders drop.", "Breathe in gently through your nose for about 4 seconds.", "Breathe out slowly through your mouth for about 6 seconds, saying 'calm' in your mind.", "Pause briefly before the next breath. Continue for a few minutes."]
+    },
+    {
+      "id": "body-scan",
+      "title": "Body Scan Meditation",
+      "duration": "4:01",
+      "category": "Meditation",
+      "description": "Bring gentle attention to each part of your body and notice sensations without judging them.",
+      "audio": "Body Scan Meditation.mp3",
+      "steps": ["Lie down or sit and close your eyes if that feels okay.", "Notice your feet, then slowly move your attention up through your legs, belly, chest, arms, neck and face.", "Where you notice tension, breathe into it and let it soften.", "Finish with three slow breaths, noticing your whole body at once."]
+    },
+    {
+      "id": "mountain",
+      "title": "Mountain Meditation",
+      "duration": "8:12",
+      "category": "Meditation",
+      "description": "Imagine yourself as a mountain — steady and strong — while thoughts and feelings pass like weather.",
+      "audio": "Mountain Meditation.mp3",
+      "steps": ["Sit upright with a steady, grounded posture.", "Picture a mountain: solid base, strong slopes, peak in the sky.", "Imagine becoming that mountain as clouds, rain and sunshine pass over.", "Notice that thoughts and feelings come and go while you stay steady."]
+    },
+    {
+      "id": "rain",
+      "title": "Rain and Thunder Sounds",
+      "duration": "9:37",
+      "category": "Relaxation",
+      "description": "Calming rain sounds that can lower tension and help you wind down before sleep.",
+      "audio": "Rain and Thunder Sounds.mp3",
+      "steps": ["Get comfortable and dim the lights.", "Let the sound of the rain fill your attention.", "When your mind wanders, gently return to the sound.", "Let your breathing slow naturally."]
+    },
+    {
+      "id": "grounding-54321",
+      "title": "5-4-3-2-1 Grounding",
+      "duration": "3:00",
+      "category": "Grounding",
+      "description": "A quick way to come back to the present when you feel anxious or overwhelmed.",
+      "audio": "",
+      "steps": ["Name 5 things you can see.", "Name 4 things you can touch, and notice their texture.", "Name 3 things you can hear.", "Name 2 things you can smell.", "Name 1 thing you can taste.", "Take one slow breath and notice how you feel now."]
+    },
+    {
+      "id": "box-breathing",
+      "title": "Box Breathing",
+      "duration": "2:00",
+      "category": "Breathing",
+      "description": "Breathe in a steady square rhythm to calm your body. Follow the pacer below.",
+      "audio": "",
+      "pacer": true,
+      "steps": ["Breathe in for 4 seconds.", "Hold for 4 seconds.", "Breathe out for 4 seconds.", "Hold for 4 seconds.", "Repeat 4–6 times."]
+    },
+    {
+      "id": "pmr",
+      "title": "Progressive Muscle Relaxation",
+      "duration": "7:00",
+      "category": "Relaxation",
+      "description": "Tense and release each muscle group to let go of physical stress.",
+      "audio": "",
+      "steps": ["Start with your feet: tense them for 5 seconds, then release for 10.", "Move up to your calves, thighs, stomach, hands, arms and shoulders.", "Finish with your face: scrunch, hold, and release.", "Notice the difference between tension and relaxation."]
+    },
+    {
+      "id": "mindful-walk",
+      "title": "Mindful Walking",
+      "duration": "5:00",
+      "category": "Movement",
+      "description": "A short walk where you pay full attention to each step — good for study breaks.",
+      "audio": "",
+      "steps": ["Walk slowly, a little slower than usual.", "Notice your heel, the sole, then your toes touching the ground.", "Notice the air, sounds and colours around you.", "When your mind wanders to worries, return to the feeling of your steps."]
+    }
+  ]
+}

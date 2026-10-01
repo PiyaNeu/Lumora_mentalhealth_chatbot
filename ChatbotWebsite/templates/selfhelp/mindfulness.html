@@ -1,0 +1,96 @@
+{% extends "layout.html" %}
+{% block style %}
+<style>
+  .mf-card { background: rgba(255,255,255,0.85); border: 0; border-radius: 16px; }
+  .audio-placeholder { border: 2px dashed #cdb8ff; border-radius: 12px; background: #faf7ff; }
+  .pacer { width: 120px; height: 120px; margin: 8px auto; border-radius: 18px; background: #b478ff33;
+           border: 3px solid #8857ff; display: flex; align-items: center; justify-content: center;
+           font-weight: 600; color: #5b2a9d; transition: transform 4s ease-in-out; }
+  .pacer.expand { transform: scale(1.35); }
+</style>
+{% endblock style %}
+{% block content %}
+<div class="container py-4" style="max-width: 1100px;">
+  <h3 class="fw-bold mb-1" style="color:#3a0066;">Mindfulness</h3>
+  <p class="text-secondary">Short guided exercises to slow down, breathe and come back to the present.</p>
+
+  <div class="row g-3">
+    {% for ex in exercises %}
+    <div class="col-md-6">
+      <div class="card mf-card shadow-sm h-100">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start">
+            <h5 class="fw-bold mb-1">{{ ex.title }}</h5>
+            <span class="badge bg-light text-dark border">{{ ex.category }} · {{ ex.duration }}</span>
+          </div>
+          <p class="small text-secondary">{{ ex.description }}</p>
+
+          {% if ex.has_audio %}
+            <audio class="w-100 mf-audio" controls preload="none" data-id="{{ ex.id }}">
+              <source src="{{ url_for('static', filename='mindfulness/' ~ ex.audio) }}" type="audio/mpeg">
+            </audio>
+          {% else %}
+            <div class="audio-placeholder p-2 small text-center text-secondary">
+              <i class="bi bi-music-note-beamed"></i> Guided audio coming soon — follow the steps below.
+            </div>
+          {% endif %}
+
+          {% if ex.pacer %}
+            <div class="pacer" data-id="{{ ex.id }}" aria-live="polite">Press start</div>
+            <div class="text-center"><button type="button" class="btn btn-sm btn-outline-primary pacer-btn" data-id="{{ ex.id }}">Start</button></div>
+          {% endif %}
+
+          <details class="mt-2">
+            <summary class="small fw-semibold">Step-by-step</summary>
+            <ol class="small mt-2 mb-0">{% for s in ex.steps %}<li>{{ s }}</li>{% endfor %}</ol>
+          </details>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="small text-secondary text-center mt-3">If an exercise makes you feel worse, stop and take a break. In a crisis, use the <a href="{{ url_for('main.sos') }}">SOS page</a>.</p>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+(function () {
+  const logged = new Set();
+  function logPlay(id) {
+    if (logged.has(id)) return;
+    logged.add(id);
+    fetch("/selfhelp/mindfulness/" + encodeURIComponent(id) + "/played", { method: "POST" });
+  }
+  document.querySelectorAll(".mf-audio").forEach(function (a) {
+    a.addEventListener("play", function () { logPlay(a.dataset.id); });
+  });
+
+  // Box-breathing pacer: 4s in, 4s hold, 4s out, 4s hold
+  const phases = [["Breathe in", true], ["Hold", true], ["Breathe out", false], ["Hold", false]];
+  document.querySelectorAll(".pacer-btn").forEach(function (btn) {
+    let timer = null;
+    btn.addEventListener("click", function () {
+      const box = document.querySelector('.pacer[data-id="' + btn.dataset.id + '"]');
+      if (timer) {
+        clearInterval(timer); timer = null;
+        box.textContent = "Press start"; box.classList.remove("expand"); btn.textContent = "Start";
+        return;
+      }
+      logPlay(btn.dataset.id);
+      let i = 0, rounds = 0;
+      const step = function () {
+        const [label, big] = phases[i % 4];
+        box.textContent = label;
+        box.classList.toggle("expand", big);
+        i++;
+        if (i % 4 === 0 && ++rounds >= 6) { clearInterval(timer); timer = null; box.textContent = "Well done"; btn.textContent = "Start"; }
+      };
+      step();
+      timer = setInterval(step, 4000);
+      btn.textContent = "Stop";
+    });
+  });
+})();
+</script>
+{% endblock scripts %}

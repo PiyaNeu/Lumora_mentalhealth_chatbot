@@ -1,10 +1,12 @@
+import json
+import os
 from datetime import datetime, timedelta
 
-from flask import Blueprint, abort, render_template, request
+from flask import Blueprint, abort, current_app, jsonify, render_template, request
 from flask_login import current_user, login_required
 
 from ChatbotWebsite import db
-from ChatbotWebsite.models import AssessmentResult
+from ChatbotWebsite.models import AssessmentResult, ToolUsage
 from ChatbotWebsite.selfhelp import burnout as burnout_check
 from ChatbotWebsite.selfhelp.assessments import ASSESSMENTS, IncompleteAnswers, parse_answers, score
 
@@ -56,3 +58,32 @@ def burnout():
     result = burnout_check.evaluate(signals, recent_q.band if recent_q else None)
     return render_template("selfhelp/burnout.html", title="Burnout Check", result=result,
                            signals=signals[:8], questionnaire=recent_q)
+
+
+_MINDFULNESS = os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "mindfulness.json")
+
+
+def load_exercises():
+    with open(_MINDFULNESS, encoding="utf-8") as fh:
+        exercises = json.load(fh)["exercises"]
+    audio_dir = os.path.join(current_app.static_folder, "mindfulness")
+    for ex in exercises:
+        ex["has_audio"] = bool(ex.get("audio")) and os.path.exists(os.path.join(audio_dir, ex["audio"]))
+    return exercises
+
+
+@selfhelp.route("/mindfulness")
+def mindfulness():
+    return render_template("selfhelp/mindfulness.html", title="Mindfulness", exercises=load_exercises())
+
+
+@selfhelp.route("/mindfulness/<exercise_id>/played", methods=["POST"])
+def mindfulness_played(exercise_id):
+    """Record that an exercise was started (logged-in users only; guests are not tracked)."""
+    if exercise_id not in {e["id"] for e in load_exercises()}:
+        abort(404)
+    if current_user.is_authenticated:
+        db.session.add(ToolUsage(user_id=current_user.id, tool="mindfulness", detail=exercise_id))
+        db.session.commit()
+    return jsonify({"ok": True})
+

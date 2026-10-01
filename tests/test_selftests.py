@@ -131,3 +131,27 @@ def test_burnout_page_combines_mood_journal_and_chat(client):
 
 def test_burnout_requires_login(client):
     assert client.get("/selfhelp/burnout").status_code == 302
+
+
+# Mindfulness (item 9)
+def test_mindfulness_page_lists_exercises_for_guests(client):
+    page = client.get("/selfhelp/mindfulness")
+    assert page.status_code == 200
+    assert b"Box Breathing" in page.data and b"5-4-3-2-1 Grounding" in page.data
+
+
+def test_mindfulness_audio_player_or_placeholder(client):
+    page = client.get("/selfhelp/mindfulness").data
+    assert b"<audio" in page                       # exercises whose MP3 exists
+    assert b"Guided audio coming soon" in page     # exercises without audio yet
+
+
+def test_mindfulness_play_logged_for_users_only(client):
+    from ChatbotWebsite.models import ToolUsage
+
+    client.post("/selfhelp/mindfulness/box-breathing/played")
+    assert ToolUsage.query.count() == 0
+    login_user_(client)
+    client.post("/selfhelp/mindfulness/box-breathing/played")
+    assert ToolUsage.query.one().detail == "box-breathing"
+    assert client.post("/selfhelp/mindfulness/unknown/played").status_code == 404

@@ -184,3 +184,12 @@ class AssessmentResult(db.Model):
     answers = db.Column(db.String(200))               # comma-separated option values
     created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
 
+
+class ToolUsage(db.Model):
+    """Lightweight log of self-help tool use (e.g. mindfulness plays) for J3 engagement metrics."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    tool = db.Column(db.String(30), nullable=False)    # e.g. mindfulness
+    detail = db.Column(db.String(60))                   # e.g. exercise id
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
