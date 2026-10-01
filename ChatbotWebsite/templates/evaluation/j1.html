@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 1100px;">
+  <div class="card border-0 shadow-sm mb-3" style="background: rgba(255,255,255,0.9); border-radius: 14px;">
+    <div class="card-body">
+      <h3 class="mb-1">J1: Sentiment Model Evaluation</h3>
+      <p class="text-secondary mb-2">This evaluation compares sentiment prediction using three approaches: <strong>VADER</strong> (lexicon-based), <strong>ML</strong> (supervised classifier), and a <strong>Hybrid</strong> method combining both.</p>
+      <span class="badge bg-light text-dark border">Metric: Macro-F1 · Labels: {{ labels | join(', ') }}</span>
+    </div>
+  </div>
+
+  {% if not result %}
+  <div class="alert alert-info">J1 needs at least {{ min_labels }} human-labelled messages (you have {{ labelled }}).
+    <a href="{{ url_for('evaluation.labeling') }}" class="alert-link">Label messages</a>.</div>
+  {% else %}
+  <div class="card border-0 shadow-sm mb-3" style="background: rgba(255,255,255,0.9); border-radius: 14px;">
+    <div class="card-body">
+      <h6 class="fw-bold">Summary Metrics</h6>
+      <div class="small text-secondary mb-2">Macro-F1 ranges from 0 to 1 and averages F1 across all sentiment classes, making it suitable for imbalanced datasets.</div>
+      <div class="row g-2">
+        {% for method, f1 in result.macro_f1.items() %}
+        <div class="col-md-4">
+          <div class="border rounded p-3 bg-white">
+            <div class="small text-secondary">Macro-F1 ({{ method }})</div>
+            <div class="fs-4 fw-bold">{{ '%.2f' | format(f1) }}</div>
+            <div class="small text-secondary">{{ {'VADER': 'Lexicon-based baseline.', 'ML': 'Supervised classifier.', 'Hybrid': 'ML + rule-based adjustments.'}[method] }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="small text-secondary mt-2">Evaluation is performed on {{ result.n }} human-labelled chat messages
+        (negative {{ result.support.get('negative', 0) }}, neutral {{ result.support.get('neutral', 0) }}, positive {{ result.support.get('positive', 0) }}).</div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100" style="background: rgba(255,255,255,0.9); border-radius: 14px;">
+        <div class="card-body">
+          <h6 class="fw-bold">Macro-F1 Comparison</h6>
+          <div style="height: 260px;"><canvas id="f1Chart"></canvas></div>
+          <div class="alert alert-light border small mt-2 mb-0"><strong>Interpretation:</strong> Macro-F1 evaluates each sentiment class equally, preventing dominant classes from skewing results. This is important for conversational mental health data.</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm h-100" style="background: rgba(255,255,255,0.9); border-radius: 14px;">
+        <div class="card-body">
+          <h6 class="fw-bold">Confusion Matrix (Hybrid)</h6>
+          <div class="small text-secondary mb-2">Rows represent actual labels; columns represent predicted labels.</div>
+          {% set cm = result.confusion['Hybrid'] %}
+          {% set peak = [cm | map('max') | max, 1] | max %}
+          <table class="table table-bordered text-center mb-2" style="table-layout: fixed;">
+            <thead><tr><th class="small">actual ↓ / predicted →</th>{% for l in labels %}<th class="small">{{ l }}</th>{% endfor %}</tr></thead>
+            <tbody>
+            {% for row in cm %}
+              <tr><th class="small">{{ labels[loop.index0] }}</th>
+              {% for v in row %}
+                {% set a = (0.08 + 0.85 * v / peak) | round(2) %}
+                <td style="background: rgba(31,90,170,{{ a }}); color: {{ 'white' if a > 0.5 else 'black' }}; font-weight: 600;">{{ v }}</td>
+              {% endfor %}</tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <div class="alert alert-light border small mb-0"><strong>Interpretation:</strong> Diagonal cells indicate correct predictions, while off-diagonal cells represent misclassifications.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock content %}
+
+{% block scripts %}
+{% if result %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  new Chart(document.getElementById("f1Chart"), {
+    type: "bar",
+    data: { labels: {{ result.macro_f1.keys() | list | tojson }},
+            datasets: [{ label: "Macro-F1", data: {{ result.macro_f1.values() | list | tojson }}, backgroundColor: "#1f5aaa" }] },
+    options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 1 } }, plugins: { legend: { display: false } } },
+  });
+</script>
+{% endif %}
+{% endblock scripts %}

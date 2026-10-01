@@ -285,3 +285,26 @@ class Appointment(db.Model):
     __table_args__ = (db.Index('uq_active_slot', 'psychiatrist_id', 'date', 'time', unique=True,
                                sqlite_where=db.text("status != 'cancelled'")),)
 
+
+class SentimentLabel(db.Model):
+    """Human ground-truth label for a user chat message (Manual Labeling page, used by J1)."""
+    id = db.Column(db.Integer, primary_key=True)
+    message_id = db.Column(db.Integer, db.ForeignKey('chat_message.id', ondelete="CASCADE"), nullable=False,
+                           unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    label = db.Column(db.String(10), nullable=False)  # negative | neutral | positive
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    message = db.relationship('ChatMessage')
+
+
+class SessionFeedback(db.Model):
+    """J2: one rating (1–5) + helpful yes/no per chat session."""
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('chat_session.id', ondelete="SET NULL"), unique=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    session_title = db.Column(db.String(80))  # kept so the J2 table survives session deletion
+    rating = db.Column(db.Integer, nullable=False)
+    helpful = db.Column(db.Boolean, nullable=False)
+    comment = db.Column(db.String(300))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+

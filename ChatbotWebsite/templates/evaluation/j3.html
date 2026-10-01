@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 1100px;">
+  <div class="card border-0 shadow-sm mb-3" style="background: rgba(255,255,255,0.9); border-radius: 14px;">
+    <div class="card-body">
+      <h3 class="mb-1">J3: Usage &amp; Outcome Indicators</h3>
+      <p class="text-secondary mb-2">This section provides higher-level analytics: engagement trend (sessions), sentiment trend over time, and changes in self-assessment scores (PHQ-9 / GAD-7).</p>
+      <span class="badge bg-light text-dark border">Window: Last 7–14 days comparison</span>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-3" style="background: rgba(255,255,255,0.9); border-radius: 14px;">
+    <div class="card-body">
+      <h6 class="fw-bold">Key Indicators</h6>
+      <div class="small text-secondary mb-2">These are "credit-heavy" because they show outcomes, not just features.</div>
+      <div class="row g-2">
+        <div class="col-md-4"><div class="border rounded p-3 bg-white h-100">
+          <div class="small text-secondary">Sessions Used</div><div class="fs-4 fw-bold">{{ sessions_used }}</div>
+          <div class="small text-secondary">Non-archived sessions created by the user</div></div></div>
+        <div class="col-md-4"><div class="border rounded p-3 bg-white h-100">
+          <div class="small text-secondary">Avg Sentiment Trend</div>
+          <div class="fs-4 fw-bold">{{ '%+.3f' | format(trend) if trend is not none else '—' }}</div>
+          <div class="small text-secondary">Recent 7-day avg{% if recent_avg is not none %} ({{ recent_avg }}){% endif %} minus previous 7-day avg{% if prev_avg is not none %} ({{ prev_avg }}){% endif %}</div></div></div>
+        <div class="col-md-4"><div class="border rounded p-3 bg-white h-100">
+          <div class="small text-secondary">Assessment Change</div>
+          {% if assessment %}
+            {% for test, a in assessment.items() %}
+            <div><span class="fs-5 fw-bold">{{ '%+d' | format(a.change) }}</span> <span class="small">{{ 'PHQ-9' if test == 'phq9' else 'GAD-7' }} ({{ a.first }} → {{ a.latest }}, {{ a.count }} tests)</span></div>
+            {% endfor %}
+          {% else %}<div class="fs-4 fw-bold">0</div>{% endif %}
+          <div class="small text-secondary">Latest score − earliest score (lower is better)</div></div></div>
+      </div>
+      <div class="small text-secondary mt-2">These indicators are informative but not diagnostic. They help the user track patterns over time.</div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-8"><div class="card border-0 shadow-sm h-100" style="background: rgba(255,255,255,0.9); border-radius: 14px;"><div class="card-body">
+      <h6 class="fw-bold">Weekly Engagement vs Sentiment</h6>
+      <div class="small text-secondary mb-2">Combines usage (sessions/week) and emotional trend (avg sentiment/week).</div>
+      <div style="height: 300px;"><canvas id="weeklyChart"></canvas></div>
+      <div class="small text-secondary mt-2">
+        {% if correlation is not none %}
+          Correlation between weekly sessions and average sentiment: <strong>r = {{ correlation }}</strong>. This is an association, not proof that one causes the other.
+        {% else %}
+          A correlation is shown once there are at least 4 weeks with both sessions and sentiment data.
+        {% endif %}
+      </div>
+    </div></div></div>
+    <div class="col-md-4"><div class="card border-0 shadow-sm h-100" style="background: rgba(255,255,255,0.9); border-radius: 14px;"><div class="card-body">
+      <h6 class="fw-bold">Engagement</h6>
+      <table class="table table-sm mb-0">
+        {% for k, v in engagement.items() %}<tr><td>{{ k }}</td><td class="text-end fw-semibold">{{ v }}</td></tr>{% endfor %}
+      </table>
+    </div></div></div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+  new Chart(document.getElementById("weeklyChart"), {
+    type: "line",
+    data: { labels: {{ weekly.labels | tojson }},
+            datasets: [
+              { label: "Sessions/Week", data: {{ weekly.sessions | tojson }}, borderColor: "#1f77b4", yAxisID: "y", tension: 0.2 },
+              { label: "Avg Sentiment/Week", data: {{ weekly.sentiment | tojson }}, borderColor: "#ff7f0e", yAxisID: "y1", tension: 0.2, spanGaps: true },
+            ] },
+    options: { maintainAspectRatio: false,
+               scales: { y: { beginAtZero: true, ticks: { precision: 0 }, title: { display: true, text: "Sessions" } },
+                         y1: { min: -1, max: 1, position: "right", grid: { drawOnChartArea: false }, title: { display: true, text: "Sentiment" } } } },
+  });
+</script>
+{% endblock scripts %}

@@ -73,6 +73,19 @@
               <i class="bi bi-people"></i> Community
             </a>
           </li>
+          {% if current_user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="bi bi-bar-chart-line"></i> Evaluation
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{ url_for('evaluation.labeling') }}">Manual Labeling</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('evaluation.j1') }}">J1: Sentiment Models</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('evaluation.j2') }}">J2: User Feedback</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('evaluation.j3') }}">J3: Usage &amp; Outcomes</a></li>
+            </ul>
+          </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link text-dark" href="{{ url_for('main.about') }}">
               <i class="bi bi-info-circle-fill"></i> About

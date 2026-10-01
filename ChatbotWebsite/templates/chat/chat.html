@@ -100,6 +100,10 @@ Hi there, welcome to LUMORA! Go ahead and send me a message. 💜</div>
       </div>
       <a class="btn btn-sm btn-outline-info" href="{{ url_for('selfhelp.tests') }}">Tests 📝</a>
       <a class="btn btn-sm btn-outline-info" href="{{ url_for('selfhelp.mindfulness') }}">Mindfulness 🧘</a>
+      {% if current_user.is_authenticated %}
+      <button type="button" class="btn btn-sm btn-outline-warning ms-auto {{ '' if active else 'd-none' }}" id="rate-btn"
+              data-bs-toggle="modal" data-bs-target="#rate-modal">⭐ Rate this chat</button>
+      {% endif %}
     </div>
 
     <form id="message-form" class="chat-inputarea" novalidate>
@@ -144,6 +148,35 @@ Hi there, welcome to LUMORA! Go ahead and send me a message. 💜</div>
     <div class="offcanvas-body">{{ chat_list() }}</div>
   </div>
 </div>
+{% if current_user.is_authenticated %}
+<div class="modal fade" id="rate-modal" tabindex="-1" aria-labelledby="rate-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="rate-title">How was this chat?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+      <div class="modal-body">
+        <div class="mb-2">Rating</div>
+        <div class="btn-group mb-3" role="group" aria-label="Rating">
+          {% for r in range(1, 6) %}
+          <input type="radio" class="btn-check" name="rating" id="rate{{ r }}" value="{{ r }}">
+          <label class="btn btn-outline-warning" for="rate{{ r }}">{{ r }} ★</label>
+          {% endfor %}
+        </div>
+        <div class="mb-2">Was Lumora helpful?</div>
+        <div class="btn-group mb-3" role="group" aria-label="Helpful">
+          <input type="radio" class="btn-check" name="helpful" id="help-yes" value="yes">
+          <label class="btn btn-outline-success" for="help-yes">Yes</label>
+          <input type="radio" class="btn-check" name="helpful" id="help-no" value="no">
+          <label class="btn btn-outline-secondary" for="help-no">No</label>
+        </div>
+        <textarea id="rate-comment" class="form-control" maxlength="300" rows="2" placeholder="Anything we could do better? (optional)"></textarea>
+        <div id="rate-msg" class="small mt-2"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-primary" id="rate-submit">Submit feedback</button></div>
+    </div>
+  </div>
+</div>
+{% endif %}
 {% endblock content %}
 
 {% block scripts %}

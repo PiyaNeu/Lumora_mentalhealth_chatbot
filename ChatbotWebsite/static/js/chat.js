@@ -112,6 +112,8 @@
         // Keep the URL on this session so a refresh reloads it
         history.replaceState(null, "", "/chat?s=" + sessionId);
         addSessionToList(data.session_id, data.session_title);
+        const rateBtn = document.getElementById("rate-btn");
+        if (rateBtn) rateBtn.classList.remove("d-none");
       }
     } catch (err) {
       typing.remove();
@@ -212,6 +214,29 @@
       body: JSON.stringify({ mode: e.target.value }),
     });
   });
+
+  // --- J2 feedback ---
+  const rateSubmit = document.getElementById("rate-submit");
+  if (rateSubmit) {
+    rateSubmit.addEventListener("click", async function () {
+      const rating = document.querySelector('input[name="rating"]:checked');
+      const helpful = document.querySelector('input[name="helpful"]:checked');
+      const msg = document.getElementById("rate-msg");
+      if (!rating || !helpful || !sessionId) {
+        msg.className = "small mt-2 text-danger";
+        msg.textContent = "Please choose a rating and whether it helped.";
+        return;
+      }
+      const resp = await fetch("/chat/sessions/" + sessionId + "/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rating: parseInt(rating.value, 10), helpful: helpful.value === "yes",
+                               comment: document.getElementById("rate-comment").value }),
+      });
+      msg.className = "small mt-2 " + (resp.ok ? "text-success" : "text-danger");
+      msg.textContent = resp.ok ? "Thank you for your feedback!" : "Could not save feedback.";
+    });
+  }
 
   // Bootstrap popovers
   document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (p) {

@@ -1,0 +1,81 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 1100px;">
+  <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+    <div>
+      <h2 class="fw-bold mb-0" style="font-family: Georgia, serif;">Manual Labeling (Ground Truth)</h2>
+      <div class="text-secondary small">Label user messages as <strong>negative</strong>, <strong>neutral</strong>, or <strong>positive</strong>. These labels are used as <strong>ground truth</strong> for J1 evaluation.</div>
+    </div>
+    <span class="badge bg-light text-dark border fs-6">Labeled so far: <span id="labelled-count">{{ labelled }}</span></span>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-3" style="background: rgba(255,255,255,0.9); border-radius: 12px;">
+    <div class="card-body">
+      <h6 class="fw-bold">Controls</h6>
+      <form class="d-flex flex-wrap gap-2 align-items-center" method="GET">
+        <label class="small">Limit <input type="number" name="limit" value="{{ limit }}" min="10" max="500" class="form-control form-control-sm d-inline-block" style="width: 90px;"></label>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" role="switch" id="unlabeled" name="unlabeled" value="1" {% if only_unlabeled %}checked{% endif %}>
+          <label class="form-check-label small" for="unlabeled">Only unlabeled</label>
+        </div>
+        <label class="small">Balanced sample, per class <input type="number" name="balanced" value="{{ balanced or '' }}" min="1" max="100" placeholder="e.g. 20" class="form-control form-control-sm d-inline-block" style="width: 100px;"></label>
+        <button class="btn btn-sm btn-outline-secondary">Refresh</button>
+        <a href="{{ url_for('evaluation.j1') }}" class="btn btn-sm btn-outline-primary ms-auto">Go to J1 →</a>
+      </form>
+      <div class="small text-secondary mt-2">"Balanced sample" picks up to N messages from each predicted class so all three labels are represented.</div>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm" style="background: rgba(255,255,255,0.9); border-radius: 12px;">
+    <div class="card-body">
+      <h6 class="fw-bold">Messages</h6>
+      <div class="table-responsive">
+        <table class="table table-sm align-middle">
+          <thead><tr><th style="width: 160px;">Time</th><th>Message</th><th style="width: 290px;">Human Label</th></tr></thead>
+          <tbody>
+          {% for m in messages %}
+            {% set current = labels.get(m.id) %}
+            <tr data-id="{{ m.id }}">
+              <td class="small text-secondary">{{ m.timestamp | localtime('%Y-%m-%d %H:%M') }}</td>
+              <td>{{ m.message }}</td>
+              <td>
+                <div class="btn-group btn-group-sm" role="group" aria-label="Label">
+                  {% for l, style in [('negative', 'danger'), ('neutral', 'secondary'), ('positive', 'success')] %}
+                  <button type="button" class="btn label-btn {{ 'btn-' ~ style if current == l else 'btn-outline-' ~ style }}" data-label="{{ l }}" data-style="{{ style }}">{{ l | capitalize }}</button>
+                  {% endfor %}
+                  <button type="button" class="btn btn-outline-light text-muted label-btn" data-label="clear" title="Clear label">✕</button>
+                </div>
+              </td>
+            </tr>
+          {% else %}
+            <tr><td colspan="3" class="text-secondary">No messages to label yet. Chat with Lumora first — guest chats are not stored.</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("click", async function (e) {
+    const btn = e.target.closest(".label-btn");
+    if (!btn) return;
+    const row = btn.closest("tr");
+    const resp = await fetch("{{ url_for('evaluation.set_label') }}", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message_id: parseInt(row.dataset.id, 10), label: btn.dataset.label }),
+    });
+    if (!resp.ok) return;
+    const data = await resp.json();
+    document.getElementById("labelled-count").textContent = data.labelled;
+    row.querySelectorAll(".label-btn[data-style]").forEach(function (b) {
+      const on = b === btn;
+      b.className = "btn label-btn " + (on ? "btn-" : "btn-outline-") + b.dataset.style;
+    });
+  });
+</script>
+{% endblock scripts %}
