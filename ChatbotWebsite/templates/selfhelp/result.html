@@ -24,6 +24,9 @@
       <div class="d-flex flex-wrap gap-2">
         <a href="{{ url_for('selfhelp.tests') }}" class="btn btn-outline-secondary">Back to tests</a>
         <a href="{{ url_for('chat.chat_page') }}" class="btn btn-outline-primary">Talk to Lumora</a>
+        {% if result.band not in ('Minimal', 'Low', 'Mild') %}
+        <a href="{{ url_for('consultation.index') }}" class="btn btn-primary">Book a consultation</a>
+        {% endif %}
       </div>
     </div>
   </div>

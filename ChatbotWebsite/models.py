@@ -245,3 +245,43 @@ class CommunityReport(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     __table_args__ = (db.UniqueConstraint('target_type', 'target_id', 'user_id', name='uq_report'),)
 
+
+class Psychiatrist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), nullable=False)
+    specialty = db.Column(db.String(120), nullable=False)
+    location = db.Column(db.String(40), nullable=False)       # e.g. Kathmandu, Lalitpur, Online
+    languages = db.Column(db.String(80), nullable=False)
+    bio = db.Column(db.String(300))
+    work_days = db.Column(db.String(20), nullable=False)      # weekday numbers, Mon=0: "0,1,2,3,4"
+    start_time = db.Column(db.String(5), nullable=False)      # "16:00"
+    end_time = db.Column(db.String(5), nullable=False)        # "20:00" (last slot ends here)
+    slot_minutes = db.Column(db.Integer, nullable=False, default=30)
+    is_demo = db.Column(db.Boolean, nullable=False, default=True)
+    active = db.Column(db.Boolean, nullable=False, default=True)
+
+    @property
+    def days_label(self):
+        names = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        days = [int(d) for d in self.work_days.split(",")]
+        return "Every day" if len(days) == 7 else ", ".join(names[d] for d in days)
+
+
+class Appointment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    psychiatrist_id = db.Column(db.Integer, db.ForeignKey('psychiatrist.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.String(5), nullable=False)            # "12:30" local time
+    status = db.Column(db.String(12), nullable=False, default="booked")       # booked | cancelled
+    payment_method = db.Column(db.String(15), nullable=False)                 # khalti | khalti-demo | cash
+    payment_status = db.Column(db.String(15), nullable=False, default="unpaid")  # unpaid | paid | cash_on_visit
+    fee_npr = db.Column(db.Integer, nullable=False)
+    khalti_pidx = db.Column(db.String(60))
+    transaction_id = db.Column(db.String(60))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    psychiatrist = db.relationship('Psychiatrist')
+    # Database-level double-booking guard: one active booking per doctor per slot
+    __table_args__ = (db.Index('uq_active_slot', 'psychiatrist_id', 'date', 'time', unique=True,
+                               sqlite_where=db.text("status != 'cancelled'")),)
+

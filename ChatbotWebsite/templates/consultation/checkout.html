@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-5" style="max-width: 560px;">
+  <div class="card border-0 shadow" style="background: rgba(255,255,255,0.95); border-radius: 20px;">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-start">
+        <div><h3 class="fw-bold mb-0">Checkout</h3><div class="small text-secondary">Review your booking details.</div></div>
+        <span class="badge rounded-pill bg-danger-subtle text-danger border border-danger-subtle fs-6">NPR {{ appt.fee_npr }}</span>
+      </div>
+      <hr>
+      {% set badge = {'paid': ('✅', 'PAID', 'success'), 'cash_on_visit': ('💵', 'CASH ON VISIT', 'warning'), 'unpaid': ('⏳', 'UNPAID', 'danger')}[appt.payment_status] %}
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="badge bg-{{ badge[2] }}-subtle text-{{ badge[2] }} border border-{{ badge[2] }}-subtle fs-6">{{ badge[0] }} Status: {{ 'CANCELLED' if appt.status == 'cancelled' else badge[1] }}</span>
+        <span class="fw-semibold text-secondary">{{ 'KHALTI' if appt.payment_method.startswith('khalti') else 'CASH' }}</span>
+      </div>
+      <div><strong>Psychiatrist:</strong> {{ appt.psychiatrist.name }}</div>
+      <div><strong>Date:</strong> {{ appt.date.isoformat() }}</div>
+      <div><strong>Time:</strong> {{ appt.time }}</div>
+      {% if appt.transaction_id %}<div class="small text-secondary">Khalti transaction: {{ appt.transaction_id }}</div>{% endif %}
+
+      {% if appt.status != 'cancelled' and appt.payment_status == 'unpaid' %}
+        {% if khalti_live %}
+          <a href="{{ url_for('consultation.pay', appt_id=appt.id) }}" class="btn btn-danger w-100 mt-3">Pay with Khalti • NPR {{ appt.fee_npr }}</a>
+        {% else %}
+          <div class="alert alert-warning small mt-3 mb-2">Khalti demo requires a public URL (ngrok) and a sandbox key. This is a local demo checkout — no real payment is taken.</div>
+          <form method="POST" action="{{ url_for('consultation.demo_pay', appt_id=appt.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-danger w-100">Simulate Khalti payment (demo)</button>
+          </form>
+        {% endif %}
+      {% elif appt.payment_method == 'khalti-demo' %}
+        <div class="alert alert-warning small mt-3 mb-0">Paid in demo mode — no real money was taken.</div>
+      {% endif %}
+
+      <a href="{{ url_for('consultation.index') }}" class="btn btn-outline-dark w-100 mt-3">Back to booking</a>
+      {% if appt.status != 'cancelled' %}
+      <form method="POST" action="{{ url_for('consultation.cancel', appt_id=appt.id) }}" class="mt-2" onsubmit="return confirm('Cancel this appointment?');">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="btn btn-link btn-sm text-danger w-100">Cancel appointment</button>
+      </form>
+      {% endif %}
+      <div class="small text-secondary text-center mt-2">Lumora is a final-year demo project. Payment gateways can be integrated later.</div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

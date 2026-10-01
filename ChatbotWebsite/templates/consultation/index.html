@@ -1,0 +1,129 @@
+{% extends "layout.html" %}
+{% block style %}
+<style>
+  .c-card { background: rgba(255,255,255,0.9); border: 0; border-radius: 16px; }
+  .doc-card { cursor: pointer; transition: transform .15s, box-shadow .15s; border: 2px solid transparent; }
+  .doc-card:hover { transform: translateY(-2px); }
+  .doc-card.selected { border-color: #8857ff; box-shadow: 0 6px 20px rgba(136,87,255,.25); }
+  .doc-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg,#b478ff,#ff9cee);
+                color: #fff; font-weight: 700; font-size: 1.3rem; display: flex; align-items: center; justify-content: center; }
+  .logo-badge { width: 36px; height: 36px; border-radius: 10px; background: #e2554f; color: #fff;
+                display: flex; align-items: center; justify-content: center; font-weight: 700; }
+</style>
+{% endblock style %}
+{% block content %}
+<div class="container py-4" style="max-width: 1150px;">
+  <div class="c-card shadow-sm p-3 mb-3 d-flex flex-wrap align-items-center gap-3">
+    <div class="logo-badge">L</div>
+    <div class="flex-grow-1"><h5 class="fw-bold mb-0">Lumora Consultation</h5><div class="small text-secondary">Choose a psychiatrist • Book a slot • Pay securely</div></div>
+    <span class="badge rounded-pill text-danger border border-danger-subtle bg-danger-subtle">Fixed Fee: NPR {{ fee }}</span>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-lg-8">
+      <h6 class="fw-bold mb-0">Choose your psychiatrist</h6>
+      <div class="small text-secondary mb-2">Tap a card to select. You can change anytime before payment.</div>
+      <div class="row g-3">
+        {% for d in doctors %}
+        <div class="col-md-6">
+          <div class="card c-card shadow-sm doc-card h-100" data-id="{{ d.id }}" data-name="{{ d.name }}" tabindex="0">
+            <div class="card-body">
+              <div class="d-flex gap-3 align-items-center mb-2">
+                <div class="doc-avatar">{{ d.name.split()[1][0] }}{{ d.name.split()[-1][0] }}</div>
+                <div>
+                  <div class="fw-bold">{{ d.name }}</div>
+                  <div class="small text-secondary">{{ d.specialty }}</div>
+                </div>
+                <span class="badge bg-danger-subtle text-danger ms-auto">{{ d.location }}</span>
+              </div>
+              <div class="small">📆 {{ d.start_time }}–{{ d.end_time }}, {{ d.days_label }}</div>
+              <div class="small">🗣️ {{ d.languages }}</div>
+              <div class="small text-secondary mt-1">{{ d.bio }}</div>
+              {% if d.is_demo %}<div class="small text-muted fst-italic mt-1">Demo profile for the student project</div>{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card c-card shadow-sm">
+        <div class="card-body">
+          <h5 class="fw-bold">📝 Book your slot</h5>
+          <div class="small text-secondary mb-2">Fixed fee NPR {{ fee }}. Select doctor + date/time and continue.</div>
+          <form method="POST" action="{{ url_for('consultation.book') }}" id="book-form" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="doctor" id="doctor-id">
+            <div class="form-control-plaintext small fw-semibold bg-light rounded px-2 mb-2" id="doctor-label">Selected: none</div>
+            <input type="date" name="date" id="date" class="form-control mb-2" min="{{ today.isoformat() }}" required>
+            <select name="time" id="time" class="form-select mb-2" required><option value="">Pick a date first</option></select>
+            <select name="method" class="form-select mb-2" required>
+              <option value="">Payment method</option>
+              <option value="khalti">Khalti {{ '' if khalti_live else '(Sandbox demo)' }}</option>
+              <option value="cash">Cash on visit</option>
+            </select>
+            <button class="btn btn-danger w-100">Continue • NPR {{ fee }}</button>
+          </form>
+          <div class="small text-secondary mt-2">Lumora tip: pick the doctor that feels safest for you — you can always switch later.</div>
+        </div>
+      </div>
+
+      <div class="card c-card shadow-sm mt-3">
+        <div class="card-body">
+          <h6 class="fw-bold">Upcoming appointments</h6>
+          {% for a in upcoming %}
+          <div class="d-flex justify-content-between align-items-center border-bottom py-1 small">
+            <a href="{{ url_for('consultation.checkout', appt_id=a.id) }}">{{ a.date.strftime('%d %b') }} {{ a.time }} · {{ a.psychiatrist.name }}</a>
+            <span class="badge {{ {'paid': 'bg-success', 'cash_on_visit': 'bg-warning text-dark', 'unpaid': 'bg-danger'}[a.payment_status] }}">{{ a.payment_status | replace('_', ' ') }}</span>
+          </div>
+          {% else %}
+          <div class="small text-secondary">No upcoming appointments.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3">{% include "consultation/_calendar.html" %}</div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+(function () {
+  const docInput = document.getElementById("doctor-id");
+  const docLabel = document.getElementById("doctor-label");
+  const dateInput = document.getElementById("date");
+  const timeSelect = document.getElementById("time");
+
+  function selectDoctor(card) {
+    document.querySelectorAll(".doc-card").forEach((c) => c.classList.toggle("selected", c === card));
+    docInput.value = card.dataset.id;
+    docLabel.textContent = "Selected: " + card.dataset.name;
+    loadSlots();
+  }
+  document.querySelectorAll(".doc-card").forEach(function (card) {
+    card.addEventListener("click", () => selectDoctor(card));
+    card.addEventListener("keydown", (e) => { if (e.key === "Enter") selectDoctor(card); });
+  });
+
+  async function loadSlots() {
+    timeSelect.replaceChildren();
+    if (!docInput.value || !dateInput.value) {
+      timeSelect.add(new Option("Pick a doctor and date", ""));
+      return;
+    }
+    const resp = await fetch("/consultation/slots?doctor=" + docInput.value + "&date=" + dateInput.value);
+    const data = await resp.json();
+    if (!data.slots || !data.slots.length) {
+      timeSelect.add(new Option("No free slots that day", ""));
+      return;
+    }
+    timeSelect.add(new Option("Choose a time", ""));
+    data.slots.forEach((s) => timeSelect.add(new Option(s, s)));
+  }
+  dateInput.addEventListener("change", loadSlots);
+})();
+</script>
+{% endblock scripts %}

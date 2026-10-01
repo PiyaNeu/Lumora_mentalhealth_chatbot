@@ -1,0 +1,32 @@
+{# "Your Appointments Calendar" (report screenshot). Include where needed; loads FullCalendar once. #}
+<div class="card border-0 shadow-sm" style="background: rgba(255,255,255,0.9); border-radius: 14px;">
+  <div class="card-body">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+      <div>
+        <h6 class="fw-bold mb-0">📅 Your Appointments Calendar</h6>
+        <div class="small text-secondary">Tap a date to see your appointment times.</div>
+      </div>
+      <div class="small">
+        <span style="color:#2e9d5b;">●</span> Paid
+        <span class="ms-2" style="color:#e0a100;">●</span> Cash on Visit
+        <span class="ms-2" style="color:#d64545;">●</span> Unpaid
+      </div>
+    </div>
+    <div id="appt-calendar" data-src="{{ url_for('consultation.calendar_events') }}"></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const el = document.getElementById("appt-calendar");
+    const cal = new FullCalendar.Calendar(el, {
+      initialView: "dayGridMonth",
+      height: "auto",
+      headerToolbar: { left: "prev,next today", center: "title", right: "dayGridMonth,timeGridWeek" },
+      events: el.dataset.src,
+      eventTimeFormat: { hour: "2-digit", minute: "2-digit", hour12: false },
+      displayEventTime: false,
+    });
+    cal.render();
+  });
+</script>

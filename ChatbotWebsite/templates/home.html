@@ -41,5 +41,8 @@
     {% endif %}
     <a href="{{ url_for('main.about') }}" class="btn btn-outline-info btn-lg">About Us</a>
   </div>
+  {% if current_user.is_authenticated %}
+  <div class="w-100 mt-4" style="max-width: 900px;">{% include "consultation/_calendar.html" %}</div>
+  {% endif %}
 </div>
 {% endblock content %}

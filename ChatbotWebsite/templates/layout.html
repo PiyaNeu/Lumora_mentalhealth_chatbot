@@ -85,6 +85,9 @@
           </li>
           {% if current_user.is_authenticated %}
             <li class="nav-item">
+              <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('consultation.index') }}"><i class="bi bi-calendar2-heart"></i> Consultation</a>
+            </li>
+            <li class="nav-item">
               <span class="nav-link text-dark"><i class="bi bi-person-circle"></i> {{ current_user.username }}</span>
             </li>
             <li class="nav-item">
