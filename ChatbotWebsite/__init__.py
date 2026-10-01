@@ -26,6 +26,15 @@ def create_app(config_class=Config):
         app.config["TEMPLATES_AUTO_RELOAD"] = True
         app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
 
+    @app.template_filter("localtime")
+    def localtime(value, fmt="%d/%m/%Y, %H:%M"):
+        """Render a stored UTC datetime in the app's local time."""
+        from datetime import timedelta
+
+        if value is None:
+            return ""
+        return (value + timedelta(minutes=app.config["UTC_OFFSET_MINUTES"])).strftime(fmt)
+
     # --- Initialize extensions ---
     db.init_app(app)
     bcrypt.init_app(app)
@@ -75,7 +84,15 @@ def create_app(config_class=Config):
     admin.add_view(AdminModelView(models.ChatMessage, db.session, endpoint="admin_chatmessage"))
 
     # --- Create tables (SQLite, no migrations) ---
+    from ChatbotWebsite.db_utils import add_missing_columns
+
     with app.app_context():
         db.create_all()
+        add_missing_columns(db)
+
+    if app.config.get("LOAD_INTENT_MODEL") and not app.testing:
+        from ChatbotWebsite.chat.intent import preload_in_background
+
+        preload_in_background(app)
 
     return app

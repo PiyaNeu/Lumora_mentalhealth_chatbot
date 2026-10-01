@@ -1,116 +1,149 @@
-{% extends 'layout.html' %} 
+{% extends 'layout.html' %}
 
 {% block style %}
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/chat.css') }}" />
 {% endblock style %}
 
 {% block content %}
-<div id="chatbot" class="chatbot">
+<div class="chat-shell"
+     id="chat-shell"
+     data-authed="{{ 'true' if current_user.is_authenticated else 'false' }}"
+     data-session-id="{{ active.id if active else '' }}"
+     data-sos-url="{{ url_for('main.sos') }}"
+     data-bot-img="{{ url_for('static', filename='images/logo.png') }}"
+     data-user-img="{{ url_for('static', filename='profile_images/' ~ (current_user.profile_image if current_user.is_authenticated else 'default.jpg')) }}">
 
-  <!-- Chatbot Profile -->
-  <div id="chatbot-profile" class="chatbot-profile">
-    <img
-      src="{{ url_for('static', filename='images/logo.png') }}"
-      id="chatbot-image"
-      class="rounded-circle border border-secondary my-4 mx-auto d-block"
-      style="width: 15.625rem; height: 15.625rem"
-    />
-    <div class="container d-grid gap-3 px-5">
-      <a class="btn btn-outline-info btn-lg" href="{{ url_for('main.about') }}">About us🤖</a>
-      <button type="button" class="btn btn-lg btn-info" data-bs-toggle="popover" data-bs-title="Help" data-bs-placement="top" data-bs-content="Start the conversation by typing a greeting or ask a question (E.g. What is Mental Health, What is the cause of depression). You can also select a specific topic through the tab above the text input box. Having trouble with chatting? Avoid typos as this chatbot has a built-in autocorrector.">Need Help?</button>
-      <div class="text-center">
-        Developed by Team LUMORA <strong>(Lumora@gmail.com)</strong>
-      </div>
-    </div>
-  </div>
-
-  <!-- Chat Area -->
-  <div class="chat-area">
-    <main id="main-chat" class="main-chat">
-
-      <!-- Chat Messages -->
-      {% if messages %}
-        {% for message in messages %}
-          {% if message.sender == 'user' %}
-            <div class="chat right-msg">
-              <img src="{{ url_for('static', filename='images/user.png') }}" class="chat-image"/>
-              <div class="chat-bubble">
-                <div class="chat-info">
-                  <div class="chat-info-name">You</div>
-                  <div class="chat-info-time">{{ message.timestamp.strftime('%d/%m/%Y, %H:%M') }}</div>
-                </div>
-                <div class="chat-text">{{ message.message }}</div>
-              </div>
-            </div>
-          {% else %}
-            <div class="chat left-msg">
-              <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-image"/>
-              <div class="chat-bubble">
-                <div class="chat-info">
-                  <div class="chat-info-name">LUMORA: MENTAL HEALTH CHATBOT</div>
-                  <div class="chat-info-time">{{ message.timestamp.strftime('%d/%m/%Y, %H:%M') }}</div>
-                </div>
-                <div class="chat-text">{{ message.message }}</div>
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-        <hr>
+  <!-- Left: profile + tools -->
+  <aside class="chat-panel chat-left">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-logo" alt="Lumora logo">
+    <label for="mode-select" class="form-label small fw-semibold mt-3 mb-1">Response style</label>
+    <select id="mode-select" class="form-select form-select-sm">
+      {% for key, label in mode_labels.items() %}
+        <option value="{{ key }}" {% if key == mode %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <div class="d-grid gap-2 mt-3">
+      <a class="btn btn-danger btn-sm" href="{{ url_for('main.sos') }}"><i class="bi bi-life-preserver"></i> SOS Help</a>
+      {% if current_user.is_authenticated %}
+        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('chat.insights') }}"><i class="bi bi-bookmark-heart"></i> Saved Insights</a>
       {% endif %}
+      <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="popover" data-bs-placement="right"
+              data-bs-title="How to use Lumora"
+              data-bs-content="Tell me how you feel or ask a question. You can write in English or Nepali. Lumora gives supportive self-help ideas, not diagnosis. In a crisis, use the SOS page.">
+        <i class="bi bi-question-circle"></i> Need Help?
+      </button>
+    </div>
+    <p class="small text-secondary text-center mt-3 mb-0">Lumora is a self-help tool, not a therapist or doctor.</p>
+  </aside>
 
-      <p class="text-muted text-center mb-2">Today</p>
+  <!-- Center: conversation -->
+  <section class="chat-panel chat-center">
+    <div class="d-flex justify-content-between align-items-center mb-2 d-lg-none">
+      <span class="fw-bold">Lumora</span>
+      <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#chats-offcanvas">
+        <i class="bi bi-chat-left-text"></i> Your Chats
+      </button>
+    </div>
+
+    <main id="main-chat" class="main-chat" aria-live="polite">
+      <p class="text-muted text-center small mb-2">Today</p>
       <div class="chat left-msg">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-image"/>
+        <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-image" alt="">
         <div class="chat-bubble">
-          <div class="chat-info">
-            <div class="chat-info-name">LUMORA: MENTAL HEALTH CHATBOT</div>
-            <div class="chat-info-time">**:**</div>
-          </div>
-          <div class="chat-text">
-            Hello, welcome to LUMORA: Mental Health Chatbot! Go ahead and send me a message. 😄
-            <br><br>
-            Please note that this is a chatbot and not a real person, so don’t substitute this for real help.
-            <br><br>
-            Always best to seek professional help if needed.
-          </div>
+          <div class="chat-info"><span class="chat-info-name">LUMORA: Mental Health Chatbot</span></div>
+          <div class="chat-text">Please understand that this is a chatbot and not a real person. It is not a substitute for professional help.
+
+Always best to seek professional help if you need to.
+
+Hi there, welcome to LUMORA! Go ahead and send me a message. 💜</div>
         </div>
       </div>
+      {% if not current_user.is_authenticated %}
+        <p class="text-center small text-secondary mt-2"><i class="bi bi-incognito"></i> Guest mode — this conversation is not saved.</p>
+      {% endif %}
+
+      {% for m in messages %}
+        {% if m.role == 'user' %}
+        <div class="chat right-msg">
+          <img src="{{ url_for('static', filename='profile_images/' ~ current_user.profile_image) }}" class="chat-image" alt="">
+          <div class="chat-bubble">
+            <div class="chat-info"><span class="chat-info-name">You</span><span class="chat-info-time">{{ m.timestamp | localtime('%H:%M') }}</span></div>
+            <div class="chat-text">{{ m.message }}</div>
+          </div>
+        </div>
+        {% else %}
+        <div class="chat left-msg {% if m.route == 'sos' %}sos-msg{% endif %}">
+          <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-image" alt="">
+          <div class="chat-bubble">
+            <div class="chat-info"><span class="chat-info-name">LUMORA</span><span class="chat-info-time">{{ m.timestamp | localtime('%H:%M') }}</span></div>
+            <div class="chat-text">{{ m.message }}</div>
+            {% if m.route == 'sos' %}<a class="btn btn-danger btn-sm mt-2" href="{{ url_for('main.sos') }}">Open SOS helplines</a>{% endif %}
+            {% if m.id in saved_ids %}
+              <button type="button" class="btn btn-link btn-sm p-0 mt-1 save-insight" disabled><i class="bi bi-bookmark-check-fill"></i> Saved</button>
+            {% else %}
+              <button type="button" class="btn btn-link btn-sm p-0 mt-1 save-insight" data-message-id="{{ m.id }}"><i class="bi bi-bookmark"></i> Save</button>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+      {% endfor %}
     </main>
 
-    <!-- Auto-scroll JS -->
-    <script>
-      let element = document.getElementById("main-chat");
-      setTimeout(() => {
-        element.scrollTop = element.scrollHeight;
-      }, 100); 
-    </script>
-
-    <!-- Tools Dropdown -->
-    <div class="tools border-top border-info gap-3">
+    <div class="tools d-flex flex-wrap gap-2 py-2">
       <div class="btn-group dropup">
-        <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Topics📜</button>
-        <ul class="dropdown-menu">
+        <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Topics 📜</button>
+        <ul class="dropdown-menu topic-menu">
           {% for topic in topics.topics %}
-            <li><button class="dropdown-item" onclick="responseTopic('{{ topic.title }}')">{{ topic.title }}</button></li>
+            <li><button class="dropdown-item topic-item" type="button" data-title="{{ topic.title }}">{{ topic.title }}</button></li>
           {% endfor %}
         </ul>
       </div>
     </div>
 
-    <!-- Chat Input Form -->
-    <form id="message-form" class="chat-inputarea">
-      <input type="text" class="chat-input" id="textInput" autocomplete="off" placeholder="Enter your message..." />
-      <button type="submit" class="btn btn-outline-info">Send</button>
+    <form id="message-form" class="chat-inputarea" novalidate>
+      <input type="text" class="chat-input form-control" id="textInput" autocomplete="off" maxlength="2000"
+             placeholder="Enter your message..." aria-label="Message">
+      <button type="submit" class="btn btn-primary">Send</button>
     </form>
+    <div id="input-warning" class="text-danger small mt-1 d-none" role="alert"></div>
+  </section>
+
+  <!-- Right: Your Chats -->
+  {% macro chat_list() %}
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <strong>Your Chats</strong>
+      <a href="{{ url_for('chat.chat_page') }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg"></i> New</a>
+    </div>
+    {% if current_user.is_authenticated %}
+      <input type="search" class="form-control form-control-sm mb-2 chat-search" placeholder="Search...">
+      <ul class="list-unstyled chat-list mb-0">
+        {% for s in sessions %}
+          <li class="chat-list-item {% if active and s.id == active.id %}active{% endif %}" data-title="{{ s.title | lower }}">
+            <a href="{{ url_for('chat.chat_page', s=s.id) }}" class="text-decoration-none text-dark flex-grow-1">
+              <div class="small fw-semibold text-truncate">{{ s.title }}</div>
+              <div class="text-secondary" style="font-size: .7rem;">{{ s.updated_at | localtime('%d/%m/%Y, %H:%M') }}</div>
+            </a>
+            <button type="button" class="btn btn-sm btn-link text-danger delete-session" data-session-id="{{ s.id }}" title="Delete chat" aria-label="Delete chat">
+              <i class="bi bi-trash"></i>
+            </button>
+          </li>
+        {% else %}
+          <li class="small text-secondary">No saved chats yet.</li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="small text-secondary mb-0">Chats are saved only for logged-in users. <a href="{{ url_for('auth.login') }}">Log in</a> to keep your history.</p>
+    {% endif %}
+  {% endmacro %}
+
+  <aside class="chat-panel chat-right d-none d-lg-block">{{ chat_list() }}</aside>
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="chats-offcanvas">
+    <div class="offcanvas-header"><button type="button" class="btn-close ms-auto" data-bs-dismiss="offcanvas" aria-label="Close"></button></div>
+    <div class="offcanvas-body">{{ chat_list() }}</div>
   </div>
-
-  <!-- Footer -->
-  <div class="text-center mt-4 mb-2 text-muted">
-    Developed by Team LUMORA | <strong>LUMORA: MENTAL HEALTH CHATBOT</strong>
-  </div>
-
-  <!-- Send functions JS -->
-  {% include "chat/send_function.html" %}
-
 </div>
 {% endblock content %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock scripts %}

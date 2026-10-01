@@ -22,6 +22,9 @@ class Config:
     # Base URL used in emails (verification links). Set to your ngrok/Render domain.
     PUBLIC_BASE_URL = os.environ.get("PUBLIC_BASE_URL", "http://127.0.0.1:5000").rstrip("/")
 
+    # Times are stored in UTC and shown in local time. Nepal is UTC+5:45 (no DST).
+    UTC_OFFSET_MINUTES = int(os.environ.get("UTC_OFFSET_MINUTES", 345))
+
     # Database: a relative sqlite path resolves inside Flask's instance/ folder
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///lumora.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False

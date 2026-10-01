@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 900px;">
+  <div class="card border-0 shadow-sm" style="background: rgba(255,255,255,0.75);">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="fw-bold mb-0">Saved Insights</h4>
+        <a href="{{ url_for('chat.chat_page') }}" class="btn btn-sm btn-outline-secondary">Back to chat</a>
+      </div>
+      {% for i in insights %}
+        <div class="border rounded p-3 mb-2 bg-white">
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <div class="small text-secondary">
+              {{ i.created_at | localtime('%d/%m/%Y, %H:%M') }}
+              {% if i.session_id %} · <a href="{{ url_for('chat.chat_page', s=i.session_id) }}">Open chat</a>{% endif %}
+            </div>
+            <form method="POST" action="{{ url_for('chat.delete_insight', insight_id=i.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-outline-danger">Delete</button>
+            </form>
+          </div>
+          <div class="mt-2" style="white-space: pre-line;">{{ i.content }}</div>
+        </div>
+      {% else %}
+        <p class="text-secondary mb-0">No saved insights yet. Use "Save" under any Lumora reply to keep it here.</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock content %}
