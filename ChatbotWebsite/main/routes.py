@@ -1,6 +1,6 @@
-from flask import render_template
-from flask import Blueprint
-from flask_login import current_user, login_required
+from flask import Blueprint, render_template
+
+from ChatbotWebsite.sos_config import EMERGENCY, HOTLINES, display_phone
 
 main = Blueprint("main", __name__)
 
@@ -16,4 +16,6 @@ def about():
 
 @main.route("/sos")
 def sos():
-    return render_template("sos.html", title="SOS")
+    pending = any(display_phone(h) is None for h in HOTLINES + EMERGENCY)
+    return render_template("sos.html", title="SOS", hotlines=HOTLINES, emergency=EMERGENCY,
+                           display_phone=display_phone, pending=pending)

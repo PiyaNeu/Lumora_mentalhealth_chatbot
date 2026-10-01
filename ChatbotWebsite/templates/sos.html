@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 820px;">
+  <h1 class="text-center fw-bold font-monospace mb-2" style="color:#3a0066;">
+    <span class="border-bottom border-3 border-dark pb-1">SOS Hotlines in Nepal</span>
+  </h1>
+  <p class="text-center text-secondary mb-4">
+    If you are in immediate danger or thinking about harming yourself, please contact emergency
+    services or a helpline now. You don't have to go through this alone.
+  </p>
+
+  {% if pending %}
+  <div class="alert alert-warning small" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    Some numbers below are still being verified and are not shown yet. In an emergency,
+    contact your local emergency services or go to the nearest hospital.
+  </div>
+  {% endif %}
+
+  <div class="card shadow-sm border-0 mb-4" style="background: rgba(255,255,255,0.75);">
+    <ul class="list-group list-group-flush">
+      {% for h in hotlines %}
+      <li class="list-group-item bg-transparent py-3">
+        <h5 class="mb-1">{{ h.name }}</h5>
+        {% set phone = display_phone(h) %}
+        {% if phone %}
+          <div>Contact Number: <a href="tel:{{ phone }}" class="fw-bold">{{ phone }}</a></div>
+        {% else %}
+          <div class="text-muted small">Contact number pending verification</div>
+        {% endif %}
+        {% if h.hours %}<div class="small text-secondary">{{ h.hours }}</div>{% endif %}
+        <div class="mt-2 d-flex gap-2">
+          {% if h.website %}<a href="{{ h.website }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Website</a>{% endif %}
+          <a href="https://www.google.com/maps/search/?api=1&query={{ h.name | urlencode }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Show Map</a>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <h5 class="fw-bold" style="color:#3a0066;">Emergency services</h5>
+  <ul class="list-group mb-4">
+    {% for e in emergency %}
+    {% set phone = display_phone(e) %}
+    <li class="list-group-item d-flex justify-content-between">
+      <span>{{ e.name }}</span>
+      {% if phone %}<a href="tel:{{ phone }}" class="fw-bold">{{ phone }}</a>{% else %}<span class="text-muted small">pending verification</span>{% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+
+  <p class="small text-secondary text-center">
+    Lumora is a self-help tool and not an emergency or medical service.
+  </p>
+</div>
+{% endblock content %}
