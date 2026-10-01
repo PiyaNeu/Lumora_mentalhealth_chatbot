@@ -4,8 +4,8 @@ from flask_login import current_user, login_required
 from ChatbotWebsite.models import MOOD_EMOJI, MOOD_LABELS
 from ChatbotWebsite.mood import analytics
 from ChatbotWebsite.mood.pdf import build_mood_report
-from ChatbotWebsite.mood.service import mood_entries, mood_points, record_manual, sentiment_points
-from ChatbotWebsite.utils import local_now, local_today, to_local
+from ChatbotWebsite.mood.service import mood_entries, mood_points, mood_rows, record_manual, sentiment_points
+from ChatbotWebsite.utils import local_now, local_today
 
 mood = Blueprint("mood", __name__)
 
@@ -60,20 +60,18 @@ def data():
 @mood.route("/export.pdf")
 @login_required
 def export_pdf():
-    entries = mood_entries(current_user.id)
-    if not entries:
+    rows = mood_rows(current_user.id)
+    if not rows:
         flash("No mood data to export yet. Add a mood check-in first.", "warning")
         return redirect(url_for("mood.dashboard"))
-    points = mood_points(current_user.id)
-    values = [v for _, v in points]
+    points = [(dt, m) for dt, m, _ in rows]
+    values = [m for _, m in points]
     direction, delta = analytics.trend(points, local_today())
     trend_text = {"up": "Improving", "down": "Declining", "stable": "Stable"}.get(direction, "Not enough data")
     if delta is not None:
         trend_text += f" ({delta:+.2f})"
     summary = {"average": sum(values) / len(values), "best": max(values), "worst": min(values),
-               "latest": values[-1], "trend": trend_text, "count": len(entries)}
-    rows = [(to_local(e.updated_at if e.source == "Manual" else e.created_at), e.mood, e.source)
-            for e in entries]
+               "latest": values[-1], "trend": trend_text, "count": len(rows)}
     pdf = build_mood_report(current_user.username, local_now(), summary, points, rows)
     resp = make_response(pdf)
     resp.headers["Content-Type"] = "application/pdf"

@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+{% block style %}
+<style>
+  .journal-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px); border-radius: 15px; border: 1px solid #c9e9ff; }
+  .journal-mood { color: #7a4fff; }
+  .clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .logo-header img { width: 110px; height: auto; border-radius: 12px; }
+  .btn-lumora { background-color: #7a4fff; border-color: #7a4fff; color: #fff; }
+  .btn-lumora:hover { background-color: #5e36d1; color: #fff; }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="text-center mb-4 logo-header">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="LUMORA logo" class="mb-2">
+    <h1 class="fw-bold font-monospace text-info border-bottom border-info pb-2 d-inline-block">Lumora Journals</h1>
+    <p class="lead text-secondary mx-auto" style="max-width: 600px;">Track your thoughts and moods. Your personal space for reflection and wellbeing.</p>
+    <a class="btn btn-lumora btn-lg shadow" href="{{ url_for('journal.new_journal') }}">Add New Journal</a>
+  </div>
+
+  {% if journals.pages > 1 %}
+  <nav class="d-flex justify-content-center mb-4 flex-wrap gap-2" aria-label="Journal pages">
+    {% for page_num in journals.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=1) %}
+      {% if page_num %}
+        <a href="{{ url_for('journal.all_journals', page=page_num) }}"
+           class="btn btn-sm {{ 'btn-secondary' if journals.page == page_num else 'btn-outline-secondary' }}">{{ page_num }}</a>
+      {% else %}
+        <span class="mx-1">…</span>
+      {% endif %}
+    {% endfor %}
+  </nav>
+  {% endif %}
+
+  <div class="row row-cols-1 row-cols-md-2 g-4 justify-content-center">
+    {% for j in journals.items %}
+    <div class="col d-flex justify-content-center">
+      <div class="card journal-card shadow-sm w-100" style="max-width: 600px;">
+        <div class="card-body">
+          <h5 class="card-title mb-1">
+            Feeling <span class="journal-mood">{{ moods[j.mood_tag][0] if j.mood_tag in moods else '' }} {{ j.mood_tag or '—' }}</span>
+            on {{ j.date_created | localtime('%d.%m.%Y') }}
+          </h5>
+          {% if j.title and j.title != 'Feeling ' ~ j.mood_tag %}<div class="fw-semibold small mb-1">{{ j.title }}</div>{% endif %}
+          <p class="clamp-3 mb-3 text-secondary">{{ j.content }}</p>
+          <hr>
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <img src="{{ url_for('static', filename='profile_images/' ~ current_user.profile_image) }}" alt="" class="rounded-circle me-2" width="40" height="40" style="object-fit: cover;">
+              <div>
+                <p class="mb-0 fw-semibold">{{ current_user.username }}</p>
+                <small class="text-muted">Created on {{ j.date_created | localtime('%d/%m/%Y, %A, %H:%M') }}</small>
+              </div>
+            </div>
+            <a href="{{ url_for('journal.view_journal', journal_id=j.id) }}" class="btn btn-outline-secondary btn-sm">View</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <p class="text-center text-secondary">No journals yet. Writing a few lines a day can help you notice patterns.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock content %}

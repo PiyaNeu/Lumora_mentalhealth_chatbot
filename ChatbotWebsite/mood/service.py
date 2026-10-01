@@ -41,14 +41,18 @@ def mood_entries(user_id):
     return MoodEntry.query.filter_by(user_id=user_id).order_by(MoodEntry.created_at).all()
 
 
-def mood_points(user_id, include_journal=True):
-    """[(local datetime, 1–5)] from manual + chat entries and (optionally) journal mood tags."""
-    points = [(to_local(e.updated_at if e.source == "Manual" else e.created_at), e.mood)
-              for e in mood_entries(user_id)]
-    if include_journal and hasattr(Journal, "mood"):
-        points += [(to_local(j.date_created), j.mood)
-                   for j in Journal.query.filter_by(user_id=user_id).filter(Journal.mood.isnot(None))]
-    return sorted(points, key=lambda p: p[0])
+def mood_rows(user_id):
+    """[(local datetime, 1–5, source)] from manual + chat entries and journal mood tags, oldest first."""
+    rows = [(to_local(e.updated_at if e.source == "Manual" else e.created_at), e.mood, e.source)
+            for e in mood_entries(user_id)]
+    rows += [(to_local(j.date_created), j.mood, "Journal")
+             for j in Journal.query.filter_by(user_id=user_id).filter(Journal.mood.isnot(None))]
+    return sorted(rows, key=lambda r: r[0])
+
+
+def mood_points(user_id):
+    """[(local datetime, 1–5)] for charts and analytics."""
+    return [(dt, mood) for dt, mood, _ in mood_rows(user_id)]
 
 
 def sentiment_points(user_id):

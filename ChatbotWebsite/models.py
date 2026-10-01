@@ -59,12 +59,23 @@ class User(db.Model, UserMixin):
         return f'User({self.username}, {self.email}, verified={self.is_verified})'
 
 
+# Journal mood tags and where they sit on the 1–5 mood scale
+JOURNAL_MOODS = {
+    "Happy": ("😊", 5), "Grateful": ("🙏", 5), "Calm": ("😌", 4), "Hopeful": ("🌱", 4),
+    "Okay": ("😐", 3), "Tired": ("😴", 2), "Stressed": ("😣", 2), "Anxious": ("😟", 2),
+    "Sad": ("😢", 2), "Angry": ("😠", 2), "Lonely": ("🥺", 2), "Awful": ("😞", 1),
+}
+
+
 class Journal(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    updated_at = db.Column(db.DateTime)
+    mood_tag = db.Column(db.String(20))          # e.g. Happy, Sad (see JOURNAL_MOODS)
+    mood = db.Column(db.Integer)                 # mood_tag mapped to the 1–5 mood scale
     sentiment_compound = db.Column(db.Float)
     sentiment_score = db.Column(db.Float)
     sentiment_label = db.Column(db.String(10))
