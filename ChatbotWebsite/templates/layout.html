@@ -52,6 +52,26 @@
             </a>
           </li>
         </ul>
+        <ul class="navbar-nav gap-2">
+          {% if current_user.is_authenticated %}
+            <li class="nav-item">
+              <span class="nav-link text-dark"><i class="bi bi-person-circle"></i> {{ current_user.username }}</span>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a>
+            </li>
+          {% else %}
+            {% if session.get('guest') %}
+              <li class="nav-item"><span class="nav-link text-muted"><i class="bi bi-incognito"></i> Guest</span></li>
+            {% endif %}
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="{{ url_for('auth.login') }}">Login</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-dark" href="{{ url_for('auth.register') }}">Register</a>
+            </li>
+          {% endif %}
+        </ul>
       </div>
     </div>
   </nav>

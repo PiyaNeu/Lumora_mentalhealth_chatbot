@@ -20,3 +20,5 @@ instance/
 # user uploads
 ChatbotWebsite/static/profile_images/*
 !ChatbotWebsite/static/profile_images/default.jpg
+
+.claude/

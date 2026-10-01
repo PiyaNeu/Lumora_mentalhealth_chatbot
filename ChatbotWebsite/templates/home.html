@@ -30,8 +30,15 @@
     CONTINUE
   </a>
 
-  <!-- About -->
-  <div class="d-flex flex-column gap-2 mt-4 w-50">
+  <!-- Account / guest options -->
+  <div class="d-flex flex-column gap-2 mt-4 w-100" style="max-width: 360px;">
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary btn-lg">Logout ({{ current_user.username }})</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">Login</a>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-lg">Register</a>
+      <a href="{{ url_for('auth.guest') }}" class="btn btn-outline-secondary btn-lg"><i class="bi bi-incognito"></i> Continue as Guest</a>
+    {% endif %}
     <a href="{{ url_for('main.about') }}" class="btn btn-outline-info btn-lg">About Us</a>
   </div>
 </div>

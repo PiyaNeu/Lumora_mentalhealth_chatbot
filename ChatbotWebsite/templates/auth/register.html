@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container-sm py-5" style="background-color: #f7e8ff; border-radius: 12px;">
+  <div class="row align-items-center">
+
+    <!-- LEFT FORM -->
+    <div class="col-md-7">
+      <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <fieldset class="form-group d-grid gap-3">
+          <legend class="fs-1 fw-bold text-dark text-center mb-4">
+            Create Account
+          </legend>
+
+          <!-- Username -->
+          <div class="form-group">
+            {{ form.username.label(class="form-label text-dark fw-semibold") }}
+            {% if form.username.errors %}
+              {{ form.username(class="form-control is-invalid") }}
+              {% for error in form.username.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            {% else %}
+              {{ form.username(class="form-control") }}
+            {% endif %}
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            {{ form.email.label(class="form-label text-dark fw-semibold") }}
+            {% if form.email.errors %}
+              {{ form.email(class="form-control is-invalid") }}
+              {% for error in form.email.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            {% else %}
+              {{ form.email(class="form-control") }}
+            {% endif %}
+            <small class="text-muted">Email verification required to log in.</small>
+          </div>
+
+          <!-- Password -->
+          <div class="form-group">
+            {{ form.password.label(class="form-label text-dark fw-semibold") }}
+            {% if form.password.errors %}
+              {{ form.password(class="form-control is-invalid") }}
+              {% for error in form.password.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            {% else %}
+              {{ form.password(class="form-control") }}
+            {% endif %}
+
+            <small class="text-muted d-block mt-1">
+              ✅ Must include at least:
+              <ul class="small ms-3">
+                <li>8 Characters</li>
+                <li>1 Uppercase Letter</li>
+                <li>1 Number</li>
+                <li>1 Special Character (@$!%*)</li>
+              </ul>
+            </small>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            {{ form.confirm_password.label(class="form-label text-dark fw-semibold") }}
+            {% if form.confirm_password.errors %}
+              {{ form.confirm_password(class="form-control is-invalid") }}
+              {% for error in form.confirm_password.errors %}
+                <div class="invalid-feedback">{{ error }}</div>
+              {% endfor %}
+            {% else %}
+              {{ form.confirm_password(class="form-control") }}
+            {% endif %}
+          </div>
+
+        </fieldset>
+
+        <div class="d-grid mt-4">
+          {{ form.submit(class="btn btn-dark btn-lg") }}
+        </div>
+      </form>
+
+      <div class="text-center mt-3">
+        <small class="fw-semibold text-dark">
+          Already have an account? 
+          <a href="{{ url_for('auth.login') }}" class="text-primary fw-bold text-decoration-none">Sign In</a>
+        </small>
+      </div>
+    </div>
+
+    <!-- RIGHT IMAGE -->
+    <div class="col-md-5 text-center">
+      <img src="{{ url_for('static', filename='images/register.jpg') }}" 
+        class="img-fluid rounded shadow-lg mt-3 mb-3" 
+        alt="Register Image">
+    </div>
+
+  </div>
+</div>
+{% endblock content %}

@@ -1,12 +1,17 @@
 from datetime import datetime
 from ChatbotWebsite import db, login_manager
 from flask_login import UserMixin
-from itsdangerous import URLSafeTimedSerializer as Serializer
+from itsdangerous import BadSignature, URLSafeTimedSerializer as Serializer
 from flask import current_app
+
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
+
+
+def _serializer():
+    return Serializer(current_app.config["SECRET_KEY"])
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -19,31 +24,35 @@ class User(db.Model, UserMixin):
     messages = db.relationship('ChatMessage', backref='user', lazy=True)
     journals = db.relationship('Journal', backref='user', lazy=True)
 
-    def get_reset_token(self):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({'user_id': self.id})
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Separate salts so a verification token can't be used as a reset token
+    def _token(self, purpose):
+        salt = f"{current_app.config['SECURITY_PASSWORD_SALT']}-{purpose}"
+        return _serializer().dumps({"user_id": self.id}, salt=salt)
 
     @staticmethod
-    def verify_reset_token(token):
-        s = Serializer(current_app.config['SECRET_KEY'])
+    def _load_token(token, purpose, max_age):
+        salt = f"{current_app.config['SECURITY_PASSWORD_SALT']}-{purpose}"
         try:
-            user_id = s.loads(token, max_age=1800)['user_id']
-        except:
+            user_id = _serializer().loads(token, salt=salt, max_age=max_age)["user_id"]
+        except (BadSignature, KeyError, TypeError):  # BadSignature covers expiry
             return None
-        return User.query.get(user_id)
+        return db.session.get(User, user_id)
 
     def get_confirmation_token(self):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        return s.dumps({'user_id': self.id}, salt=current_app.config['SECURITY_PASSWORD_SALT'])
+        return self._token("verify")
 
     @staticmethod
-    def verify_confirmation_token(token, expiration=3600):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        try:
-            user_id = s.loads(token, salt=current_app.config['SECURITY_PASSWORD_SALT'], max_age=expiration)['user_id']
-        except:
-            return None
-        return User.query.get(user_id)
+    def verify_confirmation_token(token, expiration=86400):
+        return User._load_token(token, "verify", expiration)
+
+    def get_reset_token(self):
+        return self._token("reset")
+
+    @staticmethod
+    def verify_reset_token(token, expiration=1800):
+        return User._load_token(token, "reset", expiration)
 
     def __repr__(self):
         return f'User({self.username}, {self.email}, verified={self.is_verified})'
