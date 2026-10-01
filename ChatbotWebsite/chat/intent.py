@@ -3,6 +3,8 @@
 The classifier is loaded once per app and cached in app.extensions. Tests can
 inject a fake by setting app.extensions["lumora_intent"].
 """
+import json
+import os
 import random
 import threading
 
@@ -12,36 +14,57 @@ EXTENSION_KEY = "lumora_intent"
 _load_lock = threading.Lock()
 
 
-class LegacyIntentClassifier:
-    """Mid-term bag-of-words Keras model (chat/chatbot.py). Interim backend until the
-    TF-IDF model from train.py is available."""
+DATASET_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                            "data", "intents_augmented.json")
 
-    name = "legacy-bow"
+# Intents treated as a crisis even if the keyword safety screen missed the message
+CRISIS_INTENTS = {"crisis_suicidal", "self_harm"}
 
-    def __init__(self):
-        from ChatbotWebsite.chat import chatbot as legacy  # loads TensorFlow
 
-        self._legacy = legacy
-        self._responses = {i["tag"]: i["responses"] for i in legacy.intents["intents"]}
+class TfidfIntentClassifier:
+    """Keras FFNN over word + char TF-IDF + history features (trained by train.py)."""
+
+    name = "tfidf-ffnn"
+
+    def __init__(self, model_dir):
+        import pickle
+
+        import keras
+
+        with open(os.path.join(model_dir, "intent_featurizer.pkl"), "rb") as fh:
+            bundle = pickle.load(fh)  # our own artifact written by train.py
+        self.featurizer, self.labels = bundle["featurizer"], bundle["labels"]
+        self.model = keras.models.load_model(os.path.join(model_dir, "intent_ffnn.keras"))
+        with open(DATASET_PATH, encoding="utf-8") as fh:
+            intents = json.load(fh)["intents"]
+        self._responses = {i["tag"]: i["responses"] for i in intents}
+        self._wrap = {i["tag"]: i.get("wrap", True) for i in intents}
 
     def predict(self, text, prev_text=None):
-        import numpy as np
-
-        bow = self._legacy.bag_of_words(text, self._legacy.words)
-        probs = self._legacy.model.predict(np.array([bow]), verbose=0)[0]
+        X = self.featurizer.transform([text], [prev_text or ""])
+        probs = self.model.predict(X.toarray(), verbose=0)[0]
         idx = int(probs.argmax())
-        return self._legacy.classes[idx], float(probs[idx])
+        return self.labels[idx], float(probs[idx])
 
     def responses(self, tag):
         return self._responses.get(tag, [])
+
+    def wraps(self, tag):
+        """False for conversational/safety intents whose reply should not get a brain opener."""
+        return self._wrap.get(tag, True)
 
 
 def _load_classifier():
     if not current_app.config.get("LOAD_INTENT_MODEL", True):
         return None
+    model_dir = current_app.config["MODEL_DIR"]
+    if not os.path.exists(os.path.join(model_dir, "intent_ffnn.keras")):
+        current_app.logger.warning("No trained intent model in %s (run train.py); using fallback replies",
+                                   model_dir)
+        return None
     try:
-        return LegacyIntentClassifier()
-    except Exception:  # missing model files, TF import failure, etc.
+        return TfidfIntentClassifier(model_dir)
+    except Exception:  # corrupt files, TF import failure, etc.
         current_app.logger.exception("Intent model could not be loaded; continuing without it")
         return None
 

@@ -14,13 +14,15 @@ from flask import current_app
 from ChatbotWebsite.chat import brain, llm
 from ChatbotWebsite.chat.guards import check_guards, pick
 from ChatbotWebsite.chat.humanizer import humanize
-from ChatbotWebsite.chat.intent import get_classifier, pick_response
+from ChatbotWebsite.chat.intent import CRISIS_INTENTS, get_classifier, pick_response
 from ChatbotWebsite.chat.language import detect_language, is_nepali
 from ChatbotWebsite.chat.safety import MEDIUM_REPLY, SOS_REPLY, assess_risk
 from ChatbotWebsite.chat.translate import to_english
 from ChatbotWebsite.sentiment import Sentiment, analyze
 
 MAX_INPUT_CHARS = 2000
+# Lower than the normal threshold on purpose: for crisis intents a false alarm is the safer error
+CRISIS_MODEL_THRESHOLD = 0.4
 
 NEPALI_UNAVAILABLE_NOTE = "(नेपाली अनुवाद अहिले उपलब्ध छैन, त्यसैले म अंग्रेजीमा जवाफ दिँदैछु।)"
 
@@ -78,6 +80,11 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
     threshold = current_app.config["INTENT_CONFIDENCE_THRESHOLD"]
     confident = tag is not None and confidence is not None and confidence >= threshold
 
+    # Second safety net: the model recognised a crisis the keyword rules missed
+    if tag in CRISIS_INTENTS and confidence is not None and confidence >= CRISIS_MODEL_THRESHOLD:
+        return ChatReply(SOS_REPLY[ui_lang], "sos", lang, "high", f"model:{tag}", tag, confidence,
+                         sentiment=sentiment)
+
     # 5. Brain: choose the response style
     strategy = brain.select_strategy(mode, sentiment.compound, tag if confident else None)
 
@@ -85,7 +92,9 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
     if confident:
         core = pick_response(classifier, tag)
         if core:
-            body, route = brain.compose(core, strategy), "intent"
+            wraps = getattr(classifier, "wraps", lambda t: True)(tag)
+            body = brain.compose(core, strategy) if wraps else core
+            route = "intent"
 
     # 6. Generative fallback (Mistral) for low confidence / open-ended messages
     if body is None:

@@ -1,0 +1,275 @@
+{
+  "description": "LUMORA hand-written seed intents (54). build_dataset.py merges mapped mid-term patterns and augments these into intents_augmented.json. Responses are non-diagnostic self-help guidance.",
+  "intents": [
+    {
+      "tag": "greeting", "category": "conversation", "wrap": false,
+      "patterns": ["hi", "hello", "hey", "hey there", "hello lumora", "hi lumora", "good morning", "good afternoon", "good evening", "hiya", "yo", "hello, is anyone there?", "hi, how are you?", "how are you doing today?", "how's it going?", "what's up", "namaste", "k cha", "kasto cha", "namaskar", "नमस्ते", "के छ"],
+      "responses": ["Hi, I'm Lumora 💜 How are you feeling today?", "Hello! I'm glad you're here. What's on your mind?", "Hey there. How has your day been so far?"]
+    },
+    {
+      "tag": "goodbye", "category": "conversation", "wrap": false,
+      "patterns": ["bye", "goodbye", "see you later", "see you tomorrow", "i have to go now", "talk to you later", "i'm leaving now", "good night", "ok bye", "bye for now", "catch you later", "i'm done for today", "that's all for now, bye", "gotta go", "ma jaanchu", "pachi kura garaula", "bye hai", "फेरि भेटौँला"],
+      "responses": ["Take care of yourself. I'm here whenever you want to talk again. 💜", "Goodbye for now. Be gentle with yourself today.", "See you soon. Remember to rest and drink some water."]
+    },
+    {
+      "tag": "thanks", "category": "conversation", "wrap": false,
+      "patterns": ["thanks", "thank you", "thank you so much", "thanks a lot", "that was helpful", "that helped", "thanks for listening", "i appreciate it", "thanks lumora", "you helped me a lot", "thank you for the advice", "that makes me feel better, thanks", "ty", "dhanyabad", "dhanyawad", "thank you hai", "धन्यवाद"],
+      "responses": ["You're very welcome. I'm glad that helped a little.", "Thank you for trusting me with this. I'm here anytime.", "I'm glad we talked. Is there anything else on your mind?"]
+    },
+    {
+      "tag": "about_lumora", "category": "conversation", "wrap": false,
+      "patterns": ["who are you", "what are you", "what is your name", "tell me about yourself", "are you a bot", "are you a real person", "are you human", "who made you", "who created you", "what is lumora", "are you a therapist", "are you a doctor", "can i trust you", "timi ko hau", "timro naam k ho", "तिमी को हौ"],
+      "responses": ["I'm Lumora, a supportive wellbeing chatbot made as a student project. I'm not a person, therapist or doctor, and I can't diagnose anything — but I can listen and share self-help ideas.", "I'm Lumora 💜 — a chatbot that offers a safe space to talk, plus tools like mood tracking, journaling and mindfulness. For medical concerns, please see a professional."]
+    },
+    {
+      "tag": "capabilities_help", "category": "conversation", "wrap": false,
+      "patterns": ["what can you do", "how can you help me", "can you help me", "i need help", "i need support", "help me please", "what do you offer", "how does this work", "what should i talk about", "where do i start", "what features do you have", "can we talk", "i want to talk to someone", "malai help chahiyo", "maddat garnu", "मलाई सहयोग चाहियो"],
+      "responses": ["I can listen, suggest coping ideas for stress, sleep, exams and relationships, guide breathing or grounding exercises, and point you to journaling, mood tracking and self-checks. What's been on your mind?", "I'm here to talk things through with you. You can tell me how you feel, ask for coping tips, or try a mindfulness exercise. Where would you like to start?"]
+    },
+    {
+      "tag": "agreement", "category": "conversation", "wrap": false,
+      "patterns": ["yes", "yeah", "yep", "ok", "okay", "sure", "alright", "sounds good", "i agree", "that makes sense", "you're right", "i'll try that", "let's do it", "ok i will try", "huncha", "hunchha", "ho", "thik cha", "हुन्छ", "ठिक छ"],
+      "responses": ["Great. Take it slowly — small steps count.", "Okay. Let me know how it goes, and we can adjust from there.", "Sounds good. I'm here if you want to talk it through as you go."]
+    },
+    {
+      "tag": "disagreement", "category": "conversation", "wrap": false,
+      "patterns": ["no", "nope", "not really", "i disagree", "that's wrong", "that doesn't help", "that didn't help", "that's not what i meant", "you don't understand", "that makes no sense", "i already tried that", "that won't work for me", "wrong answer", "haina", "hoina", "bujhena", "होइन"],
+      "responses": ["Thanks for telling me — I may have misunderstood. Could you say a little more about what you need right now?", "That's fair. Not every idea fits everyone. What has helped you even a little in the past?", "I'm sorry that wasn't helpful. Let's try another angle — what feels hardest at the moment?"]
+    },
+    {
+      "tag": "positive_mood", "category": "conversation", "wrap": false,
+      "patterns": ["i feel happy today", "i'm feeling good", "i am happy", "i feel great", "today was a good day", "i'm feeling better", "my mood is better now", "i feel calm today", "i'm proud of myself", "i passed my exam", "i feel excited", "things are going well", "i feel hopeful", "i had a great day", "ma khusi chu", "aaja ramro bhayo", "म खुसी छु", "आज राम्रो भयो"],
+      "responses": ["That's really lovely to hear! What do you think helped today feel good?", "I'm so glad you're feeling this way. It might be nice to note it in your journal so you can look back on it.", "That's wonderful. Celebrating good moments matters too — well done."]
+    },
+    {
+      "tag": "stress_general", "category": "emotion", "wrap": true,
+      "patterns": ["i feel stressed", "i am so stressed out", "i'm under a lot of stress", "everything is stressing me out", "i feel tense all the time", "stress is killing me", "i can't handle this stress", "i'm stressed and tired", "how do i deal with stress", "i'm feeling a lot of pressure", "my stress level is very high", "i feel stressed every day", "i can't relax", "my mind is always tense", "stressed", "malai tension bhayo", "dherai tension cha", "pressure dherai cha", "मलाई धेरै तनाव भयो", "टेन्सन भयो"],
+      "responses": ["When stress builds up, it helps to slow your body down first: try breathing in for 4 counts and out for 6, a few times. Then pick just one thing to handle next.", "Stress often feels smaller once it's written down. Try listing what's on your mind, then circle the one thing you can act on today.", "A short break can reset your nervous system — a 10-minute walk, some water, or stretching your shoulders and neck."]
+    },
+    {
+      "tag": "anxiety_general", "category": "emotion", "wrap": true,
+      "patterns": ["i feel anxious", "i'm so anxious all the time", "i feel nervous for no reason", "my anxiety is really bad today", "i keep worrying about everything", "i feel uneasy", "i have a constant feeling of dread", "my heart races when i worry", "i can't stop feeling nervous", "anxiety is ruining my day", "i feel on edge", "i get anxious easily", "how do i calm my anxiety", "anxious", "malai dar lagcha sadhai", "chinta lagcha", "manma chinta cha", "मलाई चिन्ता लाग्छ", "मन अत्तालिन्छ"],
+      "responses": ["Anxiety can make the body feel unsafe even when you are safe. Try the 5-4-3-2-1 grounding exercise: name 5 things you see, 4 you can touch, 3 you hear, 2 you smell and 1 you taste.", "Slow breathing helps calm anxious feelings: breathe in through your nose for 4, hold for 2, and breathe out slowly for 6. Repeat for a minute.", "It can help to separate worries you can act on from ones you can't. For the ones you can, choose one small step; for the others, try setting a short daily 'worry time'."]
+    },
+    {
+      "tag": "panic_attack", "category": "emotion", "wrap": true,
+      "patterns": ["i think i'm having a panic attack", "i can't breathe properly and my heart is racing", "i'm panicking right now", "my chest feels tight and i'm scared", "i feel like i'm losing control", "i'm shaking and can't calm down", "sudden panic hit me", "i had a panic attack in class", "how do i stop a panic attack", "my hands are shaking and my heart is pounding", "i feel dizzy and panicky", "panic attack", "i keep getting panic attacks", "saas ferna garo bhayo", "mutu dherai dhadkiyo", "सास फेर्न गाह्रो भयो", "मुटु धेरै धड्कियो"],
+      "responses": ["You're not alone in this, and panic does pass. Try breathing out slowly, longer than you breathe in — in for 4, out for 6. Press your feet into the floor and name 5 things you can see. If you have chest pain or it doesn't ease, please seek medical help.", "Let's slow things down together: put one hand on your chest, breathe in gently for 4, and out for 6. Notice something cold or textured you can touch. The wave of panic usually peaks and then fades within minutes."]
+    },
+    {
+      "tag": "sadness_low_mood", "category": "emotion", "wrap": true,
+      "patterns": ["i feel sad", "i feel down today", "i'm feeling really low", "i feel so unhappy", "nothing makes me happy anymore", "i feel blue", "i've been feeling down for days", "i feel heavy inside", "my mood is very low", "i feel awful", "i feel miserable", "i feel depressed", "everything feels gloomy", "i'm not okay", "sad", "malai dukha lagyo", "man dukhi cha", "udas lagyo", "मलाई दुःख लाग्यो", "म उदास छु"],
+      "responses": ["Low days are really hard. Something small and kind can help — a shower, sunlight for a few minutes, or messaging someone you trust. If this low mood lasts for weeks, talking to a professional is a good step.", "It's okay not to be okay. Try doing one tiny thing you usually enjoy, even if you don't feel like it — mood often follows action, not the other way round.", "Writing down what's weighing on you can make it feel a little lighter. Would a short journaling prompt help?"]
+    },
+    {
+      "tag": "loneliness", "category": "emotion", "wrap": true,
+      "patterns": ["i feel lonely", "i'm so alone", "i have no one to talk to", "i don't have any friends", "nobody understands me", "i feel isolated", "i feel left out", "everyone has someone except me", "i'm always alone", "i feel disconnected from people", "i miss having friends", "i feel invisible", "lonely", "ma eklo chu", "malai eklo feel huncha", "sathi chaina", "म एक्लो छु", "कोही साथी छैन"],
+      "responses": ["Loneliness is painful, and it's more common than it seems. A small reach-out — a message to an old friend or classmate — can be a first step back to connection.", "Joining something regular, like a club, a study group or a volunteering activity, can make connection easier because you see the same people again. The anonymous Community page here is another gentle place to start.", "Even short, low-pressure contact counts — chatting with a family member or saying hello to a neighbour. What kind of connection do you miss most?"]
+    },
+    {
+      "tag": "anger_frustration", "category": "emotion", "wrap": true,
+      "patterns": ["i feel so angry", "i'm really frustrated", "i get irritated easily", "i can't control my anger", "everything makes me mad", "i snapped at my friend", "i'm so annoyed right now", "i want to scream", "i feel furious", "my anger is out of control", "people keep irritating me", "i feel like breaking something", "angry", "malai ris uthyo", "dherai ris aayo", "ris thamna sakdina", "मलाई रिस उठ्यो", "धेरै रिस आयो"],
+      "responses": ["Anger is a signal that something matters to you. Before reacting, try stepping away for a few minutes and breathing out slowly; then name what triggered it.", "Physical movement can release angry energy safely — a brisk walk, push-ups, or squeezing a pillow. Once calmer, you can decide how you want to respond.", "Writing an 'unsent letter' can help: put everything you feel on paper, without sending it. Then notice what you actually need from the situation."]
+    },
+    {
+      "tag": "overwhelm", "category": "emotion", "wrap": true,
+      "patterns": ["i feel overwhelmed", "everything is too much right now", "i have too much to do", "i don't know where to start", "i'm drowning in work", "i can't keep up with everything", "my head is so full", "there's too much going on", "i feel buried under tasks", "i can't cope with everything at once", "i'm overloaded", "overwhelmed", "sabai kura ekaichoti aayo", "k garne thaha chaina", "धेरै कुरा एकैचोटि आयो", "के गर्ने थाहा छैन"],
+      "responses": ["When everything feels like too much, shrink the next step. Write down every task, then choose only the one that matters most for today.", "Try a 'brain dump': list everything in your head for two minutes. Then sort it into 'today', 'this week' and 'can wait'.", "Pause first. Take three slow breaths, drink some water, and then pick one small task you can finish in 15 minutes."]
+    },
+    {
+      "tag": "fear_worry_future", "category": "emotion", "wrap": true,
+      "patterns": ["i'm scared about the future", "i worry about what will happen", "i'm afraid i'll fail at life", "what if everything goes wrong", "i'm scared and don't know what to do", "i keep imagining the worst", "the future makes me anxious", "i fear i won't get a job", "i'm afraid of disappointing everyone", "i'm worried all the time about tomorrow", "i feel scared", "bhabishya ko dar lagcha", "pachi k huncha bhanera dar lagcha", "भविष्यको डर लाग्छ"],
+      "responses": ["Worries about the future often feel certain even though they aren't. Try asking: what is in my control today? Then take one small step on that.", "It may help to write the worst case, the best case and the most likely case. The most likely case is usually much more manageable.", "Grounding yourself in the present can ease future-worry: notice your breath, your feet on the floor, and what's around you right now."]
+    },
+    {
+      "tag": "guilt_shame", "category": "emotion", "wrap": true,
+      "patterns": ["i feel guilty", "i can't stop feeling guilty", "i feel ashamed of myself", "i made a big mistake", "i hurt someone and feel terrible", "it's all my fault", "i feel like a bad person", "i keep blaming myself", "i regret what i did", "i'm embarrassed about what happened", "guilt is eating me up", "malai pachuto lagyo", "mero galti ho", "मलाई पछुतो लाग्यो", "मेरो गल्ती हो"],
+      "responses": ["Guilt can be a sign that you care about doing right. If you can, consider what repair might look like — an apology or a small kind act — and then practise forgiving yourself.", "Try talking to yourself the way you'd talk to a close friend who made the same mistake. What would you say to them?", "Separating the action from your worth helps: you made a mistake, but you are not a mistake. What did you learn that you'd do differently?"]
+    },
+    {
+      "tag": "jealousy_comparison", "category": "emotion", "wrap": true,
+      "patterns": ["i feel jealous of my friends", "everyone is doing better than me", "i keep comparing myself to others", "social media makes me feel bad about my life", "my friend got what i wanted", "i'm envious of others", "why is everyone else so successful", "i feel behind compared to my classmates", "others have a better life than me", "i feel jealous", "arulai dekhera ris lagcha", "sabai jana malai bhanda agadi chan", "अरूसँग तुलना गर्छु"],
+      "responses": ["Comparison usually shows us someone else's highlights next to our hardest moments. Try comparing yourself only with who you were a month ago.", "Jealousy can point to something you want. What is it showing you that you'd like for yourself? That can become a goal instead of a hurt.", "A short break from social media, even for a day, often eases the comparison trap. Notice how you feel afterwards."]
+    },
+    {
+      "tag": "boredom_lack_interest", "category": "emotion", "wrap": true,
+      "patterns": ["i'm so bored", "nothing interests me anymore", "i don't enjoy my hobbies now", "everything feels dull", "i feel restless and bored", "i don't feel like doing anything fun", "life feels boring", "i lost interest in things i used to like", "i have nothing to do", "i'm bored of everything", "boring lagyo", "kehi garna man lagdaina", "बोर भयो"],
+      "responses": ["When interest fades, starting tiny helps — five minutes of a hobby, a new song, or a short walk somewhere different. If loss of interest lasts for weeks, it's worth talking to a professional.", "Try something with a small sense of achievement, like tidying a drawer or cooking a simple meal. Small wins can spark energy.", "Novelty can help: a different route home, a new podcast, or learning one small skill this week."]
+    },
+    {
+      "tag": "tiredness_fatigue", "category": "emotion", "wrap": true,
+      "patterns": ["i feel tired all the time", "i'm exhausted", "i have no energy", "i'm drained", "i feel so fatigued", "i wake up tired", "i'm mentally exhausted", "i can't get out of bed", "my body feels heavy and tired", "i feel weak and tired every day", "tired", "ma thakeko chu", "dherai thakai lagyo", "jiu gahrungo cha", "म थाकेको छु", "धेरै थकाइ लाग्यो"],
+      "responses": ["Constant tiredness can come from poor sleep, stress, skipped meals or not enough movement. Try short breaks, staying hydrated and getting some daylight. If it continues, a doctor can check for physical causes.", "Your body may be asking for rest. A 15–20 minute nap, gentle stretching or a quiet walk can help without ruining your night's sleep.", "When energy is low, lower the bar: choose the most important task and let the rest wait."]
+    },
+    {
+      "tag": "crying_emotional", "category": "emotion", "wrap": true,
+      "patterns": ["i can't stop crying", "i cried all night", "i keep crying for no reason", "i feel like crying", "tears just come out", "i broke down in tears", "i'm so emotional today", "i cried in the bathroom at college", "i feel very emotional and sensitive", "ma royeko royei chu", "runa man lagyo", "म रोइरहेको छु"],
+      "responses": ["Crying is a natural way your body releases emotion — it's okay. Let it happen, then try a glass of water and a few slow breaths.", "It sounds like a lot has built up. After crying, gentle comfort helps: a warm drink, a blanket, or talking to someone you trust.", "If it helps, you can tell me what brought the tears on. Sometimes naming the feeling makes it a little easier to hold."]
+    },
+    {
+      "tag": "overthinking", "category": "emotion", "wrap": true,
+      "patterns": ["i overthink everything", "my mind won't stop racing", "i can't stop thinking about it", "i replay conversations in my head", "my thoughts keep looping", "i analyze every little thing", "i keep thinking about what people think of me", "i'm stuck in my head", "i can't switch off my brain", "i feel confused and lost", "overthinking", "dherai sochchu", "dimag rokidaina", "म धेरै सोच्छु"],
+      "responses": ["Overthinking often loses power on paper. Try writing the thought down, then ask: is this a problem I can solve now? If not, set it aside for a planned 'worry time'.", "When thoughts loop, shift attention to your senses for a minute — what can you hear, see and feel right now?", "Ask yourself: what's the evidence for this thought, and what's the evidence against it? Often a kinder, more balanced view appears."]
+    },
+    {
+      "tag": "exam_stress", "category": "academic", "wrap": true,
+      "patterns": ["i'm stressed about my exams", "my exams are coming and i'm scared", "i have an exam tomorrow and i'm nervous", "i'm not prepared for my exam", "exam pressure is too much", "i'm afraid i'll fail my exams", "finals are stressing me out", "i blank out during exams", "i have test anxiety", "board exams are making me anxious", "i can't stop worrying about my results", "school is stressing me out", "pariksha aauna lagyo, dar lagyo", "exam ko tension cha", "padhai ko pressure cha", "परीक्षाको डर लाग्छ", "परीक्षाको तनाव छ"],
+      "responses": ["Exam stress is very common. Break revision into 25-minute focused blocks with 5-minute breaks, and start with the topics most likely to come up.", "The night before an exam, sleep usually helps more than late cramming. Review key points, prepare your things, and do a few slow breaths before bed.", "In the exam, if you blank out, pause, breathe out slowly, and start with a question you find easier to build momentum."]
+    },
+    {
+      "tag": "exam_failure_results", "category": "academic", "wrap": true,
+      "patterns": ["i failed my exam", "i got bad marks", "my results were terrible", "i didn't pass", "i'm disappointed with my grades", "my parents will be angry about my result", "i got back my result and i feel useless", "i failed again", "i scored less than my friends", "i have a back paper", "fail bhaye", "result naramro aayo", "number kam aayo", "म फेल भएँ", "नतिजा नराम्रो आयो"],
+      "responses": ["A disappointing result hurts, but it doesn't define your ability or your future. When you feel ready, look at what went wrong and what you could change next time.", "Many people recover from a bad result — retakes, different study methods and support from teachers can make a real difference. Who could you ask for guidance?", "It might help to plan how to talk to your family: share the result, what you'll do differently, and the support you need."]
+    },
+    {
+      "tag": "study_focus", "category": "academic", "wrap": true,
+      "patterns": ["i can't concentrate on studying", "i get distracted easily", "i can't focus", "my mind wanders when i study", "i read but nothing goes in", "i keep checking my phone while studying", "how can i improve my concentration", "i can't remember what i study", "i lose focus after a few minutes", "padhna man lagdaina", "padhda dhyan jadaina", "पढ्दा ध्यान जाँदैन"],
+      "responses": ["Try the Pomodoro method: 25 minutes of focused study with your phone in another room, then a 5-minute break. Repeat four times, then take a longer break.", "Active recall helps memory: after reading a section, close the book and write or say what you remember.", "A tidy space, water nearby and a clear goal for each session ('finish 10 questions') can make focusing easier."]
+    },
+    {
+      "tag": "procrastination", "category": "academic", "wrap": true,
+      "patterns": ["i keep procrastinating", "i always delay my work", "i leave everything to the last minute", "i can't make myself start", "i waste my whole day", "i know i should study but i don't", "i keep putting things off", "how do i stop procrastinating", "i scroll on my phone instead of working", "i'm lazy and keep delaying", "kaam pachi sarchu", "bholi garchu bhanchu", "काम पछि सार्छु"],
+      "responses": ["Try the 2-minute rule: commit to just two minutes of the task. Starting is usually the hardest part, and momentum often follows.", "Make the first step tiny and specific — not 'study biology', but 'read page 12'. Small, clear steps reduce the urge to delay.", "Procrastination is often about avoiding a feeling, like fear of failing. Naming that feeling can make the task less scary."]
+    },
+    {
+      "tag": "time_management", "category": "academic", "wrap": true,
+      "patterns": ["i don't have enough time", "how do i manage my time", "i can't balance study and work", "my schedule is a mess", "i miss deadlines", "i never finish my tasks on time", "i need a study timetable", "how do i plan my day", "i have too many assignments", "time pugdaina", "samaya milauna sakdina", "समय पुग्दैन"],
+      "responses": ["Try planning tomorrow tonight: list three priority tasks and give each a time slot. Anything extra is a bonus.", "Block your time — study, rest, meals and sleep — so breaks are planned, not guilty. A realistic plan beats a perfect one.", "Use the urgent/important split: do urgent and important first, schedule important but not urgent, and drop what's neither."]
+    },
+    {
+      "tag": "academic_pressure_parents", "category": "academic", "wrap": true,
+      "patterns": ["my parents expect too much from me", "my family pressures me to get top marks", "my parents want me to be a doctor but i don't", "i'm scared to disappoint my parents", "they compare me with my cousins", "my parents only care about my grades", "family expectations are crushing me", "i can't choose my own subject", "aama buwa le dherai pressure dinuhuncha", "ghar ma padhai ko pressure cha", "आमाबुबाले धेरै दबाब दिनुहुन्छ"],
+      "responses": ["Family expectations often come from love and worry, even when they feel heavy. A calm conversation about how you feel and what you're aiming for can help them understand you.", "It may help to share your effort and your plan, not only your marks — parents often relax when they see you're taking things seriously.", "If talking directly is hard, a teacher, counsellor or relative you trust might help explain your perspective."]
+    },
+    {
+      "tag": "career_uncertainty", "category": "academic", "wrap": true,
+      "patterns": ["i don't know what to do with my life", "i'm confused about my career", "i don't know which subject to choose", "i'm worried i won't get a job", "i chose the wrong course", "i have no direction in life", "what should i do after graduation", "should i go abroad or stay in nepal", "i feel lost about my future plans", "career ko chinta cha", "k padhne thaha chaina", "करियरको चिन्ता छ"],
+      "responses": ["Feeling unsure about your path is normal at this stage. Try listing what you enjoy, what you're good at and what you value — overlaps can point to options.", "Talking to people already working in fields you're curious about can make choices clearer. Small experiments like a short course or internship help too.", "You don't need the whole plan now — just the next step. What's one thing you could explore this month?"]
+    },
+    {
+      "tag": "burnout", "category": "academic", "wrap": true,
+      "patterns": ["i feel burned out", "i'm completely drained by work", "i have nothing left to give", "i don't care about my studies anymore", "my job is exhausting me", "i've been working nonstop and i'm empty", "i feel numb from too much work", "i dread going to college every day", "work stress is too much", "i'm burnt out from studying", "burnout", "kaam le thakaayo", "sabai kura le thakaayo", "कामले थकायो"],
+      "responses": ["Burnout often comes from long stress without enough recovery. Protecting rest — sleep, breaks and time off screens — is a priority, not a luxury.", "Look for one thing you can reduce or say no to this week, and one restoring activity you can add, even for 15 minutes a day.", "Lumora's Burnout Check can show how your recent mood, journaling and chats look together. It's indicative only, but it can help you notice patterns."]
+    },
+    {
+      "tag": "sleep_issues", "category": "sleep", "wrap": true,
+      "patterns": ["i can't sleep", "i have trouble falling asleep", "i wake up in the middle of the night", "i only sleep a few hours", "my sleep schedule is ruined", "i stay up all night on my phone", "my thoughts keep me awake", "i feel sleepy all day but can't sleep at night", "how can i sleep better", "i have insomnia", "i haven't slept properly in days", "i can't sleep before exams", "malai nindra lagdaina", "raati nindra aaudaina", "nindra pugena", "मलाई निद्रा लाग्दैन", "राती निद्रा आउँदैन"],
+      "responses": ["A steady routine helps sleep: wake at the same time daily, avoid screens 30–60 minutes before bed, and keep caffeine to the morning.", "If you can't sleep after about 20 minutes, get up and do something calm in dim light, then return to bed when sleepy. This helps your brain link bed with sleep.", "Try a wind-down ritual: dim lights, a warm shower, slow breathing or a body-scan meditation. If sleep problems last for weeks, consider talking to a doctor."]
+    },
+    {
+      "tag": "nightmares", "category": "sleep", "wrap": true,
+      "patterns": ["i keep having nightmares", "i had a bad dream", "i wake up scared from dreams", "nightmares every night", "i'm afraid to sleep because of bad dreams", "i dream about bad things happening", "my dreams are disturbing", "naramro sapana dekhchu", "sapana le darayo", "नराम्रो सपना देख्छु"],
+      "responses": ["Bad dreams are unsettling. After waking, ground yourself: turn on a soft light, notice your surroundings and breathe slowly until you feel settled.", "A calm bedtime routine and writing down worries before bed can reduce nightmares for some people. If they're frequent or linked to something difficult that happened, a professional can help."]
+    },
+    {
+      "tag": "appetite_eating_changes", "category": "sleep", "wrap": true,
+      "patterns": ["i don't feel like eating", "i've lost my appetite", "i eat too much when i'm stressed", "i skip meals because of stress", "i stress eat", "my eating habits are messed up", "i forget to eat", "i binge snack when i'm sad", "khana man lagdaina", "bhok lagdaina", "खाना मन लाग्दैन"],
+      "responses": ["Stress often changes appetite. Try small, regular meals at set times, even if you're not hungry, and keep water and simple snacks nearby.", "Noticing the link between feelings and eating is a good first step. If eating changes continue or worry you, please talk to a doctor or health professional."]
+    },
+    {
+      "tag": "physical_symptoms_stress", "category": "sleep", "wrap": true,
+      "patterns": ["my head hurts when i'm stressed", "i get headaches from stress", "my shoulders are always tense", "my stomach hurts when i'm nervous", "my body aches from stress", "i feel tightness in my chest when stressed", "my jaw is clenched all the time", "tension le tauko dukhcha", "pet dukhcha chinta le", "तनावले टाउको दुख्छ"],
+      "responses": ["Stress can show up in the body. Gentle stretching, warm showers and slow breathing can ease tension. Physical symptoms should also be checked by a doctor to rule out other causes.", "Try progressive muscle relaxation: tense one muscle group for 5 seconds, then release, moving from your feet up to your face."]
+    },
+    {
+      "tag": "relationship_problems", "category": "relationship", "wrap": true,
+      "patterns": ["i'm having problems with my partner", "we keep fighting", "my boyfriend doesn't understand me", "my girlfriend ignores me", "my relationship is stressing me out", "i feel unappreciated by my partner", "we argue about small things", "i don't feel loved in my relationship", "i'm not sure if i should stay in my relationship", "my partner is jealous all the time", "relationship ma problem cha", "boyfriend sanga jhagada bhayo", "girlfriend le bujhdina", "मेरो सम्बन्धमा समस्या छ"],
+      "responses": ["Relationship conflict is draining. Try using 'I feel… when… because…' statements, which tend to cause less defensiveness than blame.", "It may help to talk at a calm time, not mid-argument. Listen to understand, and agree on one small change each of you can try.", "Healthy relationships should feel safe. If you ever feel controlled, threatened or hurt, please reach out to someone you trust or use the SOS page."]
+    },
+    {
+      "tag": "breakup_heartbreak", "category": "relationship", "wrap": true,
+      "patterns": ["we broke up", "my girlfriend left me", "my boyfriend broke up with me", "i can't get over my ex", "i'm heartbroken", "i miss my ex so much", "i got dumped", "i still think about them every day", "my heart is broken", "how do i move on after a breakup", "breakup bhayo", "ex lai birsana sakdina", "माया गएपछि दुःख लाग्यो"],
+      "responses": ["Heartbreak can feel physically painful. Let yourself grieve, keep simple routines going, and lean on friends or family.", "Reducing contact — muting or unfollowing for a while — often helps healing. Each day without checking is progress.", "It might help to write what you miss, what you don't miss, and what you learned. Over time the pain usually softens."]
+    },
+    {
+      "tag": "family_conflict", "category": "relationship", "wrap": true,
+      "patterns": ["my parents fight all the time", "i don't get along with my family", "my family doesn't understand me", "there's a lot of tension at home", "my parents are getting divorced", "i argued with my mom", "my dad is always angry", "i don't feel comfortable at home", "my family is causing me stress", "ghar ma jhagada huncha", "aama buwa sadhai ladchan", "परिवारमा झगडा हुन्छ"],
+      "responses": ["Tension at home is really hard because it's hard to get away from. Having a calm space — your room, a library or a walk — can give you breathing room.", "When talking with family, choose a calm moment and focus on how you feel rather than who's right. Sometimes a trusted relative can help mediate.", "If you ever feel unsafe at home, please contact someone you trust or use the SOS page for help."]
+    },
+    {
+      "tag": "friendship_issues", "category": "relationship", "wrap": true,
+      "patterns": ["my friends ignore me", "i had a fight with my best friend", "my friends left me out", "i feel like my friends don't care", "my friend betrayed me", "i don't fit in with my friend group", "my friends talk behind my back", "i lost my best friend", "sathi le dhoka diyo", "sathiharu le bewasta garchan", "साथीले धोका दियो"],
+      "responses": ["Friendship hurts can be just as painful as other relationship problems. If it feels safe, an honest, calm conversation can clear up misunderstandings.", "It's okay to invest more in friendships that feel mutual and kind. Meeting people through shared interests can widen your circle.", "Give yourself time to feel hurt before deciding what to do. What would you like this friendship to look like?"]
+    },
+    {
+      "tag": "social_anxiety_shyness", "category": "relationship", "wrap": true,
+      "patterns": ["i feel nervous around people", "i'm scared to talk in class", "i get anxious in social situations", "i'm too shy to make friends", "i avoid parties", "i'm afraid people will judge me", "public speaking terrifies me", "i freeze when i have to present", "i feel awkward in groups", "i have social anxiety", "manche sanga bolna dar lagcha", "ma lajalu chu", "मानिससँग बोल्न डर लाग्छ"],
+      "responses": ["Social nerves often ease with gradual practice. Start small — asking a classmate a question or saying hi — and notice that it usually goes better than feared.", "Before a social situation, slow breathing and a simple plan ('I'll ask one question') can lower anxiety. Focus on the other person rather than on yourself.", "Most people are thinking about themselves far more than judging you. Be kind to yourself after each small step."]
+    },
+    {
+      "tag": "bullying_harassment", "category": "relationship", "wrap": true,
+      "patterns": ["i'm being bullied", "people at school make fun of me", "someone is harassing me online", "my classmates tease me every day", "i'm being cyberbullied", "my coworker keeps harassing me", "they spread rumours about me", "someone keeps sending me mean messages", "i'm scared to go to school because of bullies", "malai hepchan", "class ma jiskayera bolchan", "मलाई हेप्छन्"],
+      "responses": ["Bullying is never your fault. Keep a record of what happens (screenshots, dates) and tell a trusted teacher, family member or authority.", "Online, you can block, report and save evidence. Talking to someone you trust can help you decide the next steps.", "If you feel unsafe or threatened, please reach out for help right away — the SOS page lists places to contact."]
+    },
+    {
+      "tag": "homesickness", "category": "relationship", "wrap": true,
+      "patterns": ["i miss my family", "i feel homesick", "i moved to a new city and feel alone", "i'm living away from home and it's hard", "i miss my village", "i'm studying abroad and feel lonely", "hostel life is hard", "i want to go back home", "ghar ko yaad aayo", "aama ko yaad aayo", "घरको याद आयो"],
+      "responses": ["Homesickness is a sign of strong bonds. Regular calls with family, keeping familiar routines or foods, and slowly building new connections can help.", "Exploring your new place a little at a time — a café, a park, a club — can help it start to feel like your own."]
+    },
+    {
+      "tag": "low_self_esteem", "category": "self", "wrap": true,
+      "patterns": ["i hate the way i am", "i feel like i'm not good enough", "i have low self esteem", "i'm a failure", "i feel useless", "i don't like myself", "i always feel inferior", "how do i build self confidence", "i feel insecure all the time", "i'm not smart enough", "everyone is better than me", "i don't believe in myself", "ma kehi kaam ko chaina", "malai aafu man pardaina", "आफूलाई मन पराउँदिन", "म केही कामको छैन"],
+      "responses": ["Harsh self-talk can feel true, but it isn't the full picture. Try writing down three things you did today, however small — it trains your mind to notice your strengths.", "Ask yourself: would I speak to a friend this way? Try rephrasing one harsh thought into something kinder and more balanced.", "Confidence grows through small kept promises. Set one tiny goal for today and notice when you complete it."]
+    },
+    {
+      "tag": "motivation_goals", "category": "self", "wrap": true,
+      "patterns": ["i have no motivation", "i don't feel like doing anything", "how do i get motivated", "i feel demotivated", "i set goals but never follow through", "i want to improve myself", "i can't stay consistent", "i lose motivation quickly", "i want to build good habits", "kehi garna jaagar chaina", "motivation chaina", "मलाई जाँगर छैन"],
+      "responses": ["Motivation often comes after starting, not before. Pick something so small it's hard to say no to — five minutes, one page, one rep.", "Connect goals to a reason you care about, and track small wins. Seeing progress is one of the strongest motivators.", "Habit stacking can help: attach a new habit to something you already do, like reviewing notes right after dinner."]
+    },
+    {
+      "tag": "self_care", "category": "self", "wrap": true,
+      "patterns": ["how do i take care of myself", "give me self care tips", "i want to relax", "how can i feel better today", "what can i do to unwind", "i need a break", "suggest something relaxing", "i want to look after my mental health", "self care ideas please", "aafno herchaha kasari garne", "aaram garna man lagyo", "आराम गर्न मन लाग्यो"],
+      "responses": ["Self-care can be simple: enough sleep, regular meals, some movement, time outside, and something you enjoy each day.", "Try a small reset: put your phone down, have a glass of water, stretch for two minutes and take five slow breaths.", "Make a short 'comfort list' of things that help — music, a walk, a call with a friend — so it's ready on hard days."]
+    },
+    {
+      "tag": "body_image", "category": "self", "wrap": true,
+      "patterns": ["i hate how i look", "i feel ugly", "i'm unhappy with my body", "people comment on my weight", "i feel fat", "i compare my body to others online", "i'm insecure about my appearance", "i don't like my face", "i feel too thin", "ma ramro dekhinna", "mero jiu man pardaina", "म राम्रो देखिन्न"],
+      "responses": ["Many people struggle with how they see their bodies, especially with social media. Try noticing what your body does for you, not only how it looks.", "Curating your feed — following accounts that make you feel good and muting those that don't — can make a real difference.", "If worries about eating or your body are taking over daily life, please talk to a health professional; you deserve support."]
+    },
+    {
+      "tag": "grief_loss", "category": "self", "wrap": true,
+      "patterns": ["someone close to me died", "my grandmother passed away", "i lost my friend", "i'm grieving", "my pet died", "i can't accept that they're gone", "i miss my dad who died", "how do i cope with loss", "it's the anniversary of their death", "i lost someone important", "mero hajurama bitnubhayo", "priyajan gumaye", "मेरो प्रियजन बित्नुभयो"],
+      "responses": ["I'm so sorry for your loss. Grief has no right timeline, and it often comes in waves. Be gentle with yourself and let others support you.", "Remembering them in a way that feels right — writing a letter, sharing a story, looking at photos — can help you carry the loss.", "Keeping simple routines like eating and sleeping helps during grief. If the pain feels unmanageable for a long time, a counsellor can help."]
+    },
+    {
+      "tag": "breathing_exercise", "category": "coping", "wrap": true,
+      "patterns": ["teach me a breathing exercise", "how do i breathe to calm down", "box breathing", "can we do a breathing exercise", "breathing techniques please", "help me calm my breathing", "i need to calm down quickly", "guide me through deep breathing", "breathing exercises", "saas ferne abhyas", "shanta huna saas", "सास फेर्ने अभ्यास"],
+      "responses": ["Let's try box breathing: breathe in for 4, hold for 4, breathe out for 4, hold for 4. Repeat 4 times, keeping your shoulders relaxed.", "Try 4-7-8 breathing: in through your nose for 4, hold for 7, and breathe out slowly through your mouth for 8. Repeat 3–4 times.", "Place a hand on your belly and breathe so it rises more than your chest. Slow, deep belly breaths tell your body it's safe."]
+    },
+    {
+      "tag": "mindfulness_grounding", "category": "coping", "wrap": true,
+      "patterns": ["how do i ground myself", "teach me a grounding technique", "i want to try mindfulness", "how do i meditate", "can you guide a meditation", "i feel disconnected and need to ground", "what is the 5 4 3 2 1 technique", "mindfulness exercise please", "help me stay in the present", "dhyan kasari garne", "meditation sikau", "ध्यान कसरी गर्ने"],
+      "responses": ["Try 5-4-3-2-1 grounding: name 5 things you can see, 4 you can touch, 3 you can hear, 2 you can smell and 1 you can taste.", "A one-minute mindful pause: sit comfortably, notice your breath going in and out, and when your mind wanders, gently bring it back.", "The Mindfulness page has guided audio exercises, like a body scan, that you can follow along with."]
+    },
+    {
+      "tag": "coping_skills", "category": "coping", "wrap": true,
+      "patterns": ["how do i cope", "what are some coping strategies", "how do i handle my emotions", "give me tips to feel better", "how do i manage my feelings", "what should i do when i feel bad", "healthy ways to cope", "how can i calm myself", "i need coping techniques", "kasari samhalne", "man shanta kasari parne", "कसरी सम्हाल्ने"],
+      "responses": ["Helpful coping tools include slow breathing, grounding, movement, journaling, talking to someone you trust, and planning small pleasant activities.", "Try the 'name it to tame it' approach: put a name to what you feel ('I'm feeling anxious'). Naming emotions can reduce their intensity.", "Make a coping plan: list 3 things that calm you, 2 people you can reach, and 1 place you feel safe."]
+    },
+    {
+      "tag": "journaling_prompt", "category": "coping", "wrap": true,
+      "patterns": ["how do i start journaling", "give me a journaling prompt", "what should i write in my journal", "how can journaling help", "i want to write about my feelings", "journal prompt please", "help me reflect on my day", "what can i journal about", "diary lekhna sikau", "k lekhne diary ma", "डायरी कसरी लेख्ने"],
+      "responses": ["Here's a prompt: 'Right now I feel… because… What I need most is…' Write for five minutes without editing.", "Try three lines tonight: one thing that was hard, one thing that went okay, and one thing you're grateful for.", "You can use the Journal page to save entries with a mood tag and look back at patterns over time."]
+    },
+    {
+      "tag": "professional_help", "category": "coping", "wrap": true,
+      "patterns": ["should i see a therapist", "how do i find a counsellor", "i want to talk to a psychiatrist", "can i book a doctor", "where can i get professional help", "is therapy worth it", "i think i need professional help", "how do i talk to a counsellor", "can i get a consultation", "doctor sanga kura garna man lagyo", "counsellor kaha bhetne", "डाक्टरसँग कुरा गर्न मन लाग्यो"],
+      "responses": ["Reaching out to a professional is a strong, healthy step. The Consultation page lets you book a slot with a psychiatrist, and your college may also have a counsellor.", "If what you're feeling has lasted for weeks or is affecting your studies, sleep or relationships, talking to a mental health professional is a good idea.", "It can help to write down what you've been experiencing before an appointment, so it's easier to explain."]
+    },
+    {
+      "tag": "crisis_suicidal", "category": "safety", "wrap": false,
+      "patterns": ["i want to kill myself", "i want to die", "i don't want to live anymore", "i'm thinking about suicide", "i want to end my life", "life isn't worth living", "i wish i was dead", "everyone would be better off without me", "i have a plan to end it", "i'm going to end it all", "i can't go on living", "i feel suicidal", "marna man lagyo", "jiuna man chaina", "aatmahatya garchu", "मर्न मन लाग्यो", "आत्महत्या गर्छु", "जिउन मन छैन"],
+      "responses": ["I'm really sorry you're feeling this way. Your safety matters most right now. Please open the SOS page for Nepal helplines or contact local emergency services immediately, and tell someone you trust."]
+    },
+    {
+      "tag": "self_harm", "category": "safety", "wrap": false,
+      "patterns": ["i want to hurt myself", "i cut myself", "i've been self harming", "i burn myself", "i hit myself when i'm upset", "i feel like hurting myself", "self harm", "i scratch my skin until it bleeds", "i want to cut again", "aafulai chot puryauna man lagyo", "haat kateko chu", "आफूलाई चोट पुर्याउन मन लाग्यो"],
+      "responses": ["Thank you for telling me — that takes courage. Your safety comes first. Please use the SOS page to contact a helpline or emergency services now, and reach out to someone you trust."]
+    },
+    {
+      "tag": "substance_use", "category": "safety", "wrap": true,
+      "patterns": ["i drink to forget my problems", "i've been drinking a lot", "i smoke when i'm stressed", "i use weed to cope", "i can't stop drinking", "i think i'm addicted", "i take pills to feel better", "my friends pressure me to drink", "i've been using drugs", "raksi khana thale", "churot chhodna sakdina", "रक्सी धेरै खान्छु"],
+      "responses": ["Using alcohol or substances to cope is common, but it often makes stress and low mood worse over time. Notice when and why you use, and try replacing one occasion with another coping activity.", "Cutting down is easier with support. A doctor or counsellor can help confidentially — you don't have to manage it alone. If you ever take something in a dangerous amount, seek emergency help immediately."]
+    }
+  ]
+}

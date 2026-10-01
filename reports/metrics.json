@@ -1,0 +1,522 @@
+{
+  "model": "Keras FFNN on word TF-IDF (1-2) + char TF-IDF (3-5) + history features",
+  "dataset": "ChatbotWebsite\\data\\intents_augmented.json",
+  "samples": 6696,
+  "intents": 54,
+  "train_samples": 5355,
+  "validation_samples": 1341,
+  "split": "StratifiedGroupKFold 80/20 (variants of one base sentence never span both sides)",
+  "feature_dim": 18000,
+  "epochs_run": 25,
+  "best_epoch": 19,
+  "learning_rates": [
+    0.0008,
+    0.0004,
+    0.0002
+  ],
+  "validation_accuracy": 0.431,
+  "validation_macro_f1": 0.3988,
+  "final_train_accuracy": 0.9505,
+  "history_followups_accuracy": 0.23376623376623376,
+  "history_followups_accuracy_without_history": 0.012987012987012988,
+  "confidence_thresholds": [
+    {
+      "threshold": 0.3,
+      "coverage": 0.6667,
+      "accuracy_when_confident": 0.5615
+    },
+    {
+      "threshold": 0.4,
+      "coverage": 0.5675,
+      "accuracy_when_confident": 0.6255
+    },
+    {
+      "threshold": 0.5,
+      "coverage": 0.4929,
+      "accuracy_when_confident": 0.6732
+    },
+    {
+      "threshold": 0.55,
+      "coverage": 0.4586,
+      "accuracy_when_confident": 0.6911
+    },
+    {
+      "threshold": 0.6,
+      "coverage": 0.4236,
+      "accuracy_when_confident": 0.7165
+    },
+    {
+      "threshold": 0.7,
+      "coverage": 0.3535,
+      "accuracy_when_confident": 0.7595
+    },
+    {
+      "threshold": 0.8,
+      "coverage": 0.2483,
+      "accuracy_when_confident": 0.8649
+    }
+  ],
+  "per_intent": {
+    "greeting": {
+      "precision": 0.857,
+      "recall": 0.96,
+      "f1": 0.906,
+      "support": 25
+    },
+    "goodbye": {
+      "precision": 0.75,
+      "recall": 0.375,
+      "f1": 0.5,
+      "support": 24
+    },
+    "thanks": {
+      "precision": 0.739,
+      "recall": 0.68,
+      "f1": 0.708,
+      "support": 25
+    },
+    "about_lumora": {
+      "precision": 0.875,
+      "recall": 0.84,
+      "f1": 0.857,
+      "support": 25
+    },
+    "capabilities_help": {
+      "precision": 0.222,
+      "recall": 0.24,
+      "f1": 0.231,
+      "support": 25
+    },
+    "agreement": {
+      "precision": 0.04,
+      "recall": 0.04,
+      "f1": 0.04,
+      "support": 25
+    },
+    "disagreement": {
+      "precision": 0.235,
+      "recall": 0.32,
+      "f1": 0.271,
+      "support": 25
+    },
+    "positive_mood": {
+      "precision": 0.356,
+      "recall": 0.84,
+      "f1": 0.5,
+      "support": 25
+    },
+    "stress_general": {
+      "precision": 0.327,
+      "recall": 0.64,
+      "f1": 0.432,
+      "support": 25
+    },
+    "anxiety_general": {
+      "precision": 0.704,
+      "recall": 0.76,
+      "f1": 0.731,
+      "support": 25
+    },
+    "panic_attack": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 25
+    },
+    "sadness_low_mood": {
+      "precision": 0.556,
+      "recall": 0.8,
+      "f1": 0.656,
+      "support": 25
+    },
+    "loneliness": {
+      "precision": 0.396,
+      "recall": 0.76,
+      "f1": 0.521,
+      "support": 25
+    },
+    "anger_frustration": {
+      "precision": 0.349,
+      "recall": 0.625,
+      "f1": 0.448,
+      "support": 24
+    },
+    "overwhelm": {
+      "precision": 0.579,
+      "recall": 0.458,
+      "f1": 0.512,
+      "support": 24
+    },
+    "fear_worry_future": {
+      "precision": 0.235,
+      "recall": 0.296,
+      "f1": 0.262,
+      "support": 27
+    },
+    "guilt_shame": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 24
+    },
+    "jealousy_comparison": {
+      "precision": 0.5,
+      "recall": 0.577,
+      "f1": 0.536,
+      "support": 26
+    },
+    "boredom_lack_interest": {
+      "precision": 0.44,
+      "recall": 0.423,
+      "f1": 0.431,
+      "support": 26
+    },
+    "tiredness_fatigue": {
+      "precision": 0.625,
+      "recall": 0.833,
+      "f1": 0.714,
+      "support": 24
+    },
+    "crying_emotional": {
+      "precision": 0.963,
+      "recall": 0.963,
+      "f1": 0.963,
+      "support": 27
+    },
+    "overthinking": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 24
+    },
+    "exam_stress": {
+      "precision": 0.406,
+      "recall": 0.565,
+      "f1": 0.473,
+      "support": 23
+    },
+    "exam_failure_results": {
+      "precision": 0.25,
+      "recall": 0.16,
+      "f1": 0.195,
+      "support": 25
+    },
+    "study_focus": {
+      "precision": 0.467,
+      "recall": 0.259,
+      "f1": 0.333,
+      "support": 27
+    },
+    "procrastination": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 26
+    },
+    "time_management": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 23
+    },
+    "academic_pressure_parents": {
+      "precision": 0.077,
+      "recall": 0.083,
+      "f1": 0.08,
+      "support": 24
+    },
+    "career_uncertainty": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 27
+    },
+    "burnout": {
+      "precision": 0.333,
+      "recall": 0.44,
+      "f1": 0.379,
+      "support": 25
+    },
+    "sleep_issues": {
+      "precision": 0.727,
+      "recall": 0.667,
+      "f1": 0.696,
+      "support": 24
+    },
+    "nightmares": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "support": 24
+    },
+    "appetite_eating_changes": {
+      "precision": 0.545,
+      "recall": 0.5,
+      "f1": 0.522,
+      "support": 24
+    },
+    "physical_symptoms_stress": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 25
+    },
+    "relationship_problems": {
+      "precision": 0.35,
+      "recall": 0.56,
+      "f1": 0.431,
+      "support": 25
+    },
+    "breakup_heartbreak": {
+      "precision": 0.857,
+      "recall": 0.222,
+      "f1": 0.353,
+      "support": 27
+    },
+    "family_conflict": {
+      "precision": 0.087,
+      "recall": 0.08,
+      "f1": 0.083,
+      "support": 25
+    },
+    "friendship_issues": {
+      "precision": 0.37,
+      "recall": 0.739,
+      "f1": 0.493,
+      "support": 23
+    },
+    "social_anxiety_shyness": {
+      "precision": 0.364,
+      "recall": 0.32,
+      "f1": 0.34,
+      "support": 25
+    },
+    "bullying_harassment": {
+      "precision": 0.714,
+      "recall": 0.37,
+      "f1": 0.488,
+      "support": 27
+    },
+    "homesickness": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 24
+    },
+    "low_self_esteem": {
+      "precision": 0.271,
+      "recall": 0.542,
+      "f1": 0.361,
+      "support": 24
+    },
+    "motivation_goals": {
+      "precision": 0.5,
+      "recall": 0.75,
+      "f1": 0.6,
+      "support": 24
+    },
+    "self_care": {
+      "precision": 0.333,
+      "recall": 0.273,
+      "f1": 0.3,
+      "support": 22
+    },
+    "body_image": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 26
+    },
+    "grief_loss": {
+      "precision": 0.568,
+      "recall": 1.0,
+      "f1": 0.725,
+      "support": 25
+    },
+    "breathing_exercise": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 26
+    },
+    "mindfulness_grounding": {
+      "precision": 0.396,
+      "recall": 0.731,
+      "f1": 0.514,
+      "support": 26
+    },
+    "coping_skills": {
+      "precision": 0.567,
+      "recall": 0.68,
+      "f1": 0.618,
+      "support": 25
+    },
+    "journaling_prompt": {
+      "precision": 0.895,
+      "recall": 0.654,
+      "f1": 0.756,
+      "support": 26
+    },
+    "professional_help": {
+      "precision": 1.0,
+      "recall": 0.696,
+      "f1": 0.821,
+      "support": 23
+    },
+    "crisis_suicidal": {
+      "precision": 0.111,
+      "recall": 0.08,
+      "f1": 0.093,
+      "support": 25
+    },
+    "self_harm": {
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.667,
+      "support": 24
+    },
+    "substance_use": {
+      "precision": 0.0,
+      "recall": 0.0,
+      "f1": 0.0,
+      "support": 22
+    }
+  },
+  "history": {
+    "accuracy": [
+      0.13669468462467194,
+      0.41979458928108215,
+      0.6257703304290771,
+      0.7357609868049622,
+      0.7964519262313843,
+      0.8373482823371887,
+      0.8651727437973022,
+      0.886274516582489,
+      0.8982259631156921,
+      0.9088702201843262,
+      0.9208216667175293,
+      0.9256769418716431,
+      0.938748836517334,
+      0.9391223192214966,
+      0.9411764740943909,
+      0.9458450078964233,
+      0.9473389387130737,
+      0.9492063522338867,
+      0.9505135416984558,
+      0.9559290409088135,
+      0.953127920627594,
+      0.9570494890213013,
+      0.9585434198379517,
+      0.9622782468795776,
+      0.9596638679504395
+    ],
+    "loss": [
+      3.8262808322906494,
+      2.9316442012786865,
+      2.1686978340148926,
+      1.8073269128799438,
+      1.6307164430618286,
+      1.5285873413085938,
+      1.4584484100341797,
+      1.401157259941101,
+      1.367487907409668,
+      1.3379815816879272,
+      1.316857933998108,
+      1.2981840372085571,
+      1.2726566791534424,
+      1.2673591375350952,
+      1.2620258331298828,
+      1.2526135444641113,
+      1.240664005279541,
+      1.2404226064682007,
+      1.2371621131896973,
+      1.2221534252166748,
+      1.220538854598999,
+      1.2119722366333008,
+      1.2139596939086914,
+      1.2041877508163452,
+      1.2053555250167847
+    ],
+    "val_accuracy": [
+      0.30201342701911926,
+      0.3788217604160309,
+      0.3974645733833313,
+      0.3907531797885895,
+      0.4034302830696106,
+      0.4168531000614166,
+      0.4168531000614166,
+      0.41909024119377136,
+      0.41909024119377136,
+      0.4213273823261261,
+      0.4220730662345886,
+      0.42356449365615845,
+      0.4258016347885132,
+      0.4258016347885132,
+      0.43102163076400757,
+      0.42878448963165283,
+      0.43027591705322266,
+      0.4332587718963623,
+      0.43102163076400757,
+      0.43027591705322266,
+      0.42356449365615845,
+      0.4280387759208679,
+      0.427293062210083,
+      0.4265473484992981,
+      0.427293062210083
+    ],
+    "val_loss": [
+      3.686126232147217,
+      3.1382906436920166,
+      2.9289722442626953,
+      2.8737587928771973,
+      2.871523380279541,
+      2.8671011924743652,
+      2.867307424545288,
+      2.8672499656677246,
+      2.8626039028167725,
+      2.874601125717163,
+      2.866546392440796,
+      2.862938165664673,
+      2.8676795959472656,
+      2.867723226547241,
+      2.862273931503296,
+      2.862298011779785,
+      2.8528599739074707,
+      2.858492851257324,
+      2.8441812992095947,
+      2.8532819747924805,
+      2.869631767272949,
+      2.8714916706085205,
+      2.865572929382324,
+      2.8638195991516113,
+      2.8591666221618652
+    ],
+    "learning_rate": [
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.0007999999797903001,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00039999998989515007,
+      0.00019999999494757503,
+      0.00019999999494757503,
+      0.00019999999494757503
+    ]
+  }
+}
