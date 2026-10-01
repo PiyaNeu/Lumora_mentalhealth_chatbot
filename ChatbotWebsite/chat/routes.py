@@ -10,6 +10,7 @@ from ChatbotWebsite import db
 from ChatbotWebsite.chat.brain import MODE_LABELS, MODES
 from ChatbotWebsite.chat.pipeline import process_message
 from ChatbotWebsite.models import ChatMessage, ChatSession, CrisisEvent, SavedInsight
+from ChatbotWebsite.mood.service import record_chat_mood
 from ChatbotWebsite.sentiment import hybrid
 
 chat = Blueprint("chat", __name__)
@@ -110,6 +111,8 @@ def send():
                           strategy=reply.strategy, language=reply.language, risk_level=reply.risk,
                           timestamp=now)
     db.session.add_all([user_msg, bot_msg])
+    db.session.flush()
+    record_chat_mood(user_msg, reply.route)
     if reply.risk in ("medium", "high"):
         db.session.add(CrisisEvent(user_id=current_user.id, session_id=chat_session.id,
                                    level=reply.risk, matched=reply.matched[:120]))

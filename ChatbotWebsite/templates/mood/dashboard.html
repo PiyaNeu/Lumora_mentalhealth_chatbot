@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block style %}
+<style>
+  .mood-card { background: rgba(255,255,255,0.78); border: 0; border-radius: 16px; }
+  .mood-btn { font-size: 1.6rem; width: 64px; height: 64px; border-radius: 50%; }
+  .mood-btn input { display: none; }
+  .mood-option { text-align: center; }
+  .mood-option small { display: block; font-size: .75rem; }
+  .btn-check:checked + .mood-btn { background: #b478ff; border-color: #8857ff; }
+  .chart-box { position: relative; height: 260px; }
+</style>
+{% endblock style %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 1100px;">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+    <h3 class="fw-bold mb-0" style="color:#3a0066;">Mood Dashboard</h3>
+    <a href="{{ url_for('mood.export_pdf') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-file-earmark-pdf"></i> Export PDF</a>
+  </div>
+
+  <!-- Check-in -->
+  <div class="card mood-card shadow-sm mb-3">
+    <div class="card-body">
+      <h6 class="fw-bold">How are you feeling today?</h6>
+      {% if todays %}<p class="small text-secondary mb-2">Today's check-in: {{ emoji[todays.mood] }} {{ todays.label }}. Choosing again updates it.</p>{% endif %}
+      <form method="POST" action="{{ url_for('mood.checkin') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="d-flex flex-wrap gap-3 mb-2">
+          {% for value, label in labels.items() %}
+          <div class="mood-option">
+            <input type="radio" class="btn-check" name="mood" id="mood{{ value }}" value="{{ value }}" required
+                   {% if todays and todays.mood == value %}checked{% endif %}>
+            <label class="btn btn-outline-secondary mood-btn d-flex align-items-center justify-content-center" for="mood{{ value }}" title="{{ label }}">{{ emoji[value] }}</label>
+            <small>{{ value }} · {{ label }}</small>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="d-flex gap-2">
+          <input type="text" name="note" maxlength="300" class="form-control form-control-sm" placeholder="Optional note (what influenced your mood?)" value="{{ todays.note if todays and todays.note else '' }}">
+          <button class="btn btn-primary btn-sm px-4">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Mood chart -->
+  <div class="card mood-card shadow-sm mb-3">
+    <div class="card-body">
+      <div class="btn-group btn-group-sm mb-2" role="group" aria-label="Mood period">
+        {% for p in ['daily', 'weekly', 'monthly'] %}
+        <button type="button" class="btn btn-outline-primary period-btn {% if p == 'daily' %}active{% endif %}" data-target="mood" data-period="{{ p }}">{{ p | capitalize }}</button>
+        {% endfor %}
+      </div>
+      <div class="chart-box"><canvas id="moodChart"></canvas></div>
+    </div>
+  </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="card mood-card shadow-sm h-100"><div class="card-body">
+        <h6 class="fw-bold">📊 Stats</h6>
+        {% if stats %}
+          <div>Average: <strong>{{ stats.average }}</strong> · Min: {{ stats.min }} · Max: {{ stats.max }}</div>
+          <div class="mt-1">🔥 Positive mood streak: <strong>{{ stats.streak }} day{{ '' if stats.streak == 1 else 's' }}</strong></div>
+          <div class="small text-secondary mt-2">Daily/weekly/monthly values are averages. Chat and journal moods use the same 1–5 scale.</div>
+        {% else %}
+          <div class="text-secondary">No mood data yet — add your first check-in above.</div>
+        {% endif %}
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card mood-card shadow-sm h-100"><div class="card-body">
+        <h6 class="fw-bold">💡 Mood Insight</h6>
+        <div class="text-{{ 'warning' if insight.level == 'warning' else ('success' if insight.level == 'success' else 'secondary') }} fw-semibold">{{ insight.insight }}</div>
+      </div></div>
+    </div>
+    <div class="col-md-4">
+      <div class="card mood-card shadow-sm h-100"><div class="card-body">
+        <h6 class="fw-bold">🌱 Suggestions</h6>
+        <div>{{ insight.suggestion }}</div>
+        {% if insight.level == 'warning' %}<a href="{{ url_for('main.sos') }}" class="small text-danger">Need help now? Open SOS</a>{% endif %}
+      </div></div>
+    </div>
+  </div>
+
+  <!-- Chat sentiment trend -->
+  <div class="card mood-card shadow-sm mb-3">
+    <div class="card-body">
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-2 gap-2">
+        <h6 class="fw-bold mb-0">Chat Sentiment Trend</h6>
+        <div class="btn-group btn-group-sm" role="group" aria-label="Sentiment period">
+          {% for p, label in [('daily', 'Day'), ('weekly', 'Week'), ('monthly', 'Month')] %}
+          <button type="button" class="btn btn-outline-secondary period-btn {% if p == 'daily' %}active{% endif %}" data-target="sentiment" data-period="{{ p }}">{{ label }}</button>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="sentimentChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Mood vs sentiment -->
+  <div class="card mood-card shadow-sm mb-3">
+    <div class="card-body">
+      <h6 class="fw-bold">Mood vs Sentiment (Daily Average)</h6>
+      <div class="chart-box"><canvas id="mvsChart"></canvas></div>
+    </div>
+  </div>
+
+  <p class="small text-secondary text-center">These insights are for reflection only and are not a diagnosis.</p>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  const charts = {};
+  const EMPTY = "No data yet";
+
+  function lineChart(id, label, color, yOpts) {
+    return new Chart(document.getElementById(id), {
+      type: "line",
+      data: { labels: [], datasets: [{ label: label, data: [], borderColor: color,
+        backgroundColor: color + "33", fill: true, tension: 0.35, spanGaps: true }] },
+      options: { maintainAspectRatio: false, scales: { y: yOpts }, plugins: { legend: { display: true } } },
+    });
+  }
+
+  charts.mood = lineChart("moodChart", "Average mood", "#7c4dff",
+    { min: 1, max: 5, ticks: { stepSize: 1 } });
+  charts.sentiment = lineChart("sentimentChart", "Avg chat sentiment", "#29a8e0", { min: -1, max: 1 });
+  charts.mvs = new Chart(document.getElementById("mvsChart"), {
+    type: "line",
+    data: { labels: [], datasets: [
+      { label: "Avg mood (1–5)", data: [], borderColor: "#7c4dff", yAxisID: "y", tension: 0.3, spanGaps: true },
+      { label: "Avg sentiment (−1..1)", data: [], borderColor: "#ff6b8b", yAxisID: "y1", tension: 0.3, spanGaps: true },
+    ] },
+    options: { maintainAspectRatio: false, scales: {
+      y: { min: 1, max: 5, position: "left" },
+      y1: { min: -1, max: 1, position: "right", grid: { drawOnChartArea: false } } } },
+  });
+
+  async function load(target, period) {
+    const resp = await fetch("{{ url_for('mood.data') }}?period=" + period);
+    const data = await resp.json();
+    const series = data[target];
+    charts[target].data.labels = series.labels.length ? series.labels : [EMPTY];
+    charts[target].data.datasets[0].data = series.values;
+    charts[target].update();
+    if (target === "mood") {
+      charts.mvs.data.labels = data.mood_vs_sentiment.labels;
+      charts.mvs.data.datasets[0].data = data.mood_vs_sentiment.mood;
+      charts.mvs.data.datasets[1].data = data.mood_vs_sentiment.sentiment;
+      charts.mvs.update();
+    }
+  }
+
+  document.querySelectorAll(".period-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const target = btn.dataset.target;
+      document.querySelectorAll('.period-btn[data-target="' + target + '"]').forEach(function (b) {
+        b.classList.toggle("active", b === btn);
+      });
+      load(target, btn.dataset.period);
+    });
+  });
+
+  load("mood", "daily");
+  load("sentiment", "daily");
+})();
+</script>
+{% endblock scripts %}

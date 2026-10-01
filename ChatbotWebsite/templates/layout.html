@@ -46,6 +46,13 @@
               <i class="bi bi-chat-heart-fill"></i> Chat
             </a>
           </li>
+          {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="{{ url_for('mood.dashboard') }}">
+              <i class="bi bi-graph-up"></i> Mood
+            </a>
+          </li>
+          {% endif %}
           <li class="nav-item">
             <a class="nav-link text-dark" href="{{ url_for('main.about') }}">
               <i class="bi bi-info-circle-fill"></i> About

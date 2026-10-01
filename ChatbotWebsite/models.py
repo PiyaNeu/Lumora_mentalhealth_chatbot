@@ -136,3 +136,29 @@ class CrisisEvent(db.Model):
     level = db.Column(db.String(10), nullable=False)  # medium | high
     matched = db.Column(db.String(120))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
+MOOD_LABELS = {1: "Terrible", 2: "Low", 3: "Neutral", 4: "Good", 5: "Excellent"}
+MOOD_EMOJI = {1: "😢", 2: "😟", 3: "😐", 4: "🙂", 5: "😄"}
+
+
+class MoodEntry(db.Model):
+    """Mood on a 1–5 scale. source="Manual": one per user per local day (updated in place).
+    source="Chat": derived from the sentiment of a chat message (report PDF screenshot)."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    mood = db.Column(db.Integer, nullable=False)
+    note = db.Column(db.String(300))
+    source = db.Column(db.String(10), nullable=False, default="Manual")  # Manual | Chat
+    day = db.Column(db.Date, nullable=False, index=True)  # local date
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow)
+    message_id = db.Column(db.Integer, db.ForeignKey('chat_message.id', ondelete="SET NULL"))
+
+    @property
+    def label(self):
+        return MOOD_LABELS.get(self.mood, "")
+
+    def __repr__(self):
+        return f'MoodEntry(user_id={self.user_id}, day={self.day}, mood={self.mood}, source={self.source})'
+
