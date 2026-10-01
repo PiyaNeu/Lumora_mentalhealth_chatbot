@@ -1,0 +1,71 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="container-fluid p-0" style="background-color: #e6d7e6; min-height: 100vh;">
+
+  <!-- Page Title -->
+  <div class="text-center py-5">
+    <h1 class="fw-bold font-monospace mb-0 border-bottom border-info pb-2">
+      About Lumora AI
+    </h1>
+  </div>
+
+  <div class="row g-5 align-items-center justify-content-center px-3">
+
+    <!-- Chatbot Image -->
+    <div class="col-12 col-md-6 d-flex justify-content-center">
+      <div class="ratio ratio-1x1" style="max-width: 300px; width: 100%;"> <!-- Keeps aspect ratio -->
+        <img
+          src="{{ url_for('static', filename='images/logo.png') }}"
+          alt="Lumora AI Logo"
+          class="rounded-circle border border-secondary shadow-lg object-fit-contain"
+          style="width: 100%; height: 100%;"
+        />
+      </div>
+    </div>
+
+    <!-- Chatbot Intro -->
+    <div class="col-12 col-md-6 text-center text-md-start">
+      <p class="lead">
+        Welcome to <strong>Lumora AI Chatbot</strong>! Lumora provides reliable support, resources, and guidance to help individuals improve their mental health and wellbeing.
+      </p>
+      <p>
+        Seeking help for mental health concerns can be difficult. Lumora aims to make the process easier, comfortable, and accessible anytime you need guidance.
+      </p>
+      <p class="text-danger fw-bold">
+        Please note: Lumora AI is not a substitute for professional help. In case of a mental health crisis, contact a licensed professional immediately.
+      </p>
+    </div>
+
+  </div>
+
+  <div class="row g-4 mt-5 px-3 justify-content-center">
+
+    <!-- Our Mission -->
+    <div class="col-12 col-md-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="card-title text-info">Our Mission</h2>
+          <p class="card-text">
+            At Lumora, we believe education and awareness are key to mental wellness. Our AI chatbot provides accurate, up-to-date information on mental health topics, including conditions, symptoms, and coping strategies. Lumora also offers exercises and assessments to help you evaluate and improve your mental wellbeing.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Our Team -->
+    <div class="col-12 col-md-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="card-title text-info">Our Team</h2>
+          <p class="card-text">
+            Lumora AI was developed by a passionate student dedicated to breaking mental health stigma and building a supportive community. Our mission is to make mental health support accessible to everyone.<br>
+            For questions or feedback, contact the developer at <strong>lumora@gmail.com</strong>.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

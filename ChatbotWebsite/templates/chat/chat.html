@@ -1,0 +1,116 @@
+{% extends 'layout.html' %} 
+
+{% block style %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/chat.css') }}" />
+{% endblock style %}
+
+{% block content %}
+<div id="chatbot" class="chatbot">
+
+  <!-- Chatbot Profile -->
+  <div id="chatbot-profile" class="chatbot-profile">
+    <img
+      src="{{ url_for('static', filename='images/logo.png') }}"
+      id="chatbot-image"
+      class="rounded-circle border border-secondary my-4 mx-auto d-block"
+      style="width: 15.625rem; height: 15.625rem"
+    />
+    <div class="container d-grid gap-3 px-5">
+      <a class="btn btn-outline-info btn-lg" href="{{ url_for('main.about') }}">About us🤖</a>
+      <button type="button" class="btn btn-lg btn-info" data-bs-toggle="popover" data-bs-title="Help" data-bs-placement="top" data-bs-content="Start the conversation by typing a greeting or ask a question (E.g. What is Mental Health, What is the cause of depression). You can also select a specific topic through the tab above the text input box. Having trouble with chatting? Avoid typos as this chatbot has a built-in autocorrector.">Need Help?</button>
+      <div class="text-center">
+        Developed by Team LUMORA <strong>(Lumora@gmail.com)</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Area -->
+  <div class="chat-area">
+    <main id="main-chat" class="main-chat">
+
+      <!-- Chat Messages -->
+      {% if messages %}
+        {% for message in messages %}
+          {% if message.sender == 'user' %}
+            <div class="chat right-msg">
+              <img src="{{ url_for('static', filename='images/user.png') }}" class="chat-image"/>
+              <div class="chat-bubble">
+                <div class="chat-info">
+                  <div class="chat-info-name">You</div>
+                  <div class="chat-info-time">{{ message.timestamp.strftime('%d/%m/%Y, %H:%M') }}</div>
+                </div>
+                <div class="chat-text">{{ message.message }}</div>
+              </div>
+            </div>
+          {% else %}
+            <div class="chat left-msg">
+              <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-image"/>
+              <div class="chat-bubble">
+                <div class="chat-info">
+                  <div class="chat-info-name">LUMORA: MENTAL HEALTH CHATBOT</div>
+                  <div class="chat-info-time">{{ message.timestamp.strftime('%d/%m/%Y, %H:%M') }}</div>
+                </div>
+                <div class="chat-text">{{ message.message }}</div>
+              </div>
+            </div>
+          {% endif %}
+        {% endfor %}
+        <hr>
+      {% endif %}
+
+      <p class="text-muted text-center mb-2">Today</p>
+      <div class="chat left-msg">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-image"/>
+        <div class="chat-bubble">
+          <div class="chat-info">
+            <div class="chat-info-name">LUMORA: MENTAL HEALTH CHATBOT</div>
+            <div class="chat-info-time">**:**</div>
+          </div>
+          <div class="chat-text">
+            Hello, welcome to LUMORA: Mental Health Chatbot! Go ahead and send me a message. 😄
+            <br><br>
+            Please note that this is a chatbot and not a real person, so don’t substitute this for real help.
+            <br><br>
+            Always best to seek professional help if needed.
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Auto-scroll JS -->
+    <script>
+      let element = document.getElementById("main-chat");
+      setTimeout(() => {
+        element.scrollTop = element.scrollHeight;
+      }, 100); 
+    </script>
+
+    <!-- Tools Dropdown -->
+    <div class="tools border-top border-info gap-3">
+      <div class="btn-group dropup">
+        <button type="button" class="btn btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Topics📜</button>
+        <ul class="dropdown-menu">
+          {% for topic in topics.topics %}
+            <li><button class="dropdown-item" onclick="responseTopic('{{ topic.title }}')">{{ topic.title }}</button></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Chat Input Form -->
+    <form id="message-form" class="chat-inputarea">
+      <input type="text" class="chat-input" id="textInput" autocomplete="off" placeholder="Enter your message..." />
+      <button type="submit" class="btn btn-outline-info">Send</button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="text-center mt-4 mb-2 text-muted">
+    Developed by Team LUMORA | <strong>LUMORA: MENTAL HEALTH CHATBOT</strong>
+  </div>
+
+  <!-- Send functions JS -->
+  {% include "chat/send_function.html" %}
+
+</div>
+{% endblock content %}

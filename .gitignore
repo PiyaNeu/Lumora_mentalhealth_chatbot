@@ -1,0 +1,22 @@
+**/__pycache__
+chatbot-model.h5
+data.pickle
+
+# secrets
+.env
+**/.env
+
+# virtualenv
+env/
+venv/
+.venv/
+
+# local databases
+*.db
+instance/
+
+.DS_Store
+
+# user uploads
+ChatbotWebsite/static/profile_images/*
+!ChatbotWebsite/static/profile_images/default.jpg

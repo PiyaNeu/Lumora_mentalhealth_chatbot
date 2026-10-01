@@ -1,0 +1,38 @@
+{% extends 'layout.html' %}
+{% block navigation %}{% endblock navigation %}
+{% block content %}
+<div id="home-container" class="container d-flex flex-column align-items-center justify-content-center py-5">
+
+  <!-- Hero Image -->
+  <img
+    src="{{ url_for('static', filename='images/logo.png') }}"
+    alt="Lumora AI Logo"
+    class="rounded-circle border border-info shadow-lg mb-4"
+    style="width: 220px; height: 220px;"
+  />
+
+  <!-- Title -->
+  <h1 class="fw-bold font-monospace text-info border-bottom border-info pb-2 mb-3 text-center">
+    Lumora AI Chatbot
+  </h1>
+
+  <!-- Subtitle -->
+  <p class="lead text-secondary text-center mb-4" style="max-width: 650px;">
+    Your friendly mental health companion. Chat anytime for guidance, tips, and exercises to support your emotional wellbeing.
+  </p>
+
+  <!-- Single Continue Button -->
+  <a
+    href="{{ url_for('chatbot.chat') }}"
+    class="btn btn-primary btn-lg shadow mb-3"
+    style="--bs-btn-padding-y: 1.25rem; --bs-btn-padding-x: 5rem; --bs-btn-font-size: 1.6rem; font-weight: 700;"
+  >
+    CONTINUE
+  </a>
+
+  <!-- About -->
+  <div class="d-flex flex-column gap-2 mt-4 w-50">
+    <a href="{{ url_for('main.about') }}" class="btn btn-outline-info btn-lg">About Us</a>
+  </div>
+</div>
+{% endblock content %}

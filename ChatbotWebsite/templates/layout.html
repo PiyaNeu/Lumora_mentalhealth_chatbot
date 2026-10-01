@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>{{ title }}</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/layout.css') }}">
+  
+  {% block style %}{% endblock style %}
+</head>
+
+<body style="background: linear-gradient(145deg,#f3c8ff,#e7d2ff,#f8eaff); background-attachment: fixed;">
+
+  {% block navigation %}
+  <nav class="navbar navbar-expand-lg navbar-light shadow-sm glass-nav py-3">
+    <div class="container-fluid">
+      <!-- Logo -->
+      <a class="navbar-brand d-flex align-items-center fw-bold text-dark font-monospace" href="{{ url_for('main.home') }}">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" 
+             alt="Lumora Logo" 
+             style="height: 30px; width: 30px; object-fit: contain;" 
+             class="me-2">
+        LUMORA
+      </a>
+
+      <!-- Mobile Toggle -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <!-- Navigation Links -->
+      <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+        <ul class="navbar-nav gap-3">
+          <li class="nav-item">
+            <a class="nav-link fw-bold text-dark" href="{{ url_for('chatbot.chat') }}">
+              <i class="bi bi-chat-heart-fill"></i> Chat
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-dark" href="{{ url_for('main.about') }}">
+              <i class="bi bi-info-circle-fill"></i> About
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  {% endblock navigation %}
+
+  <!-- Flash Messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} text-center shadow-sm m-0">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  <!-- Page Content -->
+  {% block content %}{% endblock content %}
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
