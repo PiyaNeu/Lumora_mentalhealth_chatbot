@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% block style %}
+<style>
+  .burnout-shell { background: rgba(255,255,255,0.88); border-radius: 18px; }
+  .status-box { border-radius: 14px; background: linear-gradient(135deg, #e3f6ec, #e4ecff); }
+  .status-box.elevated { background: linear-gradient(135deg, #fff4dc, #ffe9e3); }
+  .status-box.high { background: linear-gradient(135deg, #ffe3e3, #ffe0ef); }
+  .logo-badge { width: 40px; height: 40px; border-radius: 10px; background: #e2554f; color: #fff;
+                display: flex; align-items: center; justify-content: center; font-weight: 700; }
+</style>
+{% endblock style %}
+{% block content %}
+<div class="container py-4" style="max-width: 980px;">
+  <div class="burnout-shell shadow-sm p-4">
+    <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+      <div class="logo-badge">L</div>
+      <div class="flex-grow-1">
+        <h4 class="fw-bold mb-0">Lumora Burnout Check</h4>
+        <div class="small text-secondary">We look for repeated low signals across mood, journal mood, and chat sentiment.</div>
+      </div>
+      <a href="{{ url_for('main.home') }}" class="btn btn-sm btn-outline-secondary">🏠 Home</a>
+      <span class="badge bg-light text-dark border fs-6">Level: {{ result.level }}</span>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-7">
+        {% set css = {'Elevated': 'elevated', 'High': 'high'}.get(result.level, '') %}
+        <div class="status-box {{ css }} p-4 h-100">
+          <h5 class="fw-bold">{{ '✅' if result.level in ('Normal', 'Not enough data') else '⚠️' }} {{ result.title }}</h5>
+          <p class="mb-1 small"><strong>Why?</strong> {{ result.why }}</p>
+          {% if questionnaire %}
+          <p class="small mb-2">Also using your burnout questionnaire from {{ questionnaire.created_at | localtime('%d %b') }}: <strong>{{ questionnaire.band }}</strong>.</p>
+          {% endif %}
+          <div class="d-grid gap-2 my-3">
+            <a href="{{ url_for('journal.new_journal') }}" class="btn btn-light border">Go to Journaling</a>
+            <a href="{{ url_for('mood.dashboard') }}" class="btn btn-light border">Mood Check-in</a>
+            <a href="{{ url_for('selfhelp.take_test', key='burnout') }}" class="btn btn-light border">Take the burnout questionnaire</a>
+            {% if result.level == 'High' %}<a href="{{ url_for('main.sos') }}" class="btn btn-danger">Need support now? SOS</a>{% endif %}
+          </div>
+          <div class="small text-secondary">Try breathing, rest, and journaling. Check again tomorrow. This check is indicative only, not a diagnosis.</div>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <div class="p-3 h-100 bg-white rounded-4 border">
+          <h6 class="fw-bold">Recent signals</h6>
+          {% for s in signals %}
+          <div class="d-flex justify-content-between border-bottom py-2 small">
+            <span>{{ s.kind }} • {{ s.value }}</span>
+            <span class="fw-bold {{ 'text-danger' if s.low else 'text-success' }}">{{ 'LOW' if s.low else 'OK' }}</span>
+          </div>
+          {% else %}
+          <div class="small text-secondary">No signals in the last 14 days.</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

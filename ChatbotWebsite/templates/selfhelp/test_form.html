@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 820px;">
+  <a href="{{ url_for('selfhelp.tests') }}" class="btn btn-sm btn-outline-secondary mb-3">&lt; All tests</a>
+  <div class="card border-0 shadow-sm" style="background: rgba(255,255,255,0.88); border-radius: 14px;">
+    <div class="card-body p-4">
+      <h3 class="fw-bold" style="color:#3a0066;">{{ test.title }}</h3>
+      <p class="text-secondary">{{ test.intro }}</p>
+      <div id="test-warning" class="alert alert-warning {{ '' if error else 'd-none' }}" role="alert">{{ error or 'Please answer every question before submitting.' }}</div>
+
+      <form method="POST" id="test-form" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        {% for q in test.questions %}
+        {% set qi = loop.index0 %}
+        <fieldset class="mb-3 p-3 rounded question {{ 'border border-warning' if error and answers[qi] is none else '' }}" style="background:#faf7ff;">
+          <legend class="fs-6 fw-semibold mb-2">{{ loop.index }}. {{ q }}</legend>
+          <div class="d-flex flex-wrap gap-2">
+            {% for text, value in test.options %}
+            <input type="radio" class="btn-check" name="q{{ qi }}" id="q{{ qi }}_{{ value }}" value="{{ value }}" required
+                   {% if answers[qi] == value %}checked{% endif %}>
+            <label class="btn btn-sm btn-outline-primary" for="q{{ qi }}_{{ value }}">{{ text }}</label>
+            {% endfor %}
+          </div>
+        </fieldset>
+        {% endfor %}
+        <button type="submit" class="btn btn-primary btn-lg w-100">See result</button>
+      </form>
+      <p class="small text-secondary mt-3 mb-0">This is a self-check, not a diagnosis. If you are in crisis, use the <a href="{{ url_for('main.sos') }}">SOS page</a>.</p>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+  // Block incomplete submissions and point to the first unanswered question
+  document.getElementById("test-form").addEventListener("submit", function (e) {
+    const missing = [...document.querySelectorAll(".question")].filter(
+      (fs) => !fs.querySelector('input[type="radio"]:checked'));
+    document.querySelectorAll(".question").forEach((fs) => fs.classList.remove("border", "border-warning"));
+    if (missing.length) {
+      e.preventDefault();
+      missing.forEach((fs) => fs.classList.add("border", "border-warning"));
+      const warn = document.getElementById("test-warning");
+      warn.textContent = "Please answer all " + document.querySelectorAll(".question").length +
+        " questions (" + missing.length + " left) before submitting.";
+      warn.classList.remove("d-none");
+      missing[0].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+</script>
+{% endblock scripts %}

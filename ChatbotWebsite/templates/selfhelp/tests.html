@@ -1,0 +1,52 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 960px;">
+  <h3 class="fw-bold mb-1" style="color:#3a0066;">Self-Tests</h3>
+  <p class="text-secondary">Short questionnaires to help you reflect. Results are <strong>indicative only and not a diagnosis</strong>.</p>
+
+  <div class="row g-3 mb-4">
+    {% for key, t in assessments.items() %}
+    <div class="col-md-4">
+      <div class="card h-100 border-0 shadow-sm" style="background: rgba(255,255,255,0.82); border-radius: 14px;">
+        <div class="card-body d-flex flex-column">
+          <h5 class="fw-bold">{{ t.title }}</h5>
+          <p class="small text-secondary flex-grow-1">{{ t.questions | length }} questions · about {{ (t.questions | length) // 3 + 1 }} min</p>
+          <a href="{{ url_for('selfhelp.take_test', key=key) }}" class="btn btn-primary">Start</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if current_user.is_authenticated %}
+  <div class="card border-0 shadow-sm mb-4" style="background: rgba(255,255,255,0.82); border-radius: 14px;">
+    <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div>
+        <h5 class="fw-bold mb-1">Lumora Burnout Check</h5>
+        <div class="small text-secondary">Looks for repeated low signals across your mood, journal and chat sentiment.</div>
+      </div>
+      <a href="{{ url_for('selfhelp.burnout') }}" class="btn btn-outline-primary">Run check</a>
+    </div>
+  </div>
+
+  <h5 class="fw-bold">Your recent results</h5>
+  {% if history %}
+  <div class="table-responsive">
+    <table class="table table-sm bg-white rounded">
+      <thead><tr><th>Date</th><th>Test</th><th>Score</th><th>Result (indicative)</th></tr></thead>
+      <tbody>
+        {% for r in history %}
+        <tr><td>{{ r.created_at | localtime }}</td><td>{{ assessments[r.test].title }}</td>
+            <td>{{ r.score }} / {{ assessments[r.test].max }}</td><td>{{ r.band }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <p class="small text-secondary">No results yet.</p>
+  {% endif %}
+  {% else %}
+  <p class="small text-secondary">You can take the tests as a guest; <a href="{{ url_for('auth.login') }}">log in</a> to save results and use the burnout check.</p>
+  {% endif %}
+</div>
+{% endblock content %}

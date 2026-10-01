@@ -173,3 +173,14 @@ class MoodEntry(db.Model):
     def __repr__(self):
         return f'MoodEntry(user_id={self.user_id}, day={self.day}, mood={self.mood}, source={self.source})'
 
+
+class AssessmentResult(db.Model):
+    """Saved self-test result (logged-in users). Used for history and J3 assessment change."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, index=True)
+    test = db.Column(db.String(20), nullable=False)   # phq9 | gad7 | burnout
+    score = db.Column(db.Integer, nullable=False)
+    band = db.Column(db.String(30), nullable=False)
+    answers = db.Column(db.String(200))               # comma-separated option values
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
