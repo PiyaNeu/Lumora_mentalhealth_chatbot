@@ -25,6 +25,9 @@ STRONG_MARKERS = {
     "jhundinchu", "khanchu", "pardaina", "lagena", "thiyo", "hamro", "timilai", "uslai", "kasari", "kaha",
     "kati", "parivar", "pariwar", "raati", "rati", "bihana", "beluka", "padhna", "sathiharu", "dhoka",
     "tension", "bekar", "aafno", "afno", "aafulai", "afulai", "bachna", "banchna", "garne", "bhanna",
+    "chhodi", "chodi", "chhodyo", "chodyo", "jhagada", "sanga", "sadhai", "raksi", "hepchan", "tauko",
+    "sapana", "runa", "dhyan", "mutu", "saas", "bhabishya", "sabai", "hajurama", "bitnubhayo", "garo",
+    "aayena", "thale", "lagiraako", "sikaunus", "abhyas", "pugdaina", "sarchu", "khana",
 }
 # Short or ambiguous tokens that also appear in English chat: need two hits.
 WEAK_MARKERS = {"ma", "cha", "ho", "k", "ke", "man", "dar", "ris", "ani", "ta", "ni", "pani", "ali", "hai", "la",

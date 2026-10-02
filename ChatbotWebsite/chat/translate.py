@@ -23,6 +23,25 @@ PHRASES = {
     "k garne thaha chaina": "i don't know what to do",
     "ke garne thaha chaina": "i don't know what to do",
     "thaha chaina": "i don't know",
+    "raksi dherai khana thale": "i started drinking a lot of alcohol",
+    "raksi khana thale": "i started drinking alcohol",
+    "raksi khanchu": "i drink alcohol",
+    "malai hepchan": "they bully me i am being bullied",
+    "kura garna man lagyo": "i want to talk to someone",
+    "doctor sanga": "with a doctor",
+    "stress bhayo": "i am stressed",
+    "stress cha": "i am stressed",
+    "pressure cha": "i feel a lot of pressure and stress",
+    "exam cha": "i have an exam",
+    "pariksha cha": "i have an exam",
+    "ramro aayena": "was bad",
+    "breakup bhayo": "we broke up",
+    "koi sathi chaina": "i have no friends",
+    "kohi sathi chaina": "i have no friends",
+    "kohi chaina": "i have no one",
+    "koi chaina": "i have no one",
+    "arulai dekhera": "comparing myself to others",
+    "saas ferna garo": "i can't breathe properly",
     "man ramro chaina": "i feel sad",
     "man ramro lagena": "i feel sad",
     "ramro lagena": "i feel bad",
@@ -96,6 +115,16 @@ WORDS = {
     "thakai": "tired", "dukhyo": "hurt", "dukheko": "hurt", "lagena": "not", "pardaina": "do not like",
     "garchu": "do", "huncha": "happens", "aafno": "my own", "afno": "my own", "chu": "am",
     "ko": "", "le": "", "lai": "", "nai": "", "pani": "also", "aba": "now",
+    "chhodi": "left me", "chodi": "left me", "chhodyo": "left me", "chodyo": "left me",
+    "jhagada": "fight", "sanga": "with", "sadhai": "always", "kura": "talk",
+    "tauko": "head", "dukhcha": "hurts", "sapana": "dream", "dekhchu": "see", "khana": "eat", "runa": "cry",
+    "raksi": "alcohol", "hepchan": "bully me", "saas": "breath", "ferne": "breathing", "abhyas": "exercise",
+    "sikaunus": "teach me", "dhyan": "meditation", "kasari": "how", "garne": "do", "mutu": "heart",
+    "dhadkiyo": "racing", "garo": "hard", "bhabishya": "future", "sochchu": "overthink", "sabai": "everything",
+    "pachi": "later", "sarchu": "postpone", "aayena": "did not come", "koi": "no one", "kohi": "no one",
+    "lagiraako": "feel", "lagirakheko": "feel", "uthcha": "rises", "uthyo": "rose", "arulai": "others",
+    "dekhera": "seeing", "stress": "stressed", "pressure": "pressure", "hajurama": "grandmother",
+    "bitnubhayo": "passed away", "biteko": "passed away", "thale": "started",
     # Devanagari
     "म": "i", "मलाई": "i", "मेरो": "my", "तिमी": "you", "दुःख": "sad", "दुखी": "sad",
     "उदास": "sad", "टेन्सन": "stress", "तनाव": "stress", "पीर": "worry", "चिन्ता": "anxiety",
@@ -129,5 +158,26 @@ def to_english(text, lang):
     out = " " + " ".join(VARIANTS.get(w, w) for w in out.split()) + " "
     for phrase in sorted(PHRASES, key=len, reverse=True):
         out = out.replace(f" {phrase} ", f" {PHRASES[phrase]} ")
-    words = [WORDS.get(tok, tok) for tok in _TOKEN.findall(out)]
+    tokens = _TOKEN.findall(out)
+    words = []
+    for i, tok in enumerate(tokens):
+        if tok == "ma":
+            # "ma" = "I" at the start of a sentence, but "in" after a noun ("exam ma", "ghar ma")
+            words.append("i" if i == 0 or tokens[i - 1] in (".", ",", "!", "?", "।") else "in")
+        else:
+            words.append(_word(tok))
     return re.sub(r"\s+", " ", " ".join(words)).strip()
+
+
+# Postpositions often written attached to the noun: साथीले, घरमा, sathile, gharma
+_SUFFIXES = ("ले", "लाई", "को", "मा", "le", "lai", "ko", "ma")
+
+
+def _word(tok):
+    if tok in WORDS:
+        return WORDS[tok]
+    for suf in _SUFFIXES:
+        stem = tok[: -len(suf)]
+        if tok.endswith(suf) and len(stem) >= 2 and stem in WORDS:
+            return WORDS[stem]
+    return tok

@@ -80,6 +80,11 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
     if classifier is not None:
         prev_en = to_english(prev_user_text, detect_language(prev_user_text)) if prev_user_text else None
         tag, confidence = classifier.predict(text_en, prev_en)
+        if text_en != raw:
+            # The model also learned some Nepali phrasings directly; keep whichever reading it trusts more
+            raw_tag, raw_conf = classifier.predict(raw, prev_en)
+            if raw_conf > confidence:
+                tag, confidence = raw_tag, raw_conf
     threshold = current_app.config["INTENT_CONFIDENCE_THRESHOLD"]
     confident = tag is not None and confidence is not None and confidence >= threshold
 
