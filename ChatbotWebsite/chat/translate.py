@@ -23,6 +23,28 @@ PHRASES = {
     "k garne thaha chaina": "i don't know what to do",
     "ke garne thaha chaina": "i don't know what to do",
     "thaha chaina": "i don't know",
+    "man ramro chaina": "i feel sad",
+    "man ramro lagena": "i feel sad",
+    "ramro lagena": "i feel bad",
+    "man dukhyo": "i feel hurt",
+    "dukha lagyo": "i feel sad",
+    "kehi garna man lagdaina": "i don't feel like doing anything",
+    "padhna man lagdaina": "i can't focus on studying",
+    "nindra lagena": "i could not sleep",
+    "ghar ko yaad aayo": "i miss home",
+    "aama ko yaad aayo": "i miss my mother",
+    "sathi le dhoka diyo": "my friend betrayed me",
+    "ris uthyo": "i am angry",
+    "pariksha aauna lagyo": "exams are coming",
+    "fail bhaye": "i failed",
+    "result naramro aayo": "my result was bad",
+    "eklo chu": "i am lonely",
+    "eklo mahasus huncha": "i feel lonely",
+    "thakai lagyo": "i am tired",
+    "kam ko chaina": "i am useless",
+    "kaam ko chaina": "i am useless",
+    "jindagi sakiyo": "my life is over",
+    "jindagi bekar": "life is useless",
     "tension bhayo": "i am stressed",
     "tension cha": "i am stressed",
     "dar lagyo": "i am scared",
@@ -69,7 +91,11 @@ WORDS = {
     "ekdam": "very", "ali": "a bit", "aaja": "today", "hijo": "yesterday", "bholi": "tomorrow",
     "bihe": "marriage", "garnu": "do", "garna": "do", "lagyo": "feel", "lagcha": "feel",
     "lagchha": "feel", "cha": "is", "chha": "is", "xa": "is", "chhu": "am", "xu": "am",
-    "bhayo": "happened",
+    "bhayo": "happened", "yaad": "miss", "aayo": "came", "dhoka": "betrayed", "jindagi": "life",
+    "jiban": "life", "sakiyo": "over", "bekar": "useless", "sathiharu": "friends", "padhna": "study",
+    "thakai": "tired", "dukhyo": "hurt", "dukheko": "hurt", "lagena": "not", "pardaina": "do not like",
+    "garchu": "do", "huncha": "happens", "aafno": "my own", "afno": "my own", "chu": "am",
+    "ko": "", "le": "", "lai": "", "nai": "", "pani": "also", "aba": "now",
     # Devanagari
     "म": "i", "मलाई": "i", "मेरो": "my", "तिमी": "you", "दुःख": "sad", "दुखी": "sad",
     "उदास": "sad", "टेन्सन": "stress", "तनाव": "stress", "पीर": "worry", "चिन्ता": "anxiety",
@@ -84,6 +110,15 @@ WORDS = {
 
 _TOKEN = re.compile(r"[ऀ-ॿ]+|[a-zA-Z']+|[^\s]")
 
+# Common Romanized spelling variants → one form, so phrases/words above match
+VARIANTS = {
+    "chhaina": "chaina", "xaina": "chaina", "chha": "cha", "xa": "cha", "chhu": "chu", "xu": "chu",
+    "mann": "man", "lagxa": "lagcha", "lagchha": "lagcha", "hunxa": "huncha", "hunchha": "huncha",
+    "yad": "yaad", "ayo": "aayo", "malie": "malai", "malae": "malai", "kei": "kehi", "garxu": "garchu",
+    "dukkha": "dukha", "sathii": "sathi", "jindegi": "jindagi", "zindagi": "jindagi", "jeevan": "jiban",
+    "jiwan": "jiban", "jivan": "jiban", "pariksa": "pariksha", "ghara": "ghar",
+}
+
 
 def to_english(text, lang):
     """Translate Nepali (Devanagari or Romanized) text to rough English. English passes through."""
@@ -91,7 +126,7 @@ def to_english(text, lang):
         return text
     # Pad punctuation (incl. the Devanagari danda) so phrases match at word boundaries
     out = re.sub(r"([।॥]|[^\w\s'ऀ-ॿ])", r" \1 ", text.lower())
-    out = " " + re.sub(r"\s+", " ", out).strip() + " "
+    out = " " + " ".join(VARIANTS.get(w, w) for w in out.split()) + " "
     for phrase in sorted(PHRASES, key=len, reverse=True):
         out = out.replace(f" {phrase} ", f" {PHRASES[phrase]} ")
     words = [WORDS.get(tok, tok) for tok in _TOKEN.findall(out)]

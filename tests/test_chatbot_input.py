@@ -190,3 +190,47 @@ def test_nepali_input_gets_nepali_note_without_llm(app):
     reply = process_message("malai tension bhayo")
     assert reply.language == "ne-rom"
     assert "नेपाली" in reply.text
+
+
+# Nepali replies without any LLM (responses_ne.json + Nepali brain wording)
+@pytest.mark.parametrize("text,expected_lang", [
+    ("malai nindra lagdaina", "ne-rom"),
+    ("mero man ramro chaina", "ne-rom"),
+    ("मलाई निद्रा लाग्दैन", "ne"),
+    ("ghar ko yaad aayo", "ne-rom"),
+])
+def test_nepali_message_gets_devanagari_reply(app, text, expected_lang):
+    import re
+
+    from ChatbotWebsite.chat.intent import TfidfIntentClassifier
+    import os
+
+    model_dir = app.config["MODEL_DIR"]
+    if not os.path.exists(os.path.join(model_dir, "intent_ffnn.keras")):
+        pytest.skip("run train.py first")
+    app.extensions["lumora_intent"] = TfidfIntentClassifier(model_dir)
+    reply = process_message(text)
+    assert reply.language == expected_lang
+    assert re.search(r"[ऀ-ॿ]", reply.text), reply.text
+    assert "नेपाली अनुवाद अहिले उपलब्ध छैन" not in reply.text
+
+
+def test_nepali_fallback_is_in_nepali(app):
+    app.extensions["lumora_intent"] = None
+    reply = process_message("k garne thaha chaina")
+    assert reply.route == "fallback" and "बुझ" in reply.text
+
+
+@pytest.mark.parametrize("text,meaning", [
+    ("mero man ramro chaina", "i feel sad"),
+    ("malai bachna mann chhaina", "bachna"),
+    ("ghar ko yaad aayo", "i miss home"),
+    ("sathi le dhoka diyo", "betrayed"),
+])
+def test_translation_handles_variants_and_phrases(text, meaning):
+    assert meaning in to_english(text, "ne-rom")
+
+
+@pytest.mark.parametrize("text", ["ghar ko yaad aayo", "ma jhundinchu", "bish khanchu", "aba jiudina"])
+def test_more_roman_nepali_detected(text):
+    assert detect_language(text) == "ne-rom"

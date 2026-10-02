@@ -20,9 +20,17 @@ STRONG_MARKERS = {
     "sathi", "aama", "buwa", "babu", "didi", "dai", "bahini", "bhai", "khusi", "eklo", "thakeko",
     "marna", "marchu", "jiuna", "jiudina", "aatmahatya", "atmahatya", "namaste", "dhanyabad",
     "dhanyawad", "maya", "garum", "garau", "bujhena", "bujhchu", "aaja", "bholi", "hijo",
+    "ghar", "yaad", "yad", "aayo", "ayo", "chu", "mann", "dukhyo", "dukheko", "uthyo", "diyo", "bhayeko",
+    "sakiyo", "jindagi", "jiban", "jeevan", "bichar", "sochchu", "chahanchu", "chahanna", "mardinchu",
+    "jhundinchu", "khanchu", "pardaina", "lagena", "thiyo", "hamro", "timilai", "uslai", "kasari", "kaha",
+    "kati", "parivar", "pariwar", "raati", "rati", "bihana", "beluka", "padhna", "sathiharu", "dhoka",
+    "tension", "bekar", "aafno", "afno", "aafulai", "afulai", "bachna", "banchna", "garne", "bhanna",
 }
 # Short or ambiguous tokens that also appear in English chat: need two hits.
-WEAK_MARKERS = {"ma", "cha", "ho", "k", "ke", "man", "dar", "ris", "ani", "ta", "ni", "pani", "ali", "hai", "la"}
+WEAK_MARKERS = {"ma", "cha", "ho", "k", "ke", "man", "dar", "ris", "ani", "ta", "ni", "pani", "ali", "hai", "la",
+                "ko", "le", "lai", "nai", "aba", "yo", "tyo", "bish", "fail"}
+# Typical Nepali verb endings in Latin script (each counts as a weak marker)
+VERB_ENDING = re.compile(r"^[a-z]{2,}(chu|chhu|xu|cha|chha|xa|dina|daina|dainu|eko|eki|yo|nus|nuhos|inchu|incha)$")
 
 
 def detect_language(text):
@@ -32,7 +40,7 @@ def detect_language(text):
         return "ne"
     tokens = WORD.findall(text.lower())
     strong = sum(1 for t in tokens if t in STRONG_MARKERS)
-    weak = sum(1 for t in tokens if t in WEAK_MARKERS)
+    weak = sum(1 for t in tokens if t in WEAK_MARKERS or (t not in STRONG_MARKERS and VERB_ENDING.match(t)))
     if strong >= 1 or weak >= 2:
         return "ne-rom"
     return "en"

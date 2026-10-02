@@ -39,3 +39,15 @@ def test_verified_number_is_shown(client, monkeypatch):
 
 def test_sos_linked_from_every_page_navbar(client):
     assert b'href="/sos"' in client.get("/chat").data
+
+
+def test_sos_lang_param_switches_language(client):
+    assert "नेपालका SOS हेल्पलाइनहरू" in client.get("/sos?lang=ne").data.decode()
+    assert "SOS Hotlines in Nepal" in client.get("/sos?lang=en").data.decode()
+    client.get("/sos?lang=xx")  # ignored
+    assert "SOS Hotlines in Nepal" in client.get("/sos").data.decode()
+
+
+def test_chat_reply_marks_sos_and_language_for_redirect(client):
+    data = client.post("/chat/send", json={"message": "malai bachna mann chhaina"}).get_json()
+    assert data["sos"] is True and data["language"] == "ne-rom"

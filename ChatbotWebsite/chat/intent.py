@@ -14,8 +14,9 @@ EXTENSION_KEY = "lumora_intent"
 _load_lock = threading.Lock()
 
 
-DATASET_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                            "data", "intents_augmented.json")
+_DATA_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data")
+DATASET_PATH = os.path.join(_DATA_DIR, "intents_augmented.json")
+NEPALI_RESPONSES_PATH = os.path.join(_DATA_DIR, "responses_ne.json")
 
 # Intents treated as a crisis even if the keyword safety screen missed the message
 CRISIS_INTENTS = {"crisis_suicidal", "self_harm"}
@@ -38,6 +39,8 @@ class TfidfIntentClassifier:
         with open(DATASET_PATH, encoding="utf-8") as fh:
             intents = json.load(fh)["intents"]
         self._responses = {i["tag"]: i["responses"] for i in intents}
+        with open(NEPALI_RESPONSES_PATH, encoding="utf-8") as fh:
+            self._responses_ne = json.load(fh)["responses"]
         self._wrap = {i["tag"]: i.get("wrap", True) for i in intents}
 
     def predict(self, text, prev_text=None):
@@ -46,7 +49,9 @@ class TfidfIntentClassifier:
         idx = int(probs.argmax())
         return self.labels[idx], float(probs[idx])
 
-    def responses(self, tag):
+    def responses(self, tag, lang="en"):
+        if lang == "ne" and self._responses_ne.get(tag):
+            return self._responses_ne[tag]
         return self._responses.get(tag, [])
 
     def wraps(self, tag):
@@ -93,7 +98,21 @@ def preload_in_background(app):
     threading.Thread(target=_run, name="intent-preload", daemon=True).start()
 
 
-def pick_response(classifier, tag, avoid=None):
+def pick_response(classifier, tag, avoid=None, lang="en"):
+    """Random response for `tag` in `lang` ("en" or "ne"). Returns (text, lang) — lang is "en" if no
+    Nepali response exists for this intent (or the classifier doesn't provide them)."""
+    options = []
+    if lang == "ne":
+        try:
+            options = classifier.responses(tag, "ne")
+        except TypeError:  # classifiers without language support (e.g. test fakes)
+            options = []
+        english = classifier.responses(tag)
+        if options == english:
+            options = []
+    if options:
+        choices = [r for r in options if r != avoid] or options
+        return random.choice(choices), "ne"
     options = classifier.responses(tag)
     choices = [r for r in options if r != avoid] or options
-    return random.choice(choices) if choices else None
+    return (random.choice(choices), "en") if choices else (None, "en")

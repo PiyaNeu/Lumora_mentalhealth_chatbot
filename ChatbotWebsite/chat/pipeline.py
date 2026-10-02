@@ -93,10 +93,10 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
 
     body, route, reply_lang = None, None, "en"
     if confident:
-        core = pick_response(classifier, tag)
+        core, reply_lang = pick_response(classifier, tag, lang=ui_lang)
         if core:
             wraps = getattr(classifier, "wraps", lambda t: True)(tag)
-            body = brain.compose(core, strategy) if wraps else core
+            body = brain.compose(core, strategy, reply_lang) if wraps else core
             route = "intent"
 
     # 6. Generative fallback (Mistral) for low confidence / open-ended messages
@@ -106,7 +106,7 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
             body, route = generated, "llm"
             reply_lang = ui_lang  # the LLM is asked to answer in the user's language
         else:
-            body, route = brain.fallback(strategy), "fallback"
+            body, route, reply_lang = brain.fallback(strategy, ui_lang), "fallback", ui_lang
 
     # 7. Humanizer (also enforces non-diagnostic wording)
     body = humanize(body, reply_lang)

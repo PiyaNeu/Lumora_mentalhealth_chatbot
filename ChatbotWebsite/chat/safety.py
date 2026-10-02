@@ -15,33 +15,61 @@ from dataclasses import dataclass
 HIGH_RISK = [
     r"\bsuicid\w*",
     r"\bkill(ing)? my ?self\b",
-    r"\bend(ing)? my (own )?life\b",
+    r"\b(please |just |someone )?kill me\b",   # not "killing me" ("the deadline is killing me")
+    r"\bend(ing)? (my (own )?life|myself)\b",
     r"\bend(ing)? it all\b",
     r"\btake my (own )?life\b",
-    r"\b(want|wanna|going|plan(ning)?|ready) to die\b",
+    r"\b(want|wanna|going|gonna|plan(ning)?|ready|will|should|deserve) to die\b",
+    r"\bi (will|should|wanna|want to) (just )?die\b",
     r"\bwish i (was|were) dead\b",
     r"\bbetter off dead\b",
-    r"\b(don'?t|do not) want to (live|be alive|exist)( anymore)?\b",
-    r"\bno reason to (live|go on)\b",
-    r"\b(hurt|harm|cut|cutting|burn) (myself|my ?self|my (arm|wrist|wrists|body))\b",
+    r"\b(don'?t|do not) want to (live|be alive|exist|wake up)( anymore)?\b",
+    r"\bcan'?t live (like this )?any ?more\b",
+    r"\bno (reason|will) to (live|go on)\b",
+    r"\bdone with (my )?life\b",
+    r"\b(hurt|harm|cut|cutting|burn|burning) (myself|my ?self|my (arm|arms|wrist|wrists|body|skin))\b",
+    r"\bslit (my )?wrists?\b",
     r"\bself[- ]?harm\w*",
     r"\boverdos\w*",
+    r"\b(take|swallow) (all )?(my |the |these )?(pills|tablets|sleeping pills)\b",
+    r"\b(drink|take) poison\b|\bpoison myself\b",
     r"\bhang (myself|my ?self)\b",
-    r"\bjump (off|from) (a |the )?(bridge|building|roof)\b",
+    r"\bjump (off|from) (a |the )?(bridge|building|roof|terrace|cliff)\b",
     r"\b(kill|hurt|stab|shoot) (him|her|them|someone|somebody|people|my (mom|dad|father|mother|brother|sister))\b",
     r"\bunalive\b",
-    # Nepali (romanized, as typed)
-    r"\bmarna (man|mann)\b",
-    r"\bmarchu\b",
-    r"\bmar(i)?dinchu\b",
-    r"\ba+tmahatya\b",
-    r"\bjiuna (man|mann) (chaina|chhaina|xaina)\b",
     # Nepali (Devanagari)
-    r"आत्महत्या",
-    r"मर्न मन",
-    r"मर्छु",
-    r"मरिदिन्छु",
-    r"(जिउन|बाँच्न) मन छैन",
+    r"आत्म ?हत्या",
+    r"मर्न(ु)? ?मन",
+    r"मर्ने (विचार|सोच)",
+    r"मर्न चाहन्छु",
+    r"मर्छु|मरिदिन्छु|मर्दिन्छु|मरिहाल्छु",
+    r"आफू ?लाई (मार|सक|हानि|चोट|काट)",
+    r"(जिउन|बाँच्न|बाच्न)(ु)? मन (छैन|लाग्दैन)",
+    r"जिउँदिन|बाँच्दिन|बाच्दिन",
+    r"(जिन्दगी|जीवन) (सकियो|बेकार|चाहिँदैन|चाहिदैन)",
+    r"झुण्डि|झुन्डि",
+    r"(विष|बिष|जहर) (खा|पिउ)",
+    r"हात काट|नसा काट",
+    r"मर्नु (नै )?(राम्रो|ठिक|बेस)",
+]
+
+# Romanized Nepali, matched on roman_key(): spelling normalised so that
+# mann/man, chhaina/xaina/chaina, aatmahatya/atmahatya, jeevan/jiwan/jiban all match.
+ROMAN_HIGH = [
+    r"\batma ?hatya",
+    r"\bmar(na|nu|ne) (man|ichha|icha|sochchu|sochu|bichar|chahanchu|chahan)",
+    r"\bmar(chu|dinchu|idinchu|ihalchu|um|aum)\b",
+    r"\b(ma|malai) mar(na|nu|ne)\b",
+    r"\bafu ?lai (mar|sak|hani|chot|kat|dukha di)",
+    r"\b(hat|nas|nasa) kat",
+    r"\b(bachna|banchna|bachnu|jiuna|jiunu|jiun|bachn) (man|icha|ichha) (chaina|lagdaina)",
+    r"\b(bachna|banchna|jiuna) (sakdina|chahana|chahanna)",
+    r"\b(jiudina|jiundina|bachdina|banchdina)\b",
+    r"\b(jindagi|jiban|jibhan|jibn) (sakiyo|sakkiyo|khatam|chaidaina|chahidaina)",
+    r"\bjhund(inchu|ina|inu|iyera|chu|ine)",
+    r"\b(bis|bish|bikh|jahar) (khanchu|khana|khanu|khaidinchu|piunchu)",
+    r"\bsuicide (garchu|garna|garnu|garne)",
+    r"\bmarnu (nai |nei )?(ramro|thik|bes|beter)",
 ]
 
 MEDIUM_RISK = [
@@ -60,7 +88,16 @@ MEDIUM_RISK = [
     r"\btired of (living|life|everything)\b",
     r"\b(abus(e|ed|ing)|assault(ed)?)\b",
     r"निराश",
-    r"\bniraash?\b",
+    r"(जिन्दगी|जीवन) (बेकार|अर्थहीन)",
+    r"कोही (वास्ता|माया) गर्दैन",
+]
+
+ROMAN_MEDIUM = [
+    r"\bnirash",
+    r"\b(jindagi|jiban) (bekar|bekkar|arthahin|man pardaina|man pardain)",
+    r"\bkasai(le)? (pani )?(maya|basta|wasta) gardaina",
+    r"\bkehi (pani )?(kam|kaam) ko chaina",
+    r"\bsahana sakdina\b",
 ]
 
 # Negations that turn a high-risk phrase into a cautious (medium) case
@@ -69,11 +106,29 @@ NEGATED = [
     r"\b(don'?t|do not|never) (want|wanna|plan) to (die|kill myself|hurt myself|end my life)\b",
     r"\bsuicide (prevention|awareness|hotline|helpline|rate|statistics)\b",
     r"\bwhat is (suicide|self[- ]?harm)\b",
+    r"मर्न मन छैन",
+]
+ROMAN_NEGATED = [
+    r"\bmar(na|nu) (man|ichha|icha) (chaina|lagdaina)",
 ]
 
 _HIGH = [re.compile(p, re.IGNORECASE) for p in HIGH_RISK]
 _MEDIUM = [re.compile(p, re.IGNORECASE) for p in MEDIUM_RISK]
 _NEGATED = [re.compile(p, re.IGNORECASE) for p in NEGATED]
+_ROMAN_HIGH = [re.compile(p) for p in ROMAN_HIGH]
+_ROMAN_MEDIUM = [re.compile(p) for p in ROMAN_MEDIUM]
+_ROMAN_NEGATED = [re.compile(p) for p in ROMAN_NEGATED]
+
+
+def roman_key(text):
+    """Normalise Romanized Nepali spelling so one pattern covers common variants."""
+    t = (text or "").lower()
+    t = re.sub(r"[^a-z\s]", " ", t)
+    for a, b in (("chh", "ch"), ("x", "ch"), ("aa", "a"), ("ee", "i"), ("oo", "u"), ("ph", "f"),
+                 ("sh", "s"), ("w", "b"), ("v", "b"), ("z", "j"), ("q", "k")):
+        t = t.replace(a, b)
+    t = re.sub(r"([a-z])\1+", r"\1", t)      # collapse doubled letters: mann -> man
+    return re.sub(r"\s+", " ", t).strip()
 
 
 @dataclass
@@ -110,14 +165,15 @@ def assess_risk(*texts):
         text = _normalize(raw)
         if not text:
             continue
-        hit = _first_match(_HIGH, text)
+        roman = roman_key(text)
+        hit = _first_match(_HIGH, text) or _first_match(_ROMAN_HIGH, roman)
         if hit:
-            if _first_match(_NEGATED, text):
+            if _first_match(_NEGATED, text) or _first_match(_ROMAN_NEGATED, roman):
                 if best.level == "none":
                     best = RiskResult("medium", hit)
                 continue
             return RiskResult("high", hit)
-        hit = _first_match(_MEDIUM, text)
+        hit = _first_match(_MEDIUM, text) or _first_match(_ROMAN_MEDIUM, roman)
         if hit and best.level == "none":
             best = RiskResult("medium", hit)
     return best

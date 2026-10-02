@@ -11,8 +11,7 @@
   {% if pending %}
   <div class="alert alert-warning small" role="alert">
     <i class="bi bi-exclamation-triangle-fill"></i>
-    Some numbers below are still being verified and are not shown yet. In an emergency,
-    contact your local emergency services or go to the nearest hospital.
+    {{ t('sos.pending_notice') }}
   </div>
   {% endif %}
 
@@ -43,7 +42,7 @@
     {% set phone = display_phone(e) %}
     <li class="list-group-item d-flex justify-content-between">
       <span>{{ e.name }}</span>
-      {% if phone %}<a href="tel:{{ phone }}" class="fw-bold">{{ phone }}</a>{% else %}<span class="text-muted small">pending verification</span>{% endif %}
+      {% if phone %}<a href="tel:{{ phone }}" class="fw-bold">{{ phone }}</a>{% else %}<span class="text-muted small">{{ t('sos.pending_short') }}</span>{% endif %}
     </li>
     {% endfor %}
   </ul>

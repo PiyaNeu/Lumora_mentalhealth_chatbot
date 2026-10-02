@@ -106,7 +106,7 @@
         showWarning(data.error || "Something went wrong. Please try again.");
         return;
       }
-      appendMessage("left", data.reply, { sos: data.sos, messageId: data.message_id });
+      const row = appendMessage("left", data.reply, { sos: data.sos, messageId: data.message_id });
       if (authed && data.session_id && String(data.session_id) !== String(sessionId)) {
         sessionId = data.session_id;
         // Keep the URL on this session so a refresh reloads it
@@ -115,10 +115,48 @@
         const rateBtn = document.getElementById("rate-btn");
         if (rateBtn) rateBtn.classList.remove("d-none");
       }
+      if (data.sos) startSosRedirect(row, (data.language || "").indexOf("ne") === 0 ? "ne" : null);
     } catch (err) {
       typing.remove();
       showWarning("Could not reach Lumora. Check your connection and try again.");
     }
+  }
+
+  // High-risk message: show the crisis reply, then open the SOS page automatically
+  const SOS_DELAY_SECONDS = 3;
+  let sosTimer = null;
+
+  function startSosRedirect(row, lang) {
+    if (sosTimer) return;
+    const bubble = row.querySelector(".chat-bubble");
+    const box = el("div", "alert alert-danger py-2 px-3 mt-2 mb-0 small d-flex align-items-center gap-2 flex-wrap");
+    box.setAttribute("role", "alert");
+    const ne = lang === "ne";
+    const label = el("span", "fw-semibold");
+    const stay = el("button", "btn btn-sm btn-light border", ne ? "च्याटमै बस्नुहोस्" : "Stay in chat");
+    stay.type = "button";
+    box.appendChild(label);
+    box.appendChild(stay);
+    bubble.appendChild(box);
+    scrollDown();
+
+    let left = SOS_DELAY_SECONDS;
+    const tick = function () {
+      label.textContent = ne ? left + " सेकेन्डमा SOS हेल्पलाइन खुल्दैछ…" : "Opening SOS helplines in " + left + "…";
+      if (left-- <= 0) {
+        clearInterval(sosTimer);
+        window.location.href = shell.dataset.sosUrl + (lang ? "?lang=" + lang : "");
+      }
+    };
+    tick();
+    sosTimer = setInterval(tick, 1000);
+    stay.addEventListener("click", function () {
+      clearInterval(sosTimer);
+      sosTimer = null; // a later crisis message should redirect again
+      label.textContent = ne ? "रातो SOS बटनबाट जुनसुकै बेला SOS पेज खोल्न सक्नुहुन्छ।"
+                             : "You can open the SOS page any time with the red SOS button.";
+      stay.remove();
+    });
   }
 
   function addSessionToList(id, title) {

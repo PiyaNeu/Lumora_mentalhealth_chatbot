@@ -26,10 +26,40 @@ HIGH_RISK_MESSAGES = [
     "malai marna man lagyo",
     "jiuna man chaina aba",
     "ma aatmahatya garchu",
+    # Roman Nepali spelling variants as people actually type them
+    "ma marna chahanchu",
+    "malai marna mann lagyo",
+    "ma mardinchu",
+    "malai bachna man chaina",
+    "malai bachna mann chhaina",
+    "jiuna man xaina",
+    "aba jiudina",
+    "atmahatya garna man lagyo",
+    "ma suicide garchu",
+    "mero jindagi sakiyo",
+    "yo jindagi bekar cha marnu nai ramro",
+    "ma afulai sakchu",
+    "aafulai mardinchu",
+    "haat katchu",
+    "aafulai chot puryauchu",
+    "malai marne bichar aaucha",
+    "ma jhundinchu",
+    "bish khanchu",
     # Devanagari
     "मलाई मर्न मन लाग्यो",
     "म आत्महत्या गर्छु",
     "मलाई जिउन मन छैन",
+    "म मर्न चाहन्छु",
+    "मलाई बाँच्न मन छैन",
+    "म आफूलाई मार्छु",
+    "जिन्दगी बेकार छ मर्नु नै राम्रो",
+    "मलाई मर्ने विचार आउँछ",
+    # More English phrasings
+    "please kill me",
+    "I will die tonight",
+    "I'm done with life",
+    "I'm going to take all my pills",
+    "I want to cut my wrists",
 ]
 
 MEDIUM_RISK_MESSAGES = [
@@ -40,6 +70,8 @@ MEDIUM_RISK_MESSAGES = [
     "I hate myself",
     "I'm not suicidal but I feel awful",       # negated high-risk -> cautious, not ignored
     "I don't want to kill myself, I'm just tired",
+    "malai aafno jiban man pardaina",           # "I don't like my life": distress, not explicit intent
+    "marna man chaina tara dherai dukha cha",   # "I don't want to die but it hurts a lot"
 ]
 
 SAFE_MESSAGES = [
@@ -50,6 +82,10 @@ SAFE_MESSAGES = [
     "I had a panic attack before my presentation",
     "the deadline is killing me",
     "hello",
+    "malai dherai tension bhayo",
+    "malai nindra lagdaina",
+    "ghar ko yaad aayo",
+    "aaja machha marna gayau",   # "we went fishing today" — 'marna' without crisis context
 ]
 
 

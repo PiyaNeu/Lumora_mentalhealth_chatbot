@@ -66,6 +66,9 @@ STRINGS = {
     "sos.emergency": {"en": "Emergency services", "ne": "आपतकालीन सेवाहरू"},
     "sos.pending": {"en": "Contact number pending verification", "ne": "सम्पर्क नम्बर प्रमाणीकरण हुँदैछ"},
     "sos.show_map": {"en": "Show Map", "ne": "नक्सा हेर्नुहोस्"},
+    "sos.pending_notice": {"en": "Some numbers below are still being verified and are not shown yet. In an emergency, contact your local emergency services or go to the nearest hospital.",
+                           "ne": "तलका केही नम्बरहरू प्रमाणीकरण हुँदैछन्, त्यसैले अहिले देखाइएका छैनन्। आपतकालमा स्थानीय आपतकालीन सेवामा सम्पर्क गर्नुहोस् वा नजिकको अस्पताल जानुहोस्।"},
+    "sos.pending_short": {"en": "pending verification", "ne": "प्रमाणीकरण हुँदैछ"},
     # Mood
     "mood.question": {"en": "How are you feeling today?", "ne": "आज तपाईंलाई कस्तो महसुस भइरहेको छ?"},
     "mood.save": {"en": "Save", "ne": "सुरक्षित गर्नुहोस्"},

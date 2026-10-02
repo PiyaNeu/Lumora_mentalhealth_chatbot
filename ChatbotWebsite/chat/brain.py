@@ -72,12 +72,45 @@ CLOSERS = {
     ],
 }
 
+OPENERS_NE = {
+    "listener": ["मसँग भन्नुभएकोमा साँच्चै खुसी लाग्यो।", "अहिले धेरै बोकिरहनुभएको जस्तो छ।",
+                 "भन्नुभएकोमा धन्यवाद — तपाईंको भावना महत्त्वपूर्ण छ।"],
+    "coach": ["एक-एक कदम गरौँ।", "यो गाह्रो अवस्था हो, सँगै मिलाउँला।", "ठिक छ — यसलाई अलि सजिलो बनाऔँ।"],
+    "therapist": ["यो कुराले तपाईंलाई धेरै असर गरिरहेको जस्तो छ।", "यसले तपाईंलाई कति असर गरिरहेको छ, म बुझ्छु।",
+                  "जे भइरहेको छ, त्यसमा यस्तो महसुस हुनु स्वाभाविक हो।"],
+    "balanced": ["म सुनिरहेको छु।", "यो गाह्रो हो, र यस्तो महसुस हुनु ठिकै हो।", "भन्नुभएकोमा धन्यवाद।"],
+}
+
+CLOSERS_NE = {
+    "listener": ["के भइरहेको छ, अलि बढी भन्न चाहनुहुन्छ?", "अहिले सबैभन्दा भारी के लागिरहेको छ?",
+                 "म यहीँ छु — समय लिनुहोस्।"],
+    "coach": ["सानो कदम: अर्को १० मिनेटमा गर्न सकिने एउटा कुरा छान्नुहोस्।",
+              "सानो कदम: सबैभन्दा जरुरी एउटा काम लेख्नुहोस्, अनि त्यसलाई साना भागमा बाँडौँला।",
+              "यीमध्ये कुन सुरु गर्न सजिलो लाग्छ?"],
+    "therapist": ["यो भावना आउँदा सँगै कस्तो विचार आउँछ?",
+                  "तपाईंको ठाउँमा नजिकको साथी भए, उहाँलाई के भन्नुहुन्थ्यो?",
+                  "यो भावनाले तपाईंलाई के भन्न खोजिरहेको होला?"],
+    "balanced": ["यो कस्तो लाग्यो?", "आज अलिकति मद्दत गर्ने के होला जस्तो लाग्छ?",
+                 "यो प्रयास गर्न चाहनुहुन्छ, कि अलि बढी कुरा गरौँ?"],
+}
+
 FALLBACK_CORE = {
     "listener": "I may not fully understand yet, but I'm listening and I want to.",
     "coach": "I'm not completely sure I understood, so let's narrow it down together.",
     "therapist": "I want to make sure I understand what you're going through.",
     "balanced": "I'm not sure I fully understood, but I'd like to help.",
 }
+FALLBACK_NE = {
+    "listener": ("मैले अझै पूरा बुझेको नहुन सक्छु, तर म सुनिरहेको छु।",
+                 "तपाईंलाई कस्तो महसुस भइरहेको छ, अलि बढी भन्न सक्नुहुन्छ?"),
+    "coach": ("मैले पूरा बुझेँ कि बुझिनँ, त्यसैले सँगै स्पष्ट पारौँ।",
+              "यो धेरैजसो पढाइ, निद्रा, सम्बन्ध, वा अरू केहीबारे हो?"),
+    "therapist": ("तपाईं के भोगिरहनुभएको छ, म राम्ररी बुझ्न चाहन्छु।",
+                  "पछिल्लो समय तपाईंको मनमा सबैभन्दा बढी के छ?"),
+    "balanced": ("मैले पूरा बुझेँ जस्तो लागेन, तर म मद्दत गर्न चाहन्छु।",
+                 "के भइरहेको छ, अलि बढी भन्न सक्नुहुन्छ?"),
+}
+
 FALLBACK_CLOSER = {
     "listener": "Could you tell me a little more about how you're feeling?",
     "coach": "Is this mostly about studies, sleep, relationships, or something else?",
@@ -105,22 +138,25 @@ def select_strategy(preferred_mode, compound=0.0, intent=None):
     return "balanced"
 
 
-def compose(core, strategy):
-    """Wrap core content in the strategy's opener and closer."""
-    opener = random.choice(OPENERS[strategy])
-    closer = random.choice(CLOSERS[strategy])
+def compose(core, strategy, lang="en"):
+    """Wrap core content in the strategy's opener and closer (English or Nepali)."""
+    opener = random.choice((OPENERS_NE if lang == "ne" else OPENERS)[strategy])
+    closer = random.choice((CLOSERS_NE if lang == "ne" else CLOSERS)[strategy])
     if strategy == "listener":
         core = _first_sentences(core, 2)  # listener keeps advice light
     return f"{opener} {core}\n\n{closer}"
 
 
-def fallback(strategy):
+def fallback(strategy, lang="en"):
     """Supportive reply when there is no confident intent and no LLM."""
+    if lang == "ne":
+        core, closer = FALLBACK_NE[strategy]
+        return f"{core}\n\n{closer}"
     return f"{FALLBACK_CORE[strategy]}\n\n{FALLBACK_CLOSER[strategy]}"
 
 
 def _first_sentences(text, n):
     import re
 
-    parts = re.split(r"(?<=[.!?])\s+", text.strip())
+    parts = re.split(r"(?<=[.!?।])\s+", text.strip())
     return " ".join(parts[:n])

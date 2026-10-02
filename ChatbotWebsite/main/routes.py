@@ -20,6 +20,9 @@ def about():
 
 @main.route("/sos")
 def sos():
+    # The chat's crisis redirect passes ?lang=ne for Nepali messages so help is shown in Nepali
+    if request.args.get("lang") in LANGUAGES:
+        session["ui_lang"] = request.args["lang"]
     pending = any(display_phone(h) is None for h in HOTLINES + EMERGENCY)
     return render_template("sos.html", title="SOS", hotlines=HOTLINES, emergency=EMERGENCY,
                            display_phone=display_phone, pending=pending)
