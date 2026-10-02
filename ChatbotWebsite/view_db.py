@@ -1,7 +1,10 @@
 import sqlite3
 import os
+import sys
 
-DB_PATH = os.path.join("ChatbotWebsite", "lumora.db")
+# Default local database (Flask instance folder); pass another path as the first argument
+_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = sys.argv[1] if len(sys.argv) > 1 else os.path.join(_ROOT, "instance", "lumora.db")
 
 def print_table(cursor, table_name):
     print(f"\n--- {table_name.upper()} ---")
