@@ -3,7 +3,7 @@
 
 A mental wellness chatbot for students that puts safety first. Every message is screened for crisis signals before anything else happens; high-risk messages go straight to SOS guidance instead of a normal reply. Everything else is routed through an intent classifier, a therapeutic response style the user chooses, and a fallback LLM for open-ended messages. It works in English, Nepali and Romanized Nepali, and comes with self-help tools: mood tracking, journaling, PHQ-9/GAD-7 self-tests, burnout checks, mindfulness exercises and an anonymous community.
 
-Built as our final year project in Computer Engineering at Nepal Engineering College by Piya Neupane, Salina Kunwar and Suja Baral.
+Built as our final year project in Computer Engineering at Nepal Engineering College by Piya Neupane, Salina Kunwar and Suja Baral under the guidance of our supervisor Assistant Professor Anshu Ghimire.
 
 > Lumora is a self-help and awareness tool. It does not diagnose or treat any condition and is not a substitute for professional care.
 
@@ -64,8 +64,8 @@ Side effects: sentiment score → mood dashboard, burnout signals, evaluation da
 **1. Clone and install**
 
 ```
-git clone https://github.com/PiyaNeu/REPO-NAME.git
-cd REPO-NAME
+git clone https://github.com/PiyaNeu/Lumora_mentalhealth_chatbot.git
+cd Lumora_mentalhealth_chatbot
 python -m venv venv
 venv\Scripts\activate
 pip install -r requirements.txt
