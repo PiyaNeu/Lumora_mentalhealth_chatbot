@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+{% macro window_form(action, title, desc) %}
+<div class="col-md-6">
+  <div class="border rounded-3 p-3 h-100 bg-white">
+    <div class="fw-bold">{{ title }}</div>
+    <div class="small text-secondary mb-2">{{ desc }}</div>
+    <form method="POST" action="{{ action }}" class="d-flex gap-2" onsubmit="return confirm('{{ title }}? This cannot be undone.');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <select name="window" class="form-select form-select-sm" style="max-width: 200px;">
+        {% for key, w in windows.items() %}<option value="{{ key }}" {% if key == '1m' %}selected{% endif %}>{{ w[0] }}</option>{% endfor %}
+      </select>
+      <button class="btn btn-danger btn-sm">Delete</button>
+    </form>
+  </div>
+</div>
+{% endmacro %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 980px;">
+  <div class="card border-0 shadow-sm" style="background: rgba(255,255,255,0.88); border-radius: 16px;">
+    <div class="card-body p-4">
+      <div class="d-flex justify-content-between align-items-start mb-3">
+        <div>
+          <h4 class="fw-bold mb-0">Privacy &amp; Data Controls</h4>
+          <div class="small text-secondary">Manage your stored data in LUMORA. These actions are permanent.</div>
+        </div>
+        <a href="{{ url_for('account.profile') }}" class="btn btn-sm btn-outline-secondary">Back to Account</a>
+      </div>
+
+      <div class="row g-3">
+        {{ window_form(url_for('account.delete_messages'), 'Delete old chat messages', 'Deletes chat sessions/messages older than the selected window.') }}
+        {{ window_form(url_for('account.delete_moods'), 'Delete old mood logs', 'Deletes mood logs older than the selected window.') }}
+        {{ window_form(url_for('account.delete_journals'), 'Delete old journal entries', 'Deletes journal entries older than the selected window.') }}
+
+        <div class="col-md-6">
+          <div class="border rounded-3 p-3 h-100 bg-white">
+            <div class="fw-bold">Export my data</div>
+            <div class="small text-secondary mb-2">Download a PDF summary of your stored data.</div>
+            <a href="{{ url_for('account.export_data') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-download"></i> Download PDF</a>
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="border rounded-3 p-3 h-100 bg-white">
+            <div class="fw-bold">Delete a conversation</div>
+            <div class="small text-secondary mb-2">Permanently deletes the selected chat session and all its messages.</div>
+            {% if sessions %}
+            <form method="POST" action="{{ url_for('account.delete_conversation') }}" class="d-flex gap-2" onsubmit="return confirm('Delete this conversation?');">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="session_id" class="form-select form-select-sm">
+                {% for s in sessions %}<option value="{{ s.id }}">{{ s.title }} ({{ s.updated_at | localtime('%Y-%m-%d %H:%M') }})</option>{% endfor %}
+              </select>
+              <button class="btn btn-danger btn-sm">Delete</button>
+            </form>
+            {% else %}<div class="small text-secondary">No conversations stored.</div>{% endif %}
+          </div>
+        </div>
+
+        <div class="col-md-6">
+          <div class="border border-danger rounded-3 p-3 h-100 bg-white">
+            <div class="fw-bold text-danger">Delete ALL conversations</div>
+            <div class="small text-secondary mb-2">Permanently deletes all chat sessions and messages for your account.</div>
+            <form method="POST" action="{{ url_for('account.delete_all_conversations') }}" class="d-flex gap-2">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <input type="text" name="confirm" class="form-control form-control-sm" placeholder="Type DELETE" style="max-width: 140px;" autocomplete="off">
+              <button class="btn btn-danger btn-sm">Delete All</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="small text-secondary mt-3">Guest chats are never stored. Community posts are anonymous; you can delete your own posts from the Community page.</div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

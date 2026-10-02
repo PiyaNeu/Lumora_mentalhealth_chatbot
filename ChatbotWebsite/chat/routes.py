@@ -9,8 +9,8 @@ from flask_login import current_user, login_required
 from ChatbotWebsite import db
 from ChatbotWebsite.chat.brain import MODE_LABELS, MODES
 from ChatbotWebsite.chat.pipeline import process_message
-from ChatbotWebsite.models import (ChatMessage, ChatSession, CrisisEvent, MoodEntry, SavedInsight, SentimentLabel,
-                                   SessionFeedback)
+from ChatbotWebsite.chat.service import delete_sessions
+from ChatbotWebsite.models import ChatMessage, ChatSession, CrisisEvent, SavedInsight, SessionFeedback
 from ChatbotWebsite.mood.service import record_chat_mood
 from ChatbotWebsite.sentiment import hybrid
 
@@ -128,18 +128,7 @@ def send():
 @chat.route("/chat/sessions/<int:session_id>/delete", methods=["POST"])
 @login_required
 def delete_session(session_id):
-    chat_session = _owned_session(session_id)
-    SavedInsight.query.filter_by(session_id=session_id).update({"session_id": None})
-    CrisisEvent.query.filter_by(session_id=session_id).update({"session_id": None})
-    SessionFeedback.query.filter_by(session_id=session_id).update({"session_id": None})
-    msg_ids = [m.id for m in chat_session.messages]
-    if msg_ids:
-        SavedInsight.query.filter(SavedInsight.message_id.in_(msg_ids)).update(
-            {"message_id": None}, synchronize_session=False)
-        MoodEntry.query.filter(MoodEntry.message_id.in_(msg_ids)).update(
-            {"message_id": None}, synchronize_session=False)
-        SentimentLabel.query.filter(SentimentLabel.message_id.in_(msg_ids)).delete(synchronize_session=False)
-    db.session.delete(chat_session)
+    delete_sessions([_owned_session(session_id)])
     db.session.commit()
     if request.is_json or request.accept_mimetypes.best == "application/json":
         return jsonify({"ok": True})

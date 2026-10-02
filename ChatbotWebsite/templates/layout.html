@@ -101,7 +101,7 @@
               <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('consultation.index') }}"><i class="bi bi-calendar2-heart"></i> Consultation</a>
             </li>
             <li class="nav-item">
-              <span class="nav-link text-dark"><i class="bi bi-person-circle"></i> {{ current_user.username }}</span>
+              <a class="nav-link text-dark" href="{{ url_for('account.profile') }}"><i class="bi bi-person-circle"></i> {{ current_user.username }}</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a>

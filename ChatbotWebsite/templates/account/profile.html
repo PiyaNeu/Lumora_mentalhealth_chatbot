@@ -1,0 +1,55 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="container py-4" style="max-width: 640px;">
+  <div class="card shadow-sm rounded-4 border-0 mb-3" style="background: rgba(255,255,255,0.9);">
+    <div class="card-body p-4 d-flex align-items-center gap-3 flex-wrap">
+      <img src="{{ url_for('static', filename='profile_images/' ~ current_user.profile_image) }}" alt="Profile image"
+           class="rounded-circle border border-info p-1" style="width: 110px; height: 110px; object-fit: cover;">
+      <div class="flex-grow-1">
+        <h4 class="fw-bold mb-1">{{ current_user.username }}</h4>
+        <p class="text-muted mb-2">{{ current_user.email }}</p>
+        <a href="{{ url_for('account.privacy') }}" class="btn btn-outline-primary btn-sm"><i class="bi bi-shield-lock"></i> Privacy &amp; Data Controls</a>
+        <a href="{{ url_for('chat.insights') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-bookmark-heart"></i> Saved Insights</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm rounded-4 border-0 p-4 mb-3" style="background: rgba(255,255,255,0.9);">
+    <h3 class="text-center fw-bold text-primary mb-3">Account Info</h3>
+    <form method="POST" action="" enctype="multipart/form-data" novalidate>
+      {{ form.hidden_tag() }}
+      <div class="mb-3">
+        {{ form.username.label(class="form-label") }}
+        {{ form.username(class="form-control" + (" is-invalid" if form.username.errors else "")) }}
+        {% for e in form.username.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control" value="{{ current_user.email }}" disabled>
+      </div>
+      <div class="mb-3">
+        {{ form.preferred_mode.label(class="form-label") }}
+        {{ form.preferred_mode(class="form-select") }}
+        <div class="form-text">How Lumora responds in chat. "Auto" lets Lumora choose based on how you're feeling.</div>
+      </div>
+      <div class="mb-3">
+        {{ form.picture.label(class="form-label") }}
+        {{ form.picture(class="form-control" + (" is-invalid" if form.picture.errors else ""), accept="image/png,image/jpeg") }}
+        {% for e in form.picture.errors %}<div class="invalid-feedback">{{ e }}</div>{% endfor %}
+      </div>
+      {{ form.submit(class="btn btn-primary btn-lg w-100 rounded-pill") }}
+    </form>
+  </div>
+
+  <div class="card shadow-sm rounded-4 border border-danger-subtle p-3" style="background: rgba(255,255,255,0.9);">
+    <h6 class="fw-bold text-danger">Delete account</h6>
+    <div class="small text-secondary mb-2">Permanently deletes your account and all your chats, moods, journals, test results and appointments. This can't be undone.</div>
+    <form method="POST" action="{{ url_for('account.delete_account') }}" class="d-flex gap-2"
+          onsubmit="return confirm('Delete your account and all your data permanently?');">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="password" name="password" class="form-control form-control-sm" placeholder="Confirm with your password" required autocomplete="current-password">
+      <button class="btn btn-outline-danger btn-sm text-nowrap">Delete account</button>
+    </form>
+  </div>
+</div>
+{% endblock content %}
