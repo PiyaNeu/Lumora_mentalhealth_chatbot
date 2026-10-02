@@ -1,204 +1,112 @@
-# LUMORA: MindCare Chatbot
+# Lumora: MindCare Chatbot
 
-A non-diagnostic mental-wellbeing chatbot and self-help web app for students in Nepal
-(final-year project, Nepal Engineering College). Lumora listens, offers low-risk coping
-ideas, and puts **safety first**: messages showing crisis risk are routed to SOS guidance
-before anything else happens.
+A mental wellness chatbot for students that puts safety first. Every message is screened for crisis signals before anything else happens; high-risk messages go straight to SOS guidance instead of a normal reply. Everything else is routed through an intent classifier, a therapeutic response style the user chooses, and a fallback LLM for open-ended messages. It works in English, Nepali and Romanized Nepali, and comes with self-help tools: mood tracking, journaling, PHQ-9/GAD-7 self-tests, burnout checks, mindfulness exercises and an anonymous community.
 
-> Lumora is an educational self-help tool. It does **not** diagnose or treat any condition
-> and is not an emergency service.
+Built as our final year project in Computer Engineering at Nepal Engineering College by Piya Neupane, Salina Kunwar and Suja Baral.
+
+> Lumora is a self-help and awareness tool. It does not diagnose or treat any condition and is not a substitute for professional care.
+
+## The Problem
+
+Many students struggle with stress, anxiety, exam pressure and poor sleep but never reach out for help:
+
+- **Stigma:** fear of being judged stops people from talking to anyone.
+- **Access:** counselling is expensive, far away or has long waiting times.
+- **Unsafe chatbots:** general-purpose bots can miss crisis signals or give confident, harmful advice.
+
+Lumora gives students a private place to talk at any time, with crisis detection that always runs first and clear, non-diagnostic language throughout.
 
 ## Features
 
-| Area | What it does | Code |
-|---|---|---|
-| Chat pipeline | Session handling → language detection (Devanagari + Roman Nepali) → basic translation → **risk-first safety screen** (high = SOS, medium = cautious reply) → rule guards → Keras intent model with confidence threshold → Mistral fallback (optional) → "brain" response style → humanizer | `ChatbotWebsite/chat/` |
-| Your Chats | Guest chats are never stored; logged-in users get sessions with switch / search / delete / new, plus **Save insight** | `chat/routes.py`, `static/js/chat.js` |
-| Response modes | Auto, Gentle Listener, Calm Coach, Reflective Therapist, Balanced | `chat/brain.py` |
-| Sentiment | VADER, a Keras ML classifier and a Hybrid (ML + rules), stored per message and journal | `sentiment.py` |
-| Mood tracker | 1–5 daily check-in (one per day, updates in place) + chat-derived moods; daily/weekly/monthly charts, streak, trend insight, chat sentiment trend, mood vs sentiment, PDF report | `mood/` |
-| Journal | Create / view / edit / delete, mood tag, pagination, prompts | `journal/` |
-| Self-tests | PHQ-9, GAD-7 (standard items and bands), burnout questionnaire and a signals-based burnout check. Results are indicative only | `selfhelp/` |
-| Mindfulness | Guided exercises, audio players or placeholders, box-breathing pacer | `data/mindfulness.json` |
-| Community | Anonymous posts/comments, allowed tags, Support/Relate/Heart, report + auto-hide, text screening, Recent / Support-first | `community/` |
-| SOS | Guest-accessible Nepal helpline page | `sos_config.py` |
-| Consultation | Psychiatrist list, slot booking with double-booking prevention, calendar (paid / cash on visit / unpaid), Khalti sandbox | `consultation/` |
-| Evaluation | Manual labeling, J1 (Macro-F1 + confusion matrix), J2 (session feedback), J3 (usage & outcomes) — all from the real database | `evaluation/` |
-| Privacy | Delete messages/moods/journals by time window, delete one or all conversations, export my data (PDF), delete account | `account/` |
-| UI | Bootstrap, lavender theme, English / नेपाली toggle, responsive | `templates/`, `i18n.py` |
+- **Risk-first safety screening:** crisis phrases in English, Nepali and Romanized Nepali (with spelling normalisation) trigger SOS guidance and an automatic redirect to the SOS page
+- **Hybrid chat pipeline:** rule-based guards for greetings and short inputs, a Keras intent classifier (54 intents) with a confidence threshold, and a Mistral LLM fallback for low-confidence messages
+- **Response styles:** Auto, Gentle Listener, Calm Coach, Reflective Therapist or Balanced, chosen per user
+- **English / Nepali:** language detection, translation and Nepali replies for every intent
+- **Guest and account modes:** guest chats are never stored; logged-in users get multi-session history ("Your Chats") and saved insights
+- **Mood tracking and dashboard:** daily mood, VADER chat sentiment, trends, and PDF export
+- **Self-tests:** PHQ-9, GAD-7 and a burnout check combining mood, journal and chat signals (results are indicative only)
+- **Journaling and mindfulness:** private journal entries and guided breathing and grounding exercises
+- **Anonymous community:** posts with tags and reactions, text screening, and auto-hide after repeated reports
+- **Consultation booking:** psychiatrist slots with double-booking prevention, a calendar view and Khalti sandbox payment
+- **Evaluation (J1, J2, J3):** sentiment model comparison against human labels, user feedback ratings, and usage vs outcome trends
+- **Privacy controls:** delete messages, moods or journals by time window, delete conversations or the whole account, export your data as PDF
 
-## Architecture
+## How It Works
 
 ```
-Browser (Bootstrap + vanilla JS, Chart.js, FullCalendar)
-   │  HTTPS, CSRF-protected forms / fetch
-   ▼
-Flask app (create_app) ── blueprints: main · auth · chat · mood · journal · community
-   │                                  selfhelp · consultation · evaluation · account
-   │
-   ├── Chat pipeline (chat/pipeline.py)
-   │     language.py → translate.py → safety.py ─┬─ high risk → SOS reply (stop)
-   │                                             ├─ medium   → cautious reply (stop)
-   │                                             └─ guards.py → intent.py (Keras FFNN)
-   │                                                   │ confident → response bank
-   │                                                   └ low       → llm.py (Mistral, optional)
-   │                                             → brain.py (style) → humanizer.py
-   ├── ML: ml/preprocess.py, ml/features.py (word + char TF-IDF + history), model/*.keras
-   ├── Sentiment: VADER + Keras classifier + rules (sentiment.py)
-   ├── Reports: ReportLab + matplotlib PDFs (mood/pdf.py, account/export.py)
-   └── SQLite via SQLAlchemy (instance/lumora.db) · Flask-Login · Flask-WTF · Flask-Mail
-External (optional): SMTP (email verification), Mistral API, Khalti ePayment sandbox
+Message → session handling (guest / logged-in)
+        → language detection (English, Nepali, Romanized Nepali) → translation
+        → risk screening ── high risk ──→ SOS guidance + redirect
+        → rule-based guards (greetings, too short, "idk")
+        → intent classifier ── low confidence ──→ Mistral fallback
+        → response style (listener / coach / therapist / balanced)
+        → humanizer → reply
+Side effects: sentiment score → mood dashboard, burnout signals, evaluation data
 ```
 
-## Setup
+**Intent classifier comparison (54 intents):**
 
-Requires Python 3.11 (TensorFlow 2.20).
+| Model                                   | Validation accuracy |
+| --------------------------------------- | ------------------- |
+| Naive Bayes (TF-IDF)                    | 87.61%              |
+| Linear SVM (TF-IDF)                     | 90.07%              |
+| Feed-forward NN (word + char TF-IDF)    | 94.70%              |
+| LSTM (embeddings)                       | 88.73%              |
 
-```bash
-python -m venv env
+
+**Tech stack:** Python · Flask · SQLAlchemy · SQLite · TensorFlow/Keras · scikit-learn · NLTK · VADER · Mistral API · Bootstrap · Chart.js · FullCalendar · ReportLab · Khalti
+
+## Quickstart
+
+**Requirements:** Python 3.11
+
+**1. Clone and install**
+
 ```
-
-```bash
-env\Scripts\activate
-```
-
-(On macOS/Linux: `source env/bin/activate`.)
-
-```bash
+git clone https://github.com/PiyaNeu/REPO-NAME.git
+cd REPO-NAME
+python -m venv venv
+venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-```bash
-copy .env.example .env
+**2. Configure**
+
+Copy `.env.example` to `.env` and fill in your values. The Mistral, Khalti and SMTP keys are optional; the app runs without them.
+
+**3. Train the intent model and load demo data**
+
 ```
-
-Edit `.env`: set `SECRET_KEY` and `SECURITY_PASSWORD_SALT`. Then fill the optional parts you want:
-
-- **Email verification:** SMTP settings. For Gmail, use an App Password.
-- **Mistral fallback:** `MISTRAL_API_KEY`. The app works without it.
-- **Khalti sandbox:** `KHALTI_SECRET_KEY` (test key). Without it, a clearly-labelled demo checkout is used.
-- **Public links:** `PUBLIC_BASE_URL`, your ngrok or Render URL, so emailed links work from other devices.
-
-Start the app:
-
-```bash
-python run.py
-```
-
-Open http://127.0.0.1:5000. Without SMTP settings, verification emails are written to the log instead of being sent.
-
-### Demo data
-
-```bash
+python train.py
 python seed.py
 ```
 
-This creates `demo@example.com` (password `Lumora@2026`, or `DEMO_PASSWORD` from `.env`) with three weeks of moods, chats, journals, self-test results, feedback, community posts and an appointment. Re-running the script replaces the demo account. To give a user access to `/admin`, add `--admin you@example.com`.
+**4. Run**
 
-## Training the models
-
-The trained models are committed in `model/`, so the app runs right after cloning. To rebuild them:
-
-```bash
-python build_dataset.py
+```
+flask run
 ```
 
-Regenerates `ChatbotWebsite/data/intents_augmented.json` from the hand-written `intents_seed.json` and mapped mid-term patterns.
+Open **http://localhost:5000**.
 
-```bash
-python train.py
-```
-
-Intent model: word + char TF-IDF + history features → Keras FFNN, Adam, EarlyStopping, ReduceLROnPlateau, stratified 80/20. Writes `model/` and `reports/` (accuracy curve, loss curve, per-intent precision/recall/F1, confidence table). Add `--split grouped` for the stricter unseen-sentence evaluation.
-
-```bash
-python compare_models.py
-```
-
-Naive Bayes vs Linear SVM vs FFNN vs LSTM on both splits → `reports/model_comparison.*`.
-
-```bash
-python train_sentiment.py
-```
-
-ML sentiment classifier used by J1 and the hybrid sentiment.
-
-### Results (real, from `reports/`)
-
-Dataset: 54 intents, 6,696 samples (1,081 hand-written, 277 reused from the mid-term data, 4,994 augmented variants, 344 history follow-ups). The original final-project dataset was lost; this one was rebuilt. Hand-written sentences are in `data/intents_seed.json` and `data/intents_seed_extra.json`.
-
-| Model | Validation accuracy, stratified 80/20 (report method) | Unseen-sentence split |
-|---|---|---|
-| Naive Bayes (TF-IDF) | 87.61% | 50.26% |
-| Linear SVM (TF-IDF) | 90.07% | 56.30% |
-| **Feed-Forward NN (Keras, production)** | **94.70%** (macro-F1 0.947) | 61.37% |
-| LSTM (tokenizer + embedding) | 88.73% | 48.84% |
-
-- **Stratified 80/20** is the method described in the report. Augmented variants of a sentence can appear in both training and validation, so it measures recognition of known phrasings.
-- **Unseen-sentence split** keeps every variant of a sentence on one side. It's a stricter estimate for brand-new messages and shows that more varied training sentences are the main room for improvement.
-- **Confidence threshold:** at the app's 0.55 threshold, 91.9% of validation messages are answered by the model, with 99.5% accuracy. Between 0.30 and 0.55 Lumora offers its best guess and checks it with the user ("it sounds like this might be about stress — is that right?"); below that it uses the Mistral fallback or a supportive fallback reply.
-- **Everyday phrasing (held-out check):** 36 of 45 common English expressions and 41 of 42 everyday Nepali messages that are not in the training data get a relevant reply.
-- **History features:** follow-up messages are classified correctly 40.6% of the time with history, against 3.1% without it.
-- **J1 / J2 / J3:** these are computed live from your database (Evaluation menu). J1 needs at least 10 messages labelled on the Manual Labeling page.
-
-## Tests
-
-```bash
-python -m pytest
-```
-
-470 tests. They mirror the report's Chapter 4 test-case tables:
-
-| Report table | Test file |
-|---|---|
-| 4.4.1 Authentication (TC-A1…A5) | `tests/test_auth.py` |
-| 4.4.2 / 4.4.5 Sentiment (TC-B, TC-E) | `tests/test_sentiment.py` |
-| 4.4.3 Chat sessions (TC-C1…C3) | `tests/test_chat_sessions.py` |
-| 4.4.4 Chatbot interaction (TC-D1…D4) | `tests/test_chatbot_input.py` |
-| Crisis / safety screening (§4.2.4) | `tests/test_crisis_detection.py` |
-| 4.4.6 Mood tracker (TC-F1…F3), 4.4.7 PDF (TC-G1, G2) | `tests/test_mood.py` |
-| 4.4.8 Journal (TC-H1…H3) | `tests/test_journal.py` |
-| 4.4.9 Self-tests (TC-I1, I2) | `tests/test_selftests.py` |
-| 4.4.10 SOS (TC-K1, K2) | `tests/test_sos.py` |
-| 4.4.11 Booking & calendar (TC-L1…L4), 4.4.12 Payment (TC-M1…M3) | `tests/test_consultation.py` |
-| Community, evaluation, privacy, UI, intent model | `test_community.py`, `test_evaluation.py`, `test_privacy.py`, `test_ui.py`, `test_intent_model.py` |
-
-TC-N1/N2 (ngrok public access) need a manual check: run `ngrok http 5000`, set `PUBLIC_BASE_URL` to the ngrok URL, open it on another device and register to confirm the verification email link uses the ngrok domain.
-
-## Before real use (TODO)
-
-- **SOS numbers:** every helpline number in `ChatbotWebsite/sos_config.py` is a placeholder. Verify each with the organisation, fill it in and set `verified=True`. Unverified numbers are never displayed.
-- **Psychiatrists:** the three profiles are demo data. Replace them with real, consenting practitioners before real bookings.
-- **Mindfulness audio:** four exercises have no audio yet. Add MP3s to `static/mindfulness/` and set `audio` in `data/mindfulness.json`. Also confirm the licence of the existing four MP3s, which came with the mid-term code.
-- **Deployment:** use a production server (e.g. gunicorn on Render) and consider PostgreSQL for more users.
+> Before any real-world use, replace the placeholder SOS hotline numbers with verified ones.
 
 ## Screenshots
 
-Add screenshots to `docs/screenshots/` with these names:
+**Chat with SOS redirect**
+![Chat]("C:\Users\ASUS TUF A15\OneDrive\Pictures\Screenshots\Screenshot 2026-10-02 145619.png")
 
-`chat.png` · `sos.png` · `journals.png` · `community.png` · `saved-insights.png` · `modes.png` ·
-`manual-labeling.png` · `j1.png` · `j2.png` · `j3.png` · `mood-dashboard.png` · `mood-report.png` ·
-`privacy.png` · `burnout.png` · `consultation.png` · `checkout.png` · `calendar.png`
+**Mood dashboard**
+![Mood dashboard](docs/screenshots/mood-dashboard.png)
 
-## Project structure
+**Self-tests and burnout check**
+![Self-tests](docs/screenshots/self-tests.png)
 
-```
-ChatbotWebsite/
-  __init__.py        app factory, extensions, blueprints, Flask-Admin
-  config.py          settings from .env
-  models.py          SQLAlchemy models
-  chat/              pipeline, safety, guards, intent, llm, brain, humanizer, routes
-  ml/                preprocessing, features, training helpers
-  mood/ journal/ selfhelp/ community/ consultation/ evaluation/ account/ auth/ main/
-  data/              intents_seed.json, intents_augmented.json, sentiment_extra.json, mindfulness.json
-  templates/ static/
-model/               trained intent + sentiment models
-reports/             training curves, metrics, model comparison
-tests/               pytest suite
-build_dataset.py  train.py  compare_models.py  train_sentiment.py  seed.py  run.py
-```
+**Anonymous community**
+![Community](docs/screenshots/community.png)
 
-## Team
+**Consultation booking**
+![Consultation](docs/screenshots/consultation.png)
 
-Piya Neupane · Salina Kunwar · Suja Baral — supervised by Asst. Prof. Anshu Ghimire,
-Department of Computer Science and Engineering, Nepal Engineering College.
+**Evaluation (J1, J2, J3)**
+![Evaluation](docs/screenshots/evaluation.png)
