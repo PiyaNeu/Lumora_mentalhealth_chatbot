@@ -101,3 +101,20 @@ def test_trained_model_loads_and_predicts_known_intents():
     assert len(clf.labels) == 54
     tag, conf = clf.predict("i can't sleep at night")
     assert tag == "sleep_issues" and 0 <= conf <= 1
+
+
+def test_preprocess_stays_lemmatized_under_concurrent_first_use():
+    """A transient NLTK error on concurrent first use used to switch lemmatization off for the
+    whole process, silently degrading every prediction (the model is trained on lemmas)."""
+    import threading
+
+    from ChatbotWebsite.ml import preprocess as pp
+
+    pp._nltk_ready = False  # simulate a fresh process
+    out = []
+    threads = [threading.Thread(target=lambda: out.append(pp.preprocess("i am crying about my exams")))
+               for _ in range(8)]
+    [t.start() for t in threads]
+    [t.join() for t in threads]
+    assert set(out) == {"i am cry about my exam"}
+    assert pp._nltk_ready is True

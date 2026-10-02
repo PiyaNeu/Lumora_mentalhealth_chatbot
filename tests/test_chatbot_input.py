@@ -138,11 +138,18 @@ def test_mistral_not_called_without_api_key(app, monkeypatch):
     assert llm.generate_reply("hello", "balanced") is None
 
 
-def test_previous_user_message_passed_as_history_feature(client, fake):
+def test_previous_user_message_passed_as_history_for_follow_ups(client, fake):
+    client.get("/guest")
+    client.post("/chat/send", json={"message": "my exams are next week"})
+    client.post("/chat/send", json={"message": "what should I do?"})
+    assert fake.seen_prev == "my exams are next week"
+
+
+def test_history_not_used_for_standalone_messages(client, fake):
     client.get("/guest")
     client.post("/chat/send", json={"message": "my exams are next week"})
     client.post("/chat/send", json={"message": "I feel stressed"})
-    assert fake.seen_prev == "my exams are next week"
+    assert fake.seen_prev is None
 
 
 # Brain strategy selection (§3.7.7d)

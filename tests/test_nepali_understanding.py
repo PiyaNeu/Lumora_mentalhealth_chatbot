@@ -115,3 +115,20 @@ def test_predictions_stay_correct_while_another_model_loads(real_model, app):
     stop.set()
     worker.join()
     assert results and min(results) > 0.9
+
+
+@pytest.mark.parametrize("text,prev,expected", [
+    ("not good", "hi", "sadness_low_mood"),
+    ("i am crying", "not good", "crying_emotional"),
+    ("i am having a lot of exam stress", "i am crying", "exam_stress"),
+    ("what should i do", "i am having a lot of exam stress", "exam_stress"),
+    ("any tips?", "i cant sleep at night", "sleep_issues"),
+])
+def test_reported_conversation_flow(real_model, text, prev, expected):
+    reply = process_message(text, prev_user_text=prev)
+    assert reply.route == "intent" and reply.intent == expected, (reply.route, reply.intent, reply.confidence)
+
+
+def test_unrelated_message_does_not_inherit_previous_topic(real_model):
+    reply = process_message("tell me a joke", prev_user_text="i cant sleep at night")
+    assert reply.intent != "sleep_issues"

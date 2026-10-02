@@ -7,6 +7,7 @@
 Session handling (guest vs logged-in) is done by the route; this module is pure
 message-in / reply-out so it can be unit-tested without a database.
 """
+import re
 from dataclasses import dataclass, field
 
 from flask import current_app
@@ -25,6 +26,42 @@ MAX_INPUT_CHARS = 2000
 CRISIS_MODEL_THRESHOLD = 0.4
 
 NEPALI_UNAVAILABLE_NOTE = "(नेपाली अनुवाद अहिले उपलब्ध छैन, त्यसैले म अंग्रेजीमा जवाफ दिँदैछु।)"
+
+
+SHORT_LOW_MOOD = re.compile(
+    r"^(i'?m |i am |im |feeling |i feel |it'?s |its |honestly |kinda |pretty |very |so |really |a )*"
+    r"(not (good|great|okay|ok|fine|well|so good|too good|that good|happy)|bad|awful|terrible|horrible|"
+    r"sad|down|low|upset|miserable|rough|bad day|rough day|terrible day|awful day|a bad day|not a good day|"
+    r"could be better|been better|not my day)( today| lately| right now)?[\s.!]*$",
+    re.IGNORECASE,
+)
+SHORT_GOOD_MOOD = re.compile(
+    r"^(i'?m |i am |im |feeling |i feel |it'?s |its |pretty |very |so |really |a )*"
+    r"(good|great|happy|fine|well|better|awesome|amazing|good day|great day|nice day)( today| now)?[\s.!]*$",
+    re.IGNORECASE,
+)
+
+
+# Messages that only make sense as a follow-up to the previous topic
+FOLLOW_UP = re.compile(
+    r"\b(what (should|can|do) i( do)?|what now|how (do|can|should) i|any (tips|advice|ideas|suggestions)|"
+    r"tips|advice|help( me)?|what do you suggest|why does (this|it)|it'?s getting worse|is (that|this|it) normal|"
+    r"tell me more|more (tips|ideas)|anything else|what else|i don'?t know how to (handle|deal with) (it|this)|"
+    r"k garne|ke garne|k garu|ke garu|ke garum)\b",
+    re.IGNORECASE,
+)
+
+
+def mood_shortcut(text_en):
+    """Short answers to "how are you / how was your day" that the model rarely saw in training."""
+    text = (text_en or "").strip()
+    if len(text.split()) > 6:
+        return None
+    if SHORT_LOW_MOOD.match(text):
+        return "sadness_low_mood", 0.9
+    if SHORT_GOOD_MOOD.match(text):
+        return "positive_mood", 0.9
+    return None
 
 
 @dataclass
@@ -76,15 +113,26 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
 
     # 4. Intent classifier with confidence threshold
     classifier = get_classifier()
-    tag, confidence = (None, None)
-    if classifier is not None:
+    # Replies come from the classifier's response bank, so the shortcut needs a classifier too
+    tag, confidence = (mood_shortcut(text_en) if classifier is not None else None) or (None, None)
+    if classifier is not None and tag is None:
         prev_en = to_english(prev_user_text, detect_language(prev_user_text)) if prev_user_text else None
-        tag, confidence = classifier.predict(text_en, prev_en)
+        # Candidate readings: the message with and without conversation history (history helps
+        # follow-ups like "what should I do?" but must not drown out a clear message), and for
+        # Nepali also the original text (the model learned some Nepali phrasings directly).
+        use_history = bool(prev_en) and bool(FOLLOW_UP.search(text_en))
+        candidates = [(text_en, None)] + ([(text_en, prev_en)] if use_history else [])
         if text_en != raw:
-            # The model also learned some Nepali phrasings directly; keep whichever reading it trusts more
-            raw_tag, raw_conf = classifier.predict(raw, prev_en)
-            if raw_conf > confidence:
-                tag, confidence = raw_tag, raw_conf
+            candidates += [(raw, None)] + ([(raw, prev_en)] if use_history else [])
+        tag, confidence = max((classifier.predict(t, p) for t, p in candidates), key=lambda r: r[1])
+        # Short follow-up ("what should I do?", "any tips?") that is unclear on its own:
+        # carry over the topic of the previous message if that one was clear.
+        threshold = current_app.config["INTENT_CONFIDENCE_THRESHOLD"]
+        if prev_en and confidence < threshold and FOLLOW_UP.search(text_en) and len(text_en.split()) <= 8:
+            prev_tag, prev_conf = classifier.predict(prev_en)
+            if prev_conf >= threshold and prev_tag not in CRISIS_INTENTS and getattr(
+                    classifier, "wraps", lambda t: True)(prev_tag):
+                tag, confidence = prev_tag, prev_conf
     threshold = current_app.config["INTENT_CONFIDENCE_THRESHOLD"]
     confident = tag is not None and confidence is not None and confidence >= threshold
 
