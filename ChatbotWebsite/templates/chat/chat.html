@@ -16,24 +16,24 @@
   <!-- Left: profile + tools -->
   <aside class="chat-panel chat-left">
     <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-logo" alt="Lumora logo">
-    <label for="mode-select" class="form-label small fw-semibold mt-3 mb-1">Response style</label>
+    <label for="mode-select" class="form-label small fw-semibold mt-3 mb-1">{{ t('chat.style') }}</label>
     <select id="mode-select" class="form-select form-select-sm">
       {% for key, label in mode_labels.items() %}
         <option value="{{ key }}" {% if key == mode %}selected{% endif %}>{{ label }}</option>
       {% endfor %}
     </select>
     <div class="d-grid gap-2 mt-3">
-      <a class="btn btn-danger btn-sm" href="{{ url_for('main.sos') }}"><i class="bi bi-life-preserver"></i> SOS Help</a>
+      <a class="btn btn-danger btn-sm" href="{{ url_for('main.sos') }}"><i class="bi bi-life-preserver"></i> {{ t('chat.sos') }}</a>
       {% if current_user.is_authenticated %}
-        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('chat.insights') }}"><i class="bi bi-bookmark-heart"></i> Saved Insights</a>
+        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('chat.insights') }}"><i class="bi bi-bookmark-heart"></i> {{ t('nav.insights') }}</a>
       {% endif %}
       <button type="button" class="btn btn-outline-info btn-sm" data-bs-toggle="popover" data-bs-placement="right"
               data-bs-title="How to use Lumora"
               data-bs-content="Tell me how you feel or ask a question. You can write in English or Nepali. Lumora gives supportive self-help ideas, not diagnosis. In a crisis, use the SOS page.">
-        <i class="bi bi-question-circle"></i> Need Help?
+        <i class="bi bi-question-circle"></i> {{ t('chat.help') }}
       </button>
     </div>
-    <p class="small text-secondary text-center mt-3 mb-0">Lumora is a self-help tool, not a therapist or doctor.</p>
+    <p class="small text-secondary text-center mt-3 mb-0">{{ t('chat.disclaimer') }}</p>
   </aside>
 
   <!-- Center: conversation -->
@@ -41,7 +41,7 @@
     <div class="d-flex justify-content-between align-items-center mb-2 d-lg-none">
       <span class="fw-bold">Lumora</span>
       <button class="btn btn-sm btn-outline-secondary" type="button" data-bs-toggle="offcanvas" data-bs-target="#chats-offcanvas">
-        <i class="bi bi-chat-left-text"></i> Your Chats
+        <i class="bi bi-chat-left-text"></i> {{ t('chat.your_chats') }}
       </button>
     </div>
 
@@ -51,15 +51,11 @@
         <img src="{{ url_for('static', filename='images/logo.png') }}" class="chat-image" alt="">
         <div class="chat-bubble">
           <div class="chat-info"><span class="chat-info-name">LUMORA: Mental Health Chatbot</span></div>
-          <div class="chat-text">Please understand that this is a chatbot and not a real person. It is not a substitute for professional help.
-
-Always best to seek professional help if you need to.
-
-Hi there, welcome to LUMORA! Go ahead and send me a message. 💜</div>
+          <div class="chat-text">{{ t('chat.welcome') }}</div>
         </div>
       </div>
       {% if not current_user.is_authenticated %}
-        <p class="text-center small text-secondary mt-2"><i class="bi bi-incognito"></i> Guest mode — this conversation is not saved.</p>
+        <p class="text-center small text-secondary mt-2"><i class="bi bi-incognito"></i> {{ t('chat.guest_note') }}</p>
       {% endif %}
 
       {% for m in messages %}
@@ -91,25 +87,25 @@ Hi there, welcome to LUMORA! Go ahead and send me a message. 💜</div>
 
     <div class="tools d-flex flex-wrap gap-2 py-2">
       <div class="btn-group dropup">
-        <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">Topics 📜</button>
+        <button type="button" class="btn btn-sm btn-outline-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">{{ t('chat.topics') }} 📜</button>
         <ul class="dropdown-menu topic-menu">
           {% for topic in topics.topics %}
             <li><button class="dropdown-item topic-item" type="button" data-title="{{ topic.title }}">{{ topic.title }}</button></li>
           {% endfor %}
         </ul>
       </div>
-      <a class="btn btn-sm btn-outline-info" href="{{ url_for('selfhelp.tests') }}">Tests 📝</a>
-      <a class="btn btn-sm btn-outline-info" href="{{ url_for('selfhelp.mindfulness') }}">Mindfulness 🧘</a>
+      <a class="btn btn-sm btn-outline-info" href="{{ url_for('selfhelp.tests') }}">{{ t('chat.tests') }} 📝</a>
+      <a class="btn btn-sm btn-outline-info" href="{{ url_for('selfhelp.mindfulness') }}">{{ t('nav.mindfulness') }} 🧘</a>
       {% if current_user.is_authenticated %}
       <button type="button" class="btn btn-sm btn-outline-warning ms-auto {{ '' if active else 'd-none' }}" id="rate-btn"
-              data-bs-toggle="modal" data-bs-target="#rate-modal">⭐ Rate this chat</button>
+              data-bs-toggle="modal" data-bs-target="#rate-modal">⭐ {{ t('chat.rate') }}</button>
       {% endif %}
     </div>
 
     <form id="message-form" class="chat-inputarea" novalidate>
       <input type="text" class="chat-input form-control" id="textInput" autocomplete="off" maxlength="2000"
-             placeholder="Enter your message..." aria-label="Message">
-      <button type="submit" class="btn btn-primary">Send</button>
+             placeholder="{{ t('chat.placeholder') }}" aria-label="Message">
+      <button type="submit" class="btn btn-primary">{{ t('chat.send') }}</button>
     </form>
     <div id="input-warning" class="text-danger small mt-1 d-none" role="alert"></div>
   </section>
@@ -117,11 +113,11 @@ Hi there, welcome to LUMORA! Go ahead and send me a message. 💜</div>
   <!-- Right: Your Chats -->
   {% macro chat_list() %}
     <div class="d-flex justify-content-between align-items-center mb-2">
-      <strong>Your Chats</strong>
-      <a href="{{ url_for('chat.chat_page') }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg"></i> New</a>
+      <strong>{{ t('chat.your_chats') }}</strong>
+      <a href="{{ url_for('chat.chat_page') }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-plus-lg"></i> {{ t('chat.new') }}</a>
     </div>
     {% if current_user.is_authenticated %}
-      <input type="search" class="form-control form-control-sm mb-2 chat-search" placeholder="Search...">
+      <input type="search" class="form-control form-control-sm mb-2 chat-search" placeholder="{{ t('chat.search') }}">
       <ul class="list-unstyled chat-list mb-0">
         {% for s in sessions %}
           <li class="chat-list-item {% if active and s.id == active.id %}active{% endif %}" data-title="{{ s.title | lower }}">
@@ -138,7 +134,7 @@ Hi there, welcome to LUMORA! Go ahead and send me a message. 💜</div>
         {% endfor %}
       </ul>
     {% else %}
-      <p class="small text-secondary mb-0">Chats are saved only for logged-in users. <a href="{{ url_for('auth.login') }}">Log in</a> to keep your history.</p>
+      <p class="small text-secondary mb-0">{{ t('chat.saved_only') }} <a href="{{ url_for('auth.login') }}">Log in</a> to keep your history.</p>
     {% endif %}
   {% endmacro %}
 

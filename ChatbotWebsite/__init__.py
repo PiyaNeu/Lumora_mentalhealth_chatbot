@@ -35,6 +35,12 @@ def create_app(config_class=Config):
             return ""
         return (value + timedelta(minutes=app.config["UTC_OFFSET_MINUTES"])).strftime(fmt)
 
+    @app.context_processor
+    def inject_i18n():
+        from ChatbotWebsite.i18n import LANGUAGES, current_language, t
+
+        return {"t": t, "ui_lang": current_language(), "ui_languages": LANGUAGES}
+
     # --- Initialize extensions ---
     db.init_app(app)
     bcrypt.init_app(app)

@@ -63,7 +63,10 @@ def login():
 @auth.route("/logout")
 def logout():
     logout_user()
+    lang = session.get("ui_lang")
     session.clear()
+    if lang:
+        session["ui_lang"] = lang  # keep the interface language after logout
     flash("You have been logged out.", "info")
     return redirect(url_for("auth.login"))
 
@@ -73,8 +76,11 @@ def guest():
     """Guest mode: chat without an account. Nothing is persisted for guests."""
     if current_user.is_authenticated:
         logout_user()
+    lang = session.get("ui_lang")
     session.clear()
     session["guest"] = True
+    if lang:
+        session["ui_lang"] = lang
     flash("You're chatting as a guest. Your conversation won't be saved.", "info")
     return redirect(url_for("chat.chat_page"))
 

@@ -38,6 +38,12 @@
 
 .chat-right {
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Let long chat titles truncate instead of widening the panel */
+.chat-list-item > a {
+  min-width: 0;
 }
 
 .main-chat {

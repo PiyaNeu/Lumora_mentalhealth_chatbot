@@ -2,11 +2,10 @@
 {% block content %}
 <div class="container py-4" style="max-width: 820px;">
   <h1 class="text-center fw-bold font-monospace mb-2" style="color:#3a0066;">
-    <span class="border-bottom border-3 border-dark pb-1">SOS Hotlines in Nepal</span>
+    <span class="border-bottom border-3 border-dark pb-1">{{ t('sos.title') }}</span>
   </h1>
   <p class="text-center text-secondary mb-4">
-    If you are in immediate danger or thinking about harming yourself, please contact emergency
-    services or a helpline now. You don't have to go through this alone.
+    {{ t('sos.intro') }}
   </p>
 
   {% if pending %}
@@ -26,19 +25,19 @@
         {% if phone %}
           <div>Contact Number: <a href="tel:{{ phone }}" class="fw-bold">{{ phone }}</a></div>
         {% else %}
-          <div class="text-muted small">Contact number pending verification</div>
+          <div class="text-muted small">{{ t('sos.pending') }}</div>
         {% endif %}
         {% if h.hours %}<div class="small text-secondary">{{ h.hours }}</div>{% endif %}
         <div class="mt-2 d-flex gap-2">
           {% if h.website %}<a href="{{ h.website }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Website</a>{% endif %}
-          <a href="https://www.google.com/maps/search/?api=1&query={{ h.name | urlencode }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">Show Map</a>
+          <a href="https://www.google.com/maps/search/?api=1&query={{ h.name | urlencode }}" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">{{ t('sos.show_map') }}</a>
         </div>
       </li>
       {% endfor %}
     </ul>
   </div>
 
-  <h5 class="fw-bold" style="color:#3a0066;">Emergency services</h5>
+  <h5 class="fw-bold" style="color:#3a0066;">{{ t('sos.emergency') }}</h5>
   <ul class="list-group mb-4">
     {% for e in emergency %}
     {% set phone = display_phone(e) %}

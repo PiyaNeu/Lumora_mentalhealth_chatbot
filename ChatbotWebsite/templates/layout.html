@@ -1,121 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ ui_lang }}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <meta name="csrf-token" content="{{ csrf_token() }}" />
-  <title>{{ title }}</title>
+  <title>{{ title }}{% if title and title != 'Lumora AI' %} · LUMORA{% endif %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}">
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-  <!-- Custom CSS -->
+  <!-- Lumora theme -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/layout.css') }}">
-  
+
   {% block style %}{% endblock style %}
 </head>
 
-<body style="background: linear-gradient(145deg,#f3c8ff,#e7d2ff,#f8eaff); background-attachment: fixed;">
+<body>
 
   {% block navigation %}
-  <nav class="navbar navbar-expand-lg navbar-light shadow-sm glass-nav py-3">
+  <nav class="navbar navbar-expand-lg navbar-light shadow-sm glass-nav py-2">
     <div class="container-fluid">
-      <!-- Logo -->
       <a class="navbar-brand d-flex align-items-center fw-bold text-dark font-monospace" href="{{ url_for('main.home') }}">
-        <img src="{{ url_for('static', filename='images/logo.png') }}" 
-             alt="Lumora Logo" 
-             style="height: 30px; width: 30px; object-fit: contain;" 
-             class="me-2">
+        <img src="{{ url_for('static', filename='images/logo.png') }}" alt="" style="height: 30px; width: 30px; object-fit: contain;" class="me-2">
         LUMORA
       </a>
 
-      <!-- Mobile Toggle -->
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-              data-bs-target="#navbarNav" aria-controls="navbarNav"
-              aria-expanded="false" aria-label="Toggle navigation">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- Navigation Links -->
       <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-        <ul class="navbar-nav gap-3">
+        <ul class="navbar-nav gap-lg-2">
           <li class="nav-item">
-            <a class="nav-link fw-bold text-dark" href="{{ url_for('chat.chat_page') }}">
-              <i class="bi bi-chat-heart-fill"></i> Chat
-            </a>
+            <a class="nav-link fw-bold text-dark" href="{{ url_for('chat.chat_page') }}"><i class="bi bi-chat-heart-fill"></i> {{ t('nav.chat') }}</a>
           </li>
-          {% if current_user.is_authenticated %}
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="{{ url_for('mood.dashboard') }}">
-              <i class="bi bi-graph-up"></i> Mood
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="{{ url_for('journal.all_journals') }}">
-              <i class="bi bi-journal-text"></i> Journal
-            </a>
-          </li>
-          {% endif %}
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="{{ url_for('selfhelp.tests') }}">
-              <i class="bi bi-clipboard2-pulse"></i> Self-Tests
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="{{ url_for('selfhelp.mindfulness') }}">
-              <i class="bi bi-flower1"></i> Mindfulness
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="{{ url_for('community.index') }}">
-              <i class="bi bi-people"></i> Community
-            </a>
+          <li class="nav-item dropdown">
+            <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-list"></i> {{ t('nav.more') }}</a>
+            <ul class="dropdown-menu">
+              {% if current_user.is_authenticated %}
+              <li><a class="dropdown-item" href="{{ url_for('journal.all_journals') }}"><i class="bi bi-journal-text"></i> {{ t('nav.journal') }}</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="{{ url_for('selfhelp.tests') }}"><i class="bi bi-clipboard2-pulse"></i> {{ t('nav.selftests') }}</a></li>
+              {% if current_user.is_authenticated %}
+              <li><a class="dropdown-item" href="{{ url_for('selfhelp.burnout') }}"><i class="bi bi-battery-half"></i> {{ t('nav.burnout') }}</a></li>
+              {% endif %}
+              <li><a class="dropdown-item" href="{{ url_for('selfhelp.mindfulness') }}"><i class="bi bi-flower1"></i> {{ t('nav.mindfulness') }}</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('community.index') }}"><i class="bi bi-people"></i> {{ t('nav.community') }}</a></li>
+              {% if current_user.is_authenticated %}
+              <li><a class="dropdown-item" href="{{ url_for('chat.insights') }}"><i class="bi bi-bookmark-heart"></i> {{ t('nav.insights') }}</a></li>
+              {% endif %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{{ url_for('main.about') }}"><i class="bi bi-info-circle"></i> {{ t('nav.about') }}</a></li>
+            </ul>
           </li>
           {% if current_user.is_authenticated %}
           <li class="nav-item dropdown">
-            <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-bar-chart-line"></i> Evaluation
-            </a>
+            <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-graph-up"></i> {{ t('nav.mood') }}</a>
             <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="{{ url_for('evaluation.labeling') }}">Manual Labeling</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('mood.dashboard') }}">{{ t('nav.mood_dashboard') }}</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('mood.dashboard') }}#checkin">{{ t('nav.mood_checkin') }}</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('mood.export_pdf') }}">{{ t('nav.mood_pdf') }}</a></li>
+            </ul>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-bar-chart-line"></i> {{ t('nav.evaluation') }}</a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{{ url_for('evaluation.labeling') }}">{{ t('nav.labeling') }}</a></li>
               <li><a class="dropdown-item" href="{{ url_for('evaluation.j1') }}">J1: Sentiment Models</a></li>
               <li><a class="dropdown-item" href="{{ url_for('evaluation.j2') }}">J2: User Feedback</a></li>
               <li><a class="dropdown-item" href="{{ url_for('evaluation.j3') }}">J3: Usage &amp; Outcomes</a></li>
             </ul>
           </li>
           {% endif %}
-          <li class="nav-item">
-            <a class="nav-link text-dark" href="{{ url_for('main.about') }}">
-              <i class="bi bi-info-circle-fill"></i> About
-            </a>
-          </li>
         </ul>
+
         <ul class="navbar-nav gap-2 align-items-lg-center">
+          <li class="nav-item">
+            <div class="btn-group btn-group-sm" role="group" aria-label="Interface language">
+              {% for code, label in ui_languages.items() %}
+              <a href="{{ url_for('main.set_language', code=code) }}" class="btn {{ 'btn-primary' if ui_lang == code else 'btn-outline-primary' }}" {% if ui_lang == code %}aria-current="true"{% endif %}>{{ label }}</a>
+              {% endfor %}
+            </div>
+          </li>
           <li class="nav-item">
             <a class="btn btn-danger btn-sm fw-bold px-3" href="{{ url_for('main.sos') }}">SOS <i class="bi bi-telephone-fill"></i></a>
           </li>
           {% if current_user.is_authenticated %}
             <li class="nav-item">
-              <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('consultation.index') }}"><i class="bi bi-calendar2-heart"></i> Consultation</a>
+              <a class="btn btn-outline-secondary btn-sm" href="{{ url_for('consultation.index') }}"><i class="bi bi-calendar2-heart"></i> {{ t('nav.consultation') }}</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="{{ url_for('account.profile') }}"><i class="bi bi-person-circle"></i> {{ current_user.username }}</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="{{ url_for('auth.logout') }}">Logout</a>
+            <li class="nav-item dropdown">
+              <a class="nav-link text-dark dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-person-circle"></i> {{ current_user.username }}</a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{{ url_for('account.profile') }}">{{ t('nav.account') }}</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('account.privacy') }}">{{ t('nav.privacy') }}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">{{ t('nav.logout') }}</a></li>
+              </ul>
             </li>
           {% else %}
             {% if session.get('guest') %}
-              <li class="nav-item"><span class="nav-link text-muted"><i class="bi bi-incognito"></i> Guest</span></li>
+              <li class="nav-item"><span class="nav-link text-muted"><i class="bi bi-incognito"></i> {{ t('nav.guest') }}</span></li>
             {% endif %}
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="{{ url_for('auth.login') }}">Login</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link text-dark" href="{{ url_for('auth.register') }}">Register</a>
-            </li>
+            <li class="nav-item"><a class="nav-link text-dark" href="{{ url_for('auth.login') }}">{{ t('nav.login') }}</a></li>
+            <li class="nav-item"><a class="nav-link text-dark" href="{{ url_for('auth.register') }}">{{ t('nav.register') }}</a></li>
           {% endif %}
         </ul>
       </div>
@@ -127,9 +119,7 @@
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
       {% for category, message in messages %}
-        <div class="alert alert-{{ category }} text-center shadow-sm m-0">
-          {{ message }}
-        </div>
+        <div class="alert alert-{{ category }} text-center shadow-sm m-0" role="alert">{{ message }}</div>
       {% endfor %}
     {% endif %}
   {% endwith %}
@@ -140,12 +130,9 @@
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    // Send the CSRF token with every non-GET fetch / jQuery request
+    // Send the CSRF token with every non-GET fetch request
     (function () {
       const token = document.querySelector('meta[name="csrf-token"]').content;
-      if (window.jQuery) {
-        jQuery.ajaxSetup({ headers: { "X-CSRFToken": token } });
-      }
       const origFetch = window.fetch;
       window.fetch = function (input, init) {
         init = init || {};

@@ -13,12 +13,12 @@
 
   <!-- Title -->
   <h1 class="fw-bold font-monospace text-info border-bottom border-info pb-2 mb-3 text-center">
-    Lumora AI Chatbot
+    {{ t('home.title') }}
   </h1>
 
   <!-- Subtitle -->
   <p class="lead text-secondary text-center mb-4" style="max-width: 650px;">
-    Your friendly mental health companion. Chat anytime for guidance, tips, and exercises to support your emotional wellbeing.
+    {{ t('home.subtitle') }}
   </p>
 
   <!-- Single Continue Button -->
@@ -27,7 +27,7 @@
     class="btn btn-primary btn-lg shadow mb-3"
     style="--bs-btn-padding-y: 1.25rem; --bs-btn-padding-x: 5rem; --bs-btn-font-size: 1.6rem; font-weight: 700;"
   >
-    CONTINUE
+    {{ t('home.chat_now') }}
   </a>
 
   <!-- Account / guest options -->
@@ -35,11 +35,11 @@
     {% if current_user.is_authenticated %}
       <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary btn-lg">Logout ({{ current_user.username }})</a>
     {% else %}
-      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">Login</a>
-      <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-lg">Register</a>
-      <a href="{{ url_for('auth.guest') }}" class="btn btn-outline-secondary btn-lg"><i class="bi bi-incognito"></i> Continue as Guest</a>
+      <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg">{{ t('nav.login') }}</a>
+      <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary btn-lg">{{ t('nav.register') }}</a>
+      <a href="{{ url_for('auth.guest') }}" class="btn btn-outline-secondary btn-lg"><i class="bi bi-incognito"></i> {{ t('home.guest') }}</a>
     {% endif %}
-    <a href="{{ url_for('main.about') }}" class="btn btn-outline-info btn-lg">About Us</a>
+    <a href="{{ url_for('main.about') }}" class="btn btn-outline-info btn-lg">{{ t('home.about') }}</a>
   </div>
   {% if current_user.is_authenticated %}
   <div class="w-100 mt-4" style="max-width: 900px;">{% include "consultation/_calendar.html" %}</div>
