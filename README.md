@@ -1,3 +1,4 @@
+
 # Lumora: MindCare Chatbot
 
 A mental wellness chatbot for students that puts safety first. Every message is screened for crisis signals before anything else happens; high-risk messages go straight to SOS guidance instead of a normal reply. Everything else is routed through an intent classifier, a therapeutic response style the user chooses, and a fallback LLM for open-ended messages. It works in English, Nepali and Romanized Nepali, and comes with self-help tools: mood tracking, journaling, PHQ-9/GAD-7 self-tests, burnout checks, mindfulness exercises and an anonymous community.
@@ -94,19 +95,35 @@ Open **http://localhost:5000**.
 ## Screenshots
 
 **Chat with SOS redirect**
-![Chat]("C:\Users\ASUS TUF A15\OneDrive\Pictures\Screenshots\Screenshot 2026-10-02 145619.png")
+<img width="1905" height="915" alt="sos_redirect" src="https://github.com/user-attachments/assets/2ac094c6-34fc-42c6-a279-d17a508c7c9a" />
 
 **Mood dashboard**
-![Mood dashboard](docs/screenshots/mood-dashboard.png)
+<img width="1500" height="817" alt="mood_dash" src="https://github.com/user-attachments/assets/fa89a0b9-1836-4884-86f1-aa34094c0a51" />
 
 **Self-tests and burnout check**
-![Self-tests](docs/screenshots/self-tests.png)
+
+<img width="1437" height="706" alt="self_test" src="https://github.com/user-attachments/assets/b9c3e710-4e96-4ac0-8726-528c4fdb9793" />
+
+<img width="1075" height="830" alt="test" src="https://github.com/user-attachments/assets/723e0115-02b1-400d-88e2-fb94ffd88ede" />
+
+<img width="1065" height="830" alt="another_test" src="https://github.com/user-attachments/assets/66c0e3e9-731c-4363-9927-057d32dc38cd" />
+
+<img width="1077" height="785" alt="burnout_test" src="https://github.com/user-attachments/assets/be8fec09-03cf-440e-ac2b-ec38c4d6a0cf" />
+
+<img width="1282" height="755" alt="burnout" src="https://github.com/user-attachments/assets/091b8350-8251-476c-b641-9ea0c3261713" />
+
 
 **Anonymous community**
-![Community](docs/screenshots/community.png)
+<img width="1245" height="635" alt="post_anon" src="https://github.com/user-attachments/assets/85a15873-5a7c-4a31-bd49-1815b7f6ac98" />
+
 
 **Consultation booking**
-![Consultation](docs/screenshots/consultation.png)
+<img width="1562" height="806" alt="consultation" src="https://github.com/user-attachments/assets/9681133e-5277-49bb-abda-b9a345a98d4f" />
 
 **Evaluation (J1, J2, J3)**
-![Evaluation](docs/screenshots/evaluation.png)
+<img width="1390" height="846" alt="j1" src="https://github.com/user-attachments/assets/3e0f1851-3e2a-4bd7-91ac-e86f3c3d7a2d" />
+
+<img width="1397" height="837" alt="j2" src="https://github.com/user-attachments/assets/65b325bd-da5e-4a72-a3eb-501992fd6553" />
+
+<img width="1356" height="800" alt="j3" src="https://github.com/user-attachments/assets/49193880-2680-4bc3-93d7-d00571004867" />
+
