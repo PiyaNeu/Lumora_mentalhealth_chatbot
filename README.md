@@ -125,19 +125,20 @@ ML sentiment classifier used by J1 and the hybrid sentiment.
 
 ### Results (real, from `reports/`)
 
-Dataset: 54 intents, 6,696 samples (775 hand-written, 285 reused from the mid-term data, 5,292 augmented variants, 344 history follow-ups). The original final-project dataset was lost; this one was rebuilt.
+Dataset: 54 intents, 6,696 samples (1,081 hand-written, 277 reused from the mid-term data, 4,994 augmented variants, 344 history follow-ups). The original final-project dataset was lost; this one was rebuilt. Hand-written sentences are in `data/intents_seed.json` and `data/intents_seed_extra.json`.
 
 | Model | Validation accuracy, stratified 80/20 (report method) | Unseen-sentence split |
 |---|---|---|
-| Naive Bayes (TF-IDF) | 88.88% | 31.84% |
-| Linear SVM (TF-IDF) | 91.19% | 40.94% |
-| **Feed-Forward NN (Keras, production)** | **96.04%** (macro-F1 0.961) | 43.10% |
-| LSTM (tokenizer + embedding) | 90.00% | 31.62% |
+| Naive Bayes (TF-IDF) | 87.61% | 50.26% |
+| Linear SVM (TF-IDF) | 90.07% | 56.30% |
+| **Feed-Forward NN (Keras, production)** | **94.70%** (macro-F1 0.947) | 61.37% |
+| LSTM (tokenizer + embedding) | 88.73% | 48.84% |
 
 - **Stratified 80/20** is the method described in the report. Augmented variants of a sentence can appear in both training and validation, so it measures recognition of known phrasings.
 - **Unseen-sentence split** keeps every variant of a sentence on one side. It's a stricter estimate for brand-new messages and shows that more varied training sentences are the main room for improvement.
-- **Confidence threshold:** at the app's 0.55 threshold, 93.6% of validation messages are answered by the model, with 99.8% accuracy. Messages below the threshold go to the Mistral fallback or a supportive fallback reply.
-- **History features:** follow-up messages are classified correctly 40.6% of the time with history, against 1.6% without it.
+- **Confidence threshold:** at the app's 0.55 threshold, 91.9% of validation messages are answered by the model, with 99.5% accuracy. Between 0.30 and 0.55 Lumora offers its best guess and checks it with the user ("it sounds like this might be about stress — is that right?"); below that it uses the Mistral fallback or a supportive fallback reply.
+- **Everyday phrasing (held-out check):** 36 of 45 common English expressions and 41 of 42 everyday Nepali messages that are not in the training data get a relevant reply.
+- **History features:** follow-up messages are classified correctly 40.6% of the time with history, against 3.1% without it.
 - **J1 / J2 / J3:** these are computed live from your database (Evaluation menu). J1 needs at least 10 messages labelled on the Manual Labeling page.
 
 ## Tests
@@ -146,7 +147,7 @@ Dataset: 54 intents, 6,696 samples (775 hand-written, 285 reused from the mid-te
 python -m pytest
 ```
 
-465 tests. They mirror the report's Chapter 4 test-case tables:
+470 tests. They mirror the report's Chapter 4 test-case tables:
 
 | Report table | Test file |
 |---|---|

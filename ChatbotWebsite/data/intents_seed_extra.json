@@ -1,0 +1,419 @@
+{
+  "description": "Additional hand-written everyday phrasings per intent (round 2), merged by build_dataset.py. Written to broaden real-world coverage; deliberately different from the held-out probe sentences used to evaluate it.",
+  "patterns": {
+    "greeting": [
+      "hey lumora",
+      "hello again",
+      "hi, it's me",
+      "good evening lumora",
+      "hey, are you there?",
+      "heyy"
+    ],
+    "goodbye": [
+      "i'll talk to you tomorrow",
+      "bye, take care",
+      "i need to sleep now, bye",
+      "ok i'm going now",
+      "see you next time"
+    ],
+    "thanks": [
+      "thanks, that really helps",
+      "thank you for being here",
+      "appreciate your help",
+      "that was nice of you, thanks",
+      "you made me feel better, thank you"
+    ],
+    "about_lumora": [
+      "are you an ai",
+      "is this a real person typing",
+      "who built this app",
+      "what kind of bot are you"
+    ],
+    "capabilities_help": [
+      "can i talk to you about something",
+      "i just need to vent",
+      "can you listen to me",
+      "i want to share something",
+      "i don't know who else to talk to"
+    ],
+    "agreement": [
+      "yeah that makes sense",
+      "ok sure i'll do that",
+      "true",
+      "alright i'll give it a go",
+      "yes please"
+    ],
+    "disagreement": [
+      "that's not helpful",
+      "you're not getting it",
+      "no that's not it",
+      "that's not my problem",
+      "i don't think that will work"
+    ],
+    "positive_mood": [
+      "today was actually nice",
+      "i'm in a good mood",
+      "feeling much lighter today",
+      "i got good news today",
+      "i'm happy with how today went",
+      "i finally feel okay"
+    ],
+    "stress_general": [
+      "i'm under so much pressure",
+      "everything is stressing me",
+      "i feel so tense lately",
+      "life is so stressful right now",
+      "i'm stressed out of my mind",
+      "my stress is through the roof",
+      "there's so much pressure on me",
+      "i feel pressured from all sides"
+    ],
+    "anxiety_general": [
+      "i feel anxious all the time",
+      "my anxiety won't go away",
+      "i keep worrying about small things",
+      "i'm always worried something bad will happen",
+      "i feel restless and worried",
+      "my stomach is in knots with worry",
+      "i'm so nervous i can't sit still",
+      "i worry constantly"
+    ],
+    "panic_attack": [
+      "my heart won't stop pounding",
+      "i suddenly feel like i can't breathe",
+      "i'm having a panic attack right now",
+      "everything feels like it's closing in and i'm shaking",
+      "my chest is tight and i'm panicking"
+    ],
+    "sadness_low_mood": [
+      "i feel down",
+      "i've been sad for a while",
+      "i feel so low lately",
+      "i'm not happy anymore",
+      "there's a hollow feeling in me",
+      "nothing feels good anymore",
+      "i feel heavy and sad",
+      "my days feel grey",
+      "i'm having a really bad day",
+      "i don't feel okay"
+    ],
+    "loneliness": [
+      "i have nobody",
+      "i feel so alone in this",
+      "no one checks on me",
+      "i sit alone at lunch every day",
+      "i don't have anyone to share things with",
+      "i feel invisible to everyone",
+      "people don't talk to me",
+      "i wish i had someone"
+    ],
+    "anger_frustration": [
+      "i'm so frustrated",
+      "i'm really mad right now",
+      "everyone is getting on my nerves",
+      "i lose my temper easily",
+      "i'm angry and i don't know why",
+      "i feel like yelling at someone"
+    ],
+    "overwhelm": [
+      "i have too much on my plate",
+      "there's too much in my head",
+      "my head is too full",
+      "i can't handle everything at once",
+      "it's all piling up",
+      "i'm overwhelmed with everything",
+      "everything is happening at once",
+      "i have so many things to do and i'm overwhelmed",
+      "i don't know how to deal with all of this",
+      "things keep piling up"
+    ],
+    "fear_worry_future": [
+      "i'm scared of what's coming",
+      "i worry about my future a lot",
+      "what if i never succeed",
+      "i'm afraid things won't get better",
+      "thinking about the future scares me"
+    ],
+    "guilt_shame": [
+      "i feel so guilty",
+      "i let everyone down",
+      "i'm ashamed of what i did",
+      "i can't forgive myself",
+      "i messed up badly",
+      "i feel bad for what i said to my friend"
+    ],
+    "jealousy_comparison": [
+      "everyone seems happier than me",
+      "my friends are all doing better",
+      "i always compare myself with my classmates",
+      "i see others succeeding and feel bad",
+      "instagram makes me feel like a failure"
+    ],
+    "boredom_lack_interest": [
+      "nothing excites me anymore",
+      "i don't enjoy anything",
+      "i'm not interested in anything lately",
+      "everything feels pointless and boring",
+      "i lost interest in my hobbies"
+    ],
+    "tiredness_fatigue": [
+      "i'm always exhausted",
+      "i have no energy at all",
+      "i feel drained every day",
+      "i'm tired even after sleeping",
+      "i feel so tired and weak",
+      "my body feels so heavy"
+    ],
+    "crying_emotional": [
+      "i keep crying",
+      "i cried today",
+      "i just want to cry",
+      "i've been crying a lot",
+      "tears won't stop"
+    ],
+    "overthinking": [
+      "my thoughts won't stop",
+      "my mind keeps racing",
+      "i think too much about everything",
+      "i can't turn my brain off",
+      "i keep thinking about the same thing",
+      "i replay everything in my head",
+      "my brain won't shut up",
+      "too many thoughts in my head"
+    ],
+    "exam_stress": [
+      "my exams are stressing me",
+      "i'm nervous about my test",
+      "exams are next week and i'm panicking",
+      "i'm scared about my finals",
+      "i haven't prepared for my exam",
+      "i have a test tomorrow",
+      "i'm worried i'll fail my exam",
+      "exam season is killing me",
+      "i'm so stressed about my board exams",
+      "i didn't prepare for tomorrow's exam"
+    ],
+    "exam_failure_results": [
+      "i got low marks",
+      "my results came out and they're bad",
+      "i failed my test",
+      "my grades dropped",
+      "i got a bad score",
+      "i didn't pass the exam",
+      "my report card is bad"
+    ],
+    "study_focus": [
+      "i can't focus on my studies",
+      "i get distracted when i study",
+      "my focus is gone when i open my books",
+      "i read the same page again and again",
+      "my mind wanders when i try to study",
+      "how do i focus better"
+    ],
+    "procrastination": [
+      "i keep putting off my work",
+      "i waste time on my phone",
+      "i delay everything until the last minute",
+      "i can't make myself start my assignment",
+      "i keep avoiding my homework",
+      "i scroll instead of working"
+    ],
+    "time_management": [
+      "i have too many assignments",
+      "i can't finish everything on time",
+      "how do i manage my schedule",
+      "there's not enough time in the day",
+      "i'm behind on all my work",
+      "i have so many deadlines"
+    ],
+    "academic_pressure_parents": [
+      "my parents expect me to be the best",
+      "my parents are disappointed in my grades",
+      "my family keeps comparing me to others",
+      "my dad wants me to be an engineer",
+      "i'm scared to tell my parents my result",
+      "my parents put so much pressure on me"
+    ],
+    "career_uncertainty": [
+      "i don't know what career to choose",
+      "i'm confused about my future studies",
+      "i feel lost about what to do after school",
+      "i don't know what i want to become",
+      "should i study abroad"
+    ],
+    "burnout": [
+      "i'm burnt out",
+      "school has worn me out completely",
+      "i have no motivation left from overworking",
+      "i'm exhausted from college",
+      "i'm sick of working all the time",
+      "i'm completely drained by school"
+    ],
+    "sleep_issues": [
+      "i can't fall asleep",
+      "i'm awake all night",
+      "i couldn't sleep last night",
+      "i keep waking up at 3am",
+      "i sleep very late every night",
+      "i barely slept",
+      "my sleep is terrible",
+      "i lie in bed for hours"
+    ],
+    "nightmares": [
+      "i had a nightmare",
+      "bad dreams keep waking me up",
+      "i'm scared to sleep because of dreams",
+      "i keep dreaming bad things"
+    ],
+    "appetite_eating_changes": [
+      "i'm not hungry at all",
+      "i eat too much when i'm sad",
+      "i skipped meals today",
+      "i've stopped eating properly"
+    ],
+    "physical_symptoms_stress": [
+      "stress gives me headaches",
+      "my body hurts from stress",
+      "my shoulders are so tight",
+      "my stomach hurts when i'm anxious"
+    ],
+    "relationship_problems": [
+      "my partner and i keep arguing",
+      "my boyfriend is ignoring me",
+      "my girlfriend doesn't care about me",
+      "i have problems with my partner",
+      "my relationship is falling apart",
+      "i feel unloved by my partner",
+      "i like someone but i'm scared to tell them"
+    ],
+    "breakup_heartbreak": [
+      "she broke up with me",
+      "he left me",
+      "i can't stop thinking about my ex",
+      "we just broke up",
+      "my heart is broken",
+      "i got rejected by my crush"
+    ],
+    "family_conflict": [
+      "my parents keep fighting",
+      "my mother screams at me for small things",
+      "my dad is always angry at me",
+      "i don't get along with my family",
+      "there's always fighting at home",
+      "my parents don't listen to me"
+    ],
+    "friendship_issues": [
+      "my friend is ignoring me",
+      "my friends left me out",
+      "i had an argument with my best friend",
+      "my friends don't invite me anymore",
+      "my friend said something hurtful",
+      "my closest friend is avoiding me now"
+    ],
+    "social_anxiety_shyness": [
+      "i'm scared to talk to people",
+      "i get nervous speaking in class",
+      "i'm too shy to make friends",
+      "i'm scared of presenting in front of the class",
+      "talking to strangers makes me anxious"
+    ],
+    "bullying_harassment": [
+      "people make fun of me",
+      "someone is bullying me online",
+      "my classmates tease me",
+      "i'm being picked on at school",
+      "they laugh at me every day"
+    ],
+    "homesickness": [
+      "i miss home",
+      "i miss my family a lot",
+      "i'm homesick",
+      "i want to go back home",
+      "living alone is hard, i miss my parents"
+    ],
+    "low_self_esteem": [
+      "i'm not good at anything",
+      "i feel worthless compared to others",
+      "i hate myself",
+      "i feel like a failure",
+      "i don't like who i am",
+      "everyone is better than me at everything"
+    ],
+    "motivation_goals": [
+      "i have no motivation",
+      "i can't get myself to do anything",
+      "how do i stay motivated",
+      "i've lost my drive",
+      "i want to get my life together"
+    ],
+    "self_care": [
+      "how can i take care of myself",
+      "i need to relax",
+      "what can i do to feel better today",
+      "i want to look after myself",
+      "give me something relaxing to do"
+    ],
+    "body_image": [
+      "i hate my body",
+      "i think i'm fat",
+      "i don't like how i look",
+      "i'm insecure about my looks"
+    ],
+    "grief_loss": [
+      "my grandmother died",
+      "i lost my father",
+      "someone i love passed away",
+      "my friend died last month",
+      "i'm grieving my uncle"
+    ],
+    "breathing_exercise": [
+      "help me breathe",
+      "breathing exercise please",
+      "how do i slow my breathing",
+      "teach me to breathe calmly"
+    ],
+    "mindfulness_grounding": [
+      "help me feel grounded",
+      "can we do a short meditation",
+      "i want to be more present",
+      "guide me through mindfulness"
+    ],
+    "coping_skills": [
+      "how do i deal with my feelings",
+      "what can i do when i feel bad",
+      "how do i cope with this",
+      "i need ways to feel better",
+      "how do i handle stress better"
+    ],
+    "journaling_prompt": [
+      "what should i write about",
+      "help me start a journal",
+      "give me something to reflect on",
+      "i want to write down my feelings"
+    ],
+    "professional_help": [
+      "i think i need a counsellor",
+      "how do i see a psychologist",
+      "i want to book an appointment with a doctor",
+      "should i get therapy",
+      "where can i get help from a professional"
+    ],
+    "crisis_suicidal": [
+      "i don't want to be alive",
+      "i want my life to end",
+      "i'm thinking of ending my life",
+      "i wish i could disappear forever and never wake up"
+    ],
+    "self_harm": [
+      "i hurt myself again",
+      "i want to cut myself",
+      "i've been hurting myself"
+    ],
+    "substance_use": [
+      "i drink every night",
+      "i smoke weed to calm down",
+      "i've been drinking too much",
+      "i can't stop smoking"
+    ]
+  }
+}

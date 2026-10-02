@@ -74,7 +74,8 @@ def test_feeling_useless_gets_cautious_reply(real_model):
 # "I'm not sure I understood" because confidence was split between exam_stress and stress_general.
 def test_reported_exam_stress_followup_is_understood(real_model):
     reply = process_message("yes i am having a lot of exam stress", prev_user_text="i am crying")
-    assert reply.route == "intent" and reply.intent == "exam_stress"
+    # Either a confident reply or the tentative "it sounds like exam stress — is that right?" one
+    assert reply.route in ("intent", "soft_guess") and reply.intent == "exam_stress"
 
 
 def test_family_confidence_adds_related_intents():
@@ -126,9 +127,28 @@ def test_predictions_stay_correct_while_another_model_loads(real_model, app):
 ])
 def test_reported_conversation_flow(real_model, text, prev, expected):
     reply = process_message(text, prev_user_text=prev)
-    assert reply.route == "intent" and reply.intent == expected, (reply.route, reply.intent, reply.confidence)
+    assert reply.route in ("intent", "soft_guess") and reply.intent == expected,         (reply.route, reply.intent, reply.confidence)
 
 
 def test_unrelated_message_does_not_inherit_previous_topic(real_model):
     reply = process_message("tell me a joke", prev_user_text="i cant sleep at night")
     assert reply.intent != "sleep_issues"
+
+
+@pytest.mark.parametrize("text", ["i have a lot on my mind", "everything is going wrong", "can you help me relax"])
+def test_uncertain_messages_get_a_checked_guess_not_a_generic_fallback(real_model, text):
+    reply = process_message(text)
+    assert reply.route in ("intent", "soft_guess"), (reply.route, reply.intent, reply.confidence)
+    if reply.route == "soft_guess":
+        assert "Did I get that right?" in reply.text
+
+
+def test_soft_guess_never_used_for_upbeat_or_crisis_topics():
+    from ChatbotWebsite.chat.topics import TOPIC_LABELS
+
+    for tag in ("positive_mood", "thanks", "greeting", "crisis_suicidal", "self_harm", "agreement"):
+        assert tag not in TOPIC_LABELS
+
+
+def test_not_feeling_well_mentally_is_low_mood(real_model):
+    assert process_message("i'm not feeling well mentally").intent == "sadness_low_mood"

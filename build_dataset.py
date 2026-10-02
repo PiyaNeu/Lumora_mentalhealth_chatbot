@@ -2,6 +2,7 @@
 
 Sources
   1. ChatbotWebsite/data/intents_seed.json  – hand-written LUMORA patterns + responses
+     ChatbotWebsite/data/intents_seed_extra.json – more hand-written everyday phrasings (round 2)
   2. ChatbotWebsite/static/data/intents.json – mid-term dataset; patterns from tags that
      map onto a LUMORA intent are reused (LEGACY_MAP below)
 
@@ -23,6 +24,7 @@ from collections import Counter
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 SEED_PATH = os.path.join(ROOT, "ChatbotWebsite", "data", "intents_seed.json")
+EXTRA_PATH = os.path.join(ROOT, "ChatbotWebsite", "data", "intents_seed_extra.json")
 LEGACY_PATH = os.path.join(ROOT, "ChatbotWebsite", "static", "data", "intents.json")
 OUT_PATH = os.path.join(ROOT, "ChatbotWebsite", "data", "intents_augmented.json")
 
@@ -137,7 +139,9 @@ def main():
     with open(LEGACY_PATH, encoding="utf-8") as f:
         legacy = json.load(f)["intents"]
 
-    by_tag = {i["tag"]: i for i in seed}
+    with open(EXTRA_PATH, encoding="utf-8") as f:
+        extra = json.load(f)["patterns"]
+    by_tag = {i["tag"]: {**i, "patterns": i["patterns"] + extra.get(i["tag"], [])} for i in seed}
     legacy_patterns = {tag: [] for tag in by_tag}
     for item in legacy:
         target = LEGACY_MAP.get(item["tag"])

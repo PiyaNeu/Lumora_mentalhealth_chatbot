@@ -18,21 +18,26 @@ from ChatbotWebsite.chat.humanizer import humanize
 from ChatbotWebsite.chat.intent import CRISIS_INTENTS, get_classifier, pick_response
 from ChatbotWebsite.chat.language import detect_language, is_nepali
 from ChatbotWebsite.chat.safety import MEDIUM_REPLY, SOS_REPLY, assess_risk
+from ChatbotWebsite.chat.topics import check_line, confirm_question
 from ChatbotWebsite.chat.translate import to_english
 from ChatbotWebsite.sentiment import Sentiment, analyze
 
 MAX_INPUT_CHARS = 2000
 # Lower than the normal threshold on purpose: for crisis intents a false alarm is the safer error
 CRISIS_MODEL_THRESHOLD = 0.4
+# Between this and INTENT_CONFIDENCE_THRESHOLD the model's best guess is offered tentatively
+# ("it sounds like this might be about X — is that right?") instead of a generic fallback.
+SOFT_GUESS_THRESHOLD = 0.3
 
 NEPALI_UNAVAILABLE_NOTE = "(नेपाली अनुवाद अहिले उपलब्ध छैन, त्यसैले म अंग्रेजीमा जवाफ दिँदैछु।)"
 
 
 SHORT_LOW_MOOD = re.compile(
     r"^(i'?m |i am |im |feeling |i feel |it'?s |its |honestly |kinda |pretty |very |so |really |a )*"
-    r"(not (good|great|okay|ok|fine|well|so good|too good|that good|happy)|bad|awful|terrible|horrible|"
+    r"(not (good|great|okay|ok|fine|well|so good|too good|that good|happy)|"
+    r"not feeling (well|good|great|okay|ok|myself)|bad|awful|terrible|horrible|"
     r"sad|down|low|upset|miserable|rough|bad day|rough day|terrible day|awful day|a bad day|not a good day|"
-    r"could be better|been better|not my day)( today| lately| right now)?[\s.!]*$",
+    r"could be better|been better|not my day)( mentally| emotionally)?( today| lately| right now)?[\s.!]*$",
     re.IGNORECASE,
 )
 SHORT_GOOD_MOOD = re.compile(
@@ -64,10 +69,22 @@ def mood_shortcut(text_en):
     return None
 
 
+def _soft_guess(classifier, tag, confidence, ui_lang):
+    """Offer the model's best guess tentatively. Returns (body, route, lang) or (None, None, None)."""
+    if classifier is None or tag is None or confidence is None or confidence < SOFT_GUESS_THRESHOLD:
+        return None, None, None
+    core, lang = pick_response(classifier, tag, lang=ui_lang)
+    intro = check_line(tag, lang)  # None for conversational, upbeat and crisis intents
+    if not core or intro is None:
+        return None, None, None
+    first_two = " ".join(re.split(r"(?<=[.!?।])\s+", core.strip())[:2])
+    return f"{intro} {first_two}\n\n{confirm_question(lang)}", "soft_guess", lang
+
+
 @dataclass
 class ChatReply:
     text: str
-    route: str              # sos | medium_risk | guard | intent | llm | fallback
+    route: str              # sos | medium_risk | guard | intent | soft_guess | llm | fallback
     language: str = "en"
     risk: str = "none"
     matched: str = ""
@@ -125,10 +142,11 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
         if text_en != raw:
             candidates += [(raw, None)] + ([(raw, prev_en)] if use_history else [])
         tag, confidence = max((classifier.predict(t, p) for t, p in candidates), key=lambda r: r[1])
-        # Short follow-up ("what should I do?", "any tips?") that is unclear on its own:
-        # carry over the topic of the previous message if that one was clear.
+        # Short follow-up ("what should I do?", "any tips?"): if the previous message had a clear
+        # topic, continue with exactly that topic — more precise than the history-aware reading.
         threshold = current_app.config["INTENT_CONFIDENCE_THRESHOLD"]
-        if prev_en and confidence < threshold and FOLLOW_UP.search(text_en) and len(text_en.split()) <= 8:
+        own_tag, own_conf = classifier.predict(text_en)
+        if use_history and len(text_en.split()) <= 8 and own_conf < threshold:
             prev_tag, prev_conf = classifier.predict(prev_en)
             if prev_conf >= threshold and prev_tag not in CRISIS_INTENTS and getattr(
                     classifier, "wraps", lambda t: True)(prev_tag):
@@ -137,6 +155,10 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
     confident = tag is not None and confidence is not None and confidence >= threshold
 
     # Second safety net: the model recognised a crisis the keyword rules missed
+    if tag in CRISIS_INTENTS and confidence is not None and SOFT_GUESS_THRESHOLD <= confidence < CRISIS_MODEL_THRESHOLD:
+        # Possibly a crisis, but not clear: never answer casually — use the cautious reply
+        return ChatReply(MEDIUM_REPLY[ui_lang], "medium_risk", lang, "medium", f"model:{tag}", tag, confidence,
+                         sentiment=sentiment, text_en=text_en)
     if tag in CRISIS_INTENTS and confidence is not None and confidence >= CRISIS_MODEL_THRESHOLD:
         return ChatReply(SOS_REPLY[ui_lang], "sos", lang, "high", f"model:{tag}", tag, confidence,
                          sentiment=sentiment, text_en=text_en)
@@ -159,7 +181,9 @@ def process_message(text, mode="auto", history=None, prev_user_text=None, last_b
             body, route = generated, "llm"
             reply_lang = ui_lang  # the LLM is asked to answer in the user's language
         else:
-            body, route, reply_lang = brain.fallback(strategy, ui_lang), "fallback", ui_lang
+            body, route, reply_lang = _soft_guess(classifier, tag, confidence, ui_lang)
+            if body is None:
+                body, route, reply_lang = brain.fallback(strategy, ui_lang), "fallback", ui_lang
 
     # 7. Humanizer (also enforces non-diagnostic wording)
     body = humanize(body, reply_lang)

@@ -1,60 +1,60 @@
                            precision    recall  f1-score   support
 
-                 greeting      0.889     0.960     0.923        25
-                  goodbye      0.958     0.920     0.939        25
-                   thanks      1.000     1.000     1.000        25
-             about_lumora      1.000     1.000     1.000        25
-        capabilities_help      0.960     1.000     0.980        24
-                agreement      1.000     0.920     0.958        25
+                 greeting      0.857     0.960     0.906        25
+                  goodbye      1.000     0.840     0.913        25
+                   thanks      0.962     1.000     0.980        25
+             about_lumora      1.000     0.960     0.980        25
+        capabilities_help      1.000     1.000     1.000        24
+                agreement      0.958     0.920     0.939        25
              disagreement      1.000     1.000     1.000        24
-            positive_mood      0.960     0.960     0.960        25
-           stress_general      0.913     0.875     0.894        24
-          anxiety_general      0.913     0.840     0.875        25
-             panic_attack      0.960     0.960     0.960        25
-         sadness_low_mood      0.923     0.960     0.941        25
-               loneliness      0.793     0.920     0.852        25
+            positive_mood      0.889     0.960     0.923        25
+           stress_general      1.000     0.833     0.909        24
+          anxiety_general      0.846     0.880     0.863        25
+             panic_attack      1.000     0.960     0.980        25
+         sadness_low_mood      0.917     0.880     0.898        25
+               loneliness      0.957     0.880     0.917        25
         anger_frustration      0.885     0.958     0.920        24
-                overwhelm      0.962     1.000     0.980        25
-        fear_worry_future      0.889     0.960     0.923        25
-              guilt_shame      0.962     1.000     0.980        25
-      jealousy_comparison      0.962     1.000     0.980        25
-    boredom_lack_interest      1.000     0.880     0.936        25
-        tiredness_fatigue      1.000     1.000     1.000        25
-         crying_emotional      0.958     0.920     0.939        25
+                overwhelm      1.000     1.000     1.000        25
+        fear_worry_future      0.960     0.960     0.960        25
+              guilt_shame      0.885     0.920     0.902        25
+      jealousy_comparison      1.000     0.920     0.958        25
+    boredom_lack_interest      0.917     0.880     0.898        25
+        tiredness_fatigue      0.926     1.000     0.962        25
+         crying_emotional      1.000     0.880     0.936        25
              overthinking      0.889     0.960     0.923        25
-              exam_stress      0.958     0.958     0.958        24
-     exam_failure_results      1.000     1.000     1.000        25
-              study_focus      1.000     0.917     0.957        24
-          procrastination      1.000     0.960     0.980        25
-          time_management      1.000     0.875     0.933        24
-academic_pressure_parents      1.000     0.920     0.958        25
+              exam_stress      0.957     0.917     0.936        24
+     exam_failure_results      0.923     0.960     0.941        25
+              study_focus      0.917     0.917     0.917        24
+          procrastination      1.000     1.000     1.000        25
+          time_management      1.000     0.833     0.909        24
+academic_pressure_parents      0.960     0.960     0.960        25
        career_uncertainty      1.000     0.960     0.980        25
-                  burnout      0.962     1.000     0.980        25
-             sleep_issues      1.000     0.960     0.980        25
+                  burnout      1.000     0.960     0.980        25
+             sleep_issues      0.923     0.960     0.941        25
                nightmares      0.962     1.000     0.980        25
-  appetite_eating_changes      1.000     1.000     1.000        24
- physical_symptoms_stress      0.960     0.960     0.960        25
-    relationship_problems      1.000     0.960     0.980        25
-       breakup_heartbreak      1.000     1.000     1.000        25
-          family_conflict      0.960     0.960     0.960        25
-        friendship_issues      1.000     0.960     0.980        25
-   social_anxiety_shyness      0.923     0.960     0.941        25
-      bullying_harassment      0.923     0.960     0.941        25
-             homesickness      0.960     0.960     0.960        25
-          low_self_esteem      1.000     0.920     0.958        25
-         motivation_goals      0.889     0.960     0.923        25
+  appetite_eating_changes      0.923     1.000     0.960        24
+ physical_symptoms_stress      1.000     1.000     1.000        25
+    relationship_problems      1.000     1.000     1.000        25
+       breakup_heartbreak      1.000     0.880     0.936        25
+          family_conflict      1.000     1.000     1.000        25
+        friendship_issues      0.960     0.960     0.960        25
+   social_anxiety_shyness      0.846     0.880     0.863        25
+      bullying_harassment      1.000     0.920     0.958        25
+             homesickness      1.000     1.000     1.000        25
+          low_self_esteem      0.852     0.920     0.885        25
+         motivation_goals      0.958     0.920     0.939        25
                 self_care      1.000     1.000     1.000        24
-               body_image      0.821     0.920     0.868        25
-               grief_loss      0.962     1.000     0.980        25
-       breathing_exercise      0.960     0.960     0.960        25
-    mindfulness_grounding      1.000     0.958     0.979        24
-            coping_skills      0.962     1.000     0.980        25
-        journaling_prompt      1.000     0.960     0.980        25
-        professional_help      1.000     1.000     1.000        25
-          crisis_suicidal      1.000     1.000     1.000        25
+               body_image      0.742     0.920     0.821        25
+               grief_loss      1.000     0.960     0.980        25
+       breathing_exercise      0.828     0.960     0.889        25
+    mindfulness_grounding      0.955     0.875     0.913        24
+            coping_skills      1.000     1.000     1.000        25
+        journaling_prompt      0.962     1.000     0.980        25
+        professional_help      0.923     0.960     0.941        25
+          crisis_suicidal      0.926     1.000     0.962        25
                 self_harm      1.000     1.000     1.000        25
-            substance_use      1.000     0.920     0.958        25
+            substance_use      0.960     0.960     0.960        25
 
-                 accuracy                          0.960      1340
-                macro avg      0.963     0.960     0.961      1340
-             weighted avg      0.962     0.960     0.961      1340
+                 accuracy                          0.947      1340
+                macro avg      0.950     0.947     0.947      1340
+             weighted avg      0.950     0.947     0.947      1340

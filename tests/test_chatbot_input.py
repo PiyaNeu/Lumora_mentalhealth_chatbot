@@ -12,10 +12,11 @@ from ChatbotWebsite.chat.translate import to_english
 class FakeClassifier:
     def __init__(self, tag="stress", confidence=0.95):
         self.tag, self.confidence = tag, confidence
-        self.seen_prev = None
+        self.seen_prevs = []
 
     def predict(self, text, prev_text=None):
-        self.seen_prev = prev_text
+        if prev_text:
+            self.seen_prevs.append(prev_text)
         return self.tag, self.confidence
 
     def responses(self, tag):
@@ -142,14 +143,14 @@ def test_previous_user_message_passed_as_history_for_follow_ups(client, fake):
     client.get("/guest")
     client.post("/chat/send", json={"message": "my exams are next week"})
     client.post("/chat/send", json={"message": "what should I do?"})
-    assert fake.seen_prev == "my exams are next week"
+    assert "my exams are next week" in fake.seen_prevs
 
 
 def test_history_not_used_for_standalone_messages(client, fake):
     client.get("/guest")
     client.post("/chat/send", json={"message": "my exams are next week"})
     client.post("/chat/send", json={"message": "I feel stressed"})
-    assert fake.seen_prev is None
+    assert fake.seen_prevs == []
 
 
 # Brain strategy selection (§3.7.7d)
