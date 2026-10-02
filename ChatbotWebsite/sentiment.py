@@ -16,6 +16,8 @@ from dataclasses import dataclass
 
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+from ChatbotWebsite.ml.keras_lock import KERAS_LOCK
+
 POSITIVE_THRESHOLD = 0.05
 NEGATIVE_THRESHOLD = -0.05
 HYBRID_THRESHOLD = 0.1
@@ -63,7 +65,8 @@ def _load_ml(model_dir):
 
     with open(os.path.join(model_dir, "sentiment_featurizer.pkl"), "rb") as fh:
         bundle = pickle.load(fh)  # our own artifact written by train_sentiment.py
-    model = keras.models.load_model(os.path.join(model_dir, "sentiment_ffnn.keras"))
+    with KERAS_LOCK:
+        model = keras.models.load_model(os.path.join(model_dir, "sentiment_ffnn.keras"))
     return bundle["featurizer"], bundle["labels"], model
 
 
@@ -80,7 +83,8 @@ def ml_probabilities(texts, model_dir=DEFAULT_MODEL_DIR):
             _ml[model_dir] = _load_ml(model_dir)
     featurizer, labels, model = _ml[model_dir]
     X = featurizer.transform(list(texts)).toarray()
-    probs = model.predict(X, verbose=0)
+    with KERAS_LOCK:
+        probs = model.predict(X, verbose=0)
     return [dict(zip(labels, map(float, row))) for row in probs]
 
 

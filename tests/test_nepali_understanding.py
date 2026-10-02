@@ -68,3 +68,50 @@ def test_everyday_nepali_understood(real_model, text, expected):
 
 def test_feeling_useless_gets_cautious_reply(real_model):
     assert process_message("ma aafulai kehi kaam ko chaina jasto lagcha").route == "medium_risk"
+
+
+# Reported conversation: "i am crying" -> "yes i am having a lot of exam stress" fell back to
+# "I'm not sure I understood" because confidence was split between exam_stress and stress_general.
+def test_reported_exam_stress_followup_is_understood(real_model):
+    reply = process_message("yes i am having a lot of exam stress", prev_user_text="i am crying")
+    assert reply.route == "intent" and reply.intent == "exam_stress"
+
+
+def test_family_confidence_adds_related_intents():
+    import numpy as np
+
+    from ChatbotWebsite.chat.intent import family_confidence
+
+    labels = ["exam_stress", "stress_general", "greeting", "sleep_issues"]
+    tag, conf = family_confidence(labels, np.array([0.41, 0.28, 0.21, 0.10]))
+    assert tag == "exam_stress" and abs(conf - 0.69) < 1e-6
+    tag, conf = family_confidence(labels, np.array([0.10, 0.05, 0.45, 0.40]))
+    assert tag == "greeting" and abs(conf - 0.45) < 1e-6   # greeting has no family
+
+
+def test_off_topic_messages_still_fall_back(real_model):
+    for text in ("tell me a joke", "what is the capital of france"):
+        assert process_message(text).route == "fallback"
+
+
+def test_predictions_stay_correct_while_another_model_loads(real_model, app):
+    """Keras returned wrong probabilities when predicting during another model load."""
+    import threading
+
+    from ChatbotWebsite import sentiment
+    from ChatbotWebsite.chat.intent import get_classifier
+
+    clf = get_classifier()
+    results, stop = [], threading.Event()
+
+    def loop():
+        while not stop.is_set():
+            results.append(clf.predict("i am crying")[1])
+
+    worker = threading.Thread(target=loop)
+    worker.start()
+    sentiment._ml.clear()                   # force a fresh load of the sentiment model
+    sentiment.ml_probabilities(["warm up"])
+    stop.set()
+    worker.join()
+    assert results and min(results) > 0.9

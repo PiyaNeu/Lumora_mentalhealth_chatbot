@@ -146,7 +146,7 @@ Dataset: 54 intents, 6,696 samples (775 hand-written, 285 reused from the mid-te
 python -m pytest
 ```
 
-438 tests. They mirror the report's Chapter 4 test-case tables:
+442 tests. They mirror the report's Chapter 4 test-case tables:
 
 | Report table | Test file |
 |---|---|
