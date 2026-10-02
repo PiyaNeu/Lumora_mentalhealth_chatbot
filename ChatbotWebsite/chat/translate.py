@@ -125,6 +125,8 @@ WORDS = {
     "lagiraako": "feel", "lagirakheko": "feel", "uthcha": "rises", "uthyo": "rose", "arulai": "others",
     "dekhera": "seeing", "stress": "stressed", "pressure": "pressure", "hajurama": "grandmother",
     "bitnubhayo": "passed away", "biteko": "passed away", "thale": "started",
+    "birami": "sick", "bimar": "sick", "jwaro": "fever", "jaro": "fever", "aspatal": "hospital",
+    "बिरामी": "sick", "ज्वरो": "fever", "अस्पताल": "hospital",
     # Devanagari
     "म": "i", "मलाई": "i", "मेरो": "my", "तिमी": "you", "दुःख": "sad", "दुखी": "sad",
     "उदास": "sad", "टेन्सन": "stress", "तनाव": "stress", "पीर": "worry", "चिन्ता": "anxiety",

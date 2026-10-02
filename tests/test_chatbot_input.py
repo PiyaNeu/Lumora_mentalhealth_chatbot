@@ -241,3 +241,30 @@ def test_translation_handles_variants_and_phrases(text, meaning):
 @pytest.mark.parametrize("text", ["ghar ko yaad aayo", "ma jhundinchu", "bish khanchu", "aba jiudina"])
 def test_more_roman_nepali_detected(text):
     assert detect_language(text) == "ne-rom"
+
+
+# Physical illness / medical emergencies (out of scope for the mental-health intents)
+@pytest.mark.parametrize("text,guard", [
+    ("so my friend is sick", "physical_illness"),
+    ("she has a fever", "physical_illness"),
+    ("my mom is in hospital", "physical_illness"),
+    ("my friend is ill", "physical_illness"),
+    ("sathi birami cha", "physical_illness"),
+    ("malai jwaro aayo", "physical_illness"),
+    ("my friend fainted", "medical_urgent"),
+    ("she had an accident", "medical_urgent"),
+    ("he is having fits", "medical_urgent"),
+])
+def test_physical_health_guard(app, text, guard):
+    reply = process_message(text)
+    assert reply.route == "guard" and reply.intent == guard
+    assert "doctor" in reply.text or "hospital" in reply.text or "अस्पताल" in reply.text or "डाक्टर" in reply.text
+
+
+@pytest.mark.parametrize("text", [
+    "i am sick of exams", "i feel homesick", "this fits me well", "i did it by accident",
+    "ill go to class tomorrow", "my head hurts when i am stressed",
+])
+def test_physical_health_guard_false_positives(app, text):
+    reply = process_message(text)
+    assert reply.intent not in ("physical_illness", "medical_urgent")

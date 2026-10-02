@@ -34,6 +34,24 @@ DIAGNOSIS = re.compile(
     r"\bwhat (medicine|medication|pills?|dose|dosage) should i\b|\bprescri\w*",
     re.IGNORECASE,
 )
+# Physical health (Lumora is not a medical service): someone is ill, injured or in hospital
+MEDICAL_URGENT = re.compile(
+    r"\b(unconscious|fainted|passed out|not breathing|stopped breathing|bleeding (a lot|heavily|badly)|"
+    r"seizure|having fits|heart attack|stroke|chest pain|choking|severe (burn|bleeding|pain)|"
+    r"(had|in|met with) an accident|got hit by (a )?(car|bus|bike|motorbike|truck)|"
+    r"snake ?bite|poisoned)\b|बेहोस|बेहोश|रगत धेरै|दुर्घटना|\b(behos|behosh|ragat dherai|durghatana)\b",
+    re.IGNORECASE,
+)
+PHYSICAL_ILLNESS = re.compile(
+    r"\b(sick|(is|am|was|feel|feeling|fell|been|very|really|so) ill|unwell|fever|flu|cold and cough|covid|corona|dengue|typhoid|infection|vomit\w*|diarrh\w*|"
+    r"hospital\w*|admitted|surgery|operation|injur\w*|broke (his|her|my|their) \w+|fracture|disease|"
+    r"cancer|diagnosed with)\b|बिरामी|ज्वरो|जरो|अस्पताल|\b(birami|jwaro|jaro|aspatal|bimar)\b",
+    re.IGNORECASE,
+)
+# Mental-health uses of the same words stay with the intent model
+_MENTAL_CONTEXT = re.compile(r"\b(sick of|sick and tired|mentally ill|homesick|love ?sick|feel(ing)? sick of)\b",
+                             re.IGNORECASE)
+
 _WORD = re.compile(r"[a-zA-Zऀ-ॿ]")
 
 REPLIES = {
@@ -81,6 +99,33 @@ REPLIES = {
         ],
         "ne": ["म सहयोगी च्याटबटको भूमिकाभित्रै रहनुपर्छ, त्यसैले म आफ्नो काम गर्ने तरिका बदल्न सक्दिन। तर तपाईंको भावनाबारे कुरा गर्न म तयार छु।"],
     },
+    "medical_urgent": {
+        "en": [
+            "This sounds like it could be a medical emergency. Please call emergency services or get to the "
+            "nearest hospital right now, and ask someone nearby to help. If you can, stay with the person and keep "
+            "them safe until help arrives. I'm here to talk afterwards.",
+        ],
+        "ne": [
+            "यो आपतकालीन स्वास्थ्य अवस्था जस्तो लाग्छ। कृपया अहिले नै आपतकालीन सेवामा फोन गर्नुहोस् वा नजिकको "
+            "अस्पताल जानुहोस्, र नजिकैको कसैलाई सहयोग माग्नुहोस्। सकेसम्म बिरामीको साथमा बस्नुहोस्। पछि कुरा गर्न म यहीँ छु।",
+        ],
+    },
+    "physical_illness": {
+        "en": [
+            "I'm sorry someone is unwell — that can be really worrying. I can't give medical advice, so for "
+            "symptoms like a fever it's best to see a doctor or visit a health post, especially if it's high, "
+            "lasts more than a couple of days or gets worse. Rest and fluids usually help in the meantime. "
+            "How are you feeling about it?",
+            "That sounds stressful. For physical symptoms, a doctor or health post is the right place to get "
+            "checked — and if things get worse suddenly, go to the nearest hospital. Caring for someone can be "
+            "tiring too. How are you holding up?",
+        ],
+        "ne": [
+            "कोही बिरामी हुनुहुन्छ भन्ने सुनेर दुःख लाग्यो — यसले चिन्ता लाग्न सक्छ। म चिकित्सा सल्लाह दिन सक्दिन, त्यसैले "
+            "ज्वरो जस्ता लक्षणका लागि डाक्टर वा स्वास्थ्य चौकीमा देखाउनु राम्रो हुन्छ, विशेषगरी धेरै भए, दुई-तीन दिनभन्दा बढी "
+            "रहे वा बिग्रँदै गए। आराम र पानीले बीचमा मद्दत गर्छ। तपाईंलाई यसबारे कस्तो लागिरहेको छ?",
+        ],
+    },
     "diagnosis": {
         "en": [
             "I can't diagnose or recommend medication — only a qualified professional can do that. "
@@ -103,6 +148,11 @@ def check_guards(text_en, raw_text=""):
         return "too_short", REPLIES["too_short"]
     if UNSAFE_PROMPT.search(text):
         return "unsafe_prompt", REPLIES["unsafe_prompt"]
+    raw = raw_text or text
+    if MEDICAL_URGENT.search(text) or MEDICAL_URGENT.search(raw):
+        return "medical_urgent", REPLIES["medical_urgent"]
+    if (PHYSICAL_ILLNESS.search(text) or PHYSICAL_ILLNESS.search(raw)) and not _MENTAL_CONTEXT.search(text):
+        return "physical_illness", REPLIES["physical_illness"]
     if DIAGNOSIS.search(text):
         return "diagnosis", REPLIES["diagnosis"]
     if GREETING.match(text):
